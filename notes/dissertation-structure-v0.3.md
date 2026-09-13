@@ -30,8 +30,7 @@ compiled LaTeX thesis.
 
 ## Working title
 
-**Context-Aware Learning for Security Analysis: Android Malware Detection and Adversarial
-Robustness Evaluation**
+**Learning-Based Security Analysis: Contextual Representations and Adversarial Evaluation**
 
 The title remains a working title until the research questions and contribution statements
 are approved by the supervisor.

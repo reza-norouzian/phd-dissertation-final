@@ -4,6 +4,10 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-13
 
+- `23:32` **T-016** in-progress -> review - Abstract and Kurzfassung written from Chapters 3-8, one page each, compile clean
+- `23:32` **T-016** Abstract on p. iii and Kurzfassung on p. v, one page each (last text line at y=686 and y=729 of a 745 pt text block); build 159 pp., PDFs identical, no new log warnings, strict audit passes with 0 citations
+- `23:20` **T-016** created: Write the Abstract and the Kurzfassung
+- `23:10` decision **D-001**: Dissertation working title
 - `21:36` **T-014** in-progress -> review - Approved 2.1 A and 2.2 B inserted; caption aligned, strict audit and compile pass, tracked PDFs identical
 - `21:35` **T-014** review -> in-progress - Author selected the imagegen previews 2.1 A and 2.2 B in this task; insert the approved images and adapt panel references
 - `21:26` **T-015** Canvas second pass: 2.1-A widened (analysis titles no longer wrap, lanes 262 px), all type at 6 pt or more at print scale, star-expansion vertices labelled e1-e3, 2.2-B caption names the orange triangle (G has two), wording aligned between 2.1 variants (intent filters; packing, obfuscation).
