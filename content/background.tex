@@ -102,41 +102,9 @@ and 10 per cent combined both \cite{liu2023deeplearning}.
 
 \begin{figure}[tbp]
   \centering
-  \begin{tikzpicture}[
-      every node/.style={font=\small},
-      box/.style={draw, rounded corners=2pt, minimum height=15pt, font=\scriptsize, inner sep=3pt},
-      minor/.style={draw, dashed, rounded corners=2pt, minimum height=13pt, font=\scriptsize, inner sep=2.5pt, text=black!55},
-      note/.style={font=\scriptsize\itshape, text=black!70},
-      band/.style={draw, rounded corners=3pt, font=\scriptsize}
-    ]
-    % ---------------- left: the package ----------------
-    \node[font=\small\bfseries] at (1.75,4.30) {the package};
-    \node[draw, thick, rounded corners=3pt, minimum width=3.6cm, minimum height=3.7cm]
-      (apk) at (1.75,2.20) {};
-    \node[note] at (1.75,0.10) {ZIP archive};
-    \node[box, minimum width=3.0cm] (man) at (1.75,3.55) {\texttt{AndroidManifest.xml}};
-    \node[note, align=center, text width=3.1cm] at (1.75,3.05)
-      {components, permissions,\\filtered intents};
-    \node[box, minimum width=3.0cm] (dex) at (1.75,2.35) {\texttt{classes*.dex}};
-    \node[note, align=center, text width=3.1cm] at (1.75,1.85)
-      {Dalvik bytecode: methods,\\invocations, basic blocks};
-    \node[minor, minimum width=3.0cm] (res) at (1.75,1.10) {\texttt{res/}\quad\texttt{assets/}\quad\texttt{lib/}};
-    % ---------------- right: fields of view ----------------
-    \node[font=\small\bfseries] at (8.30,4.30) {what each mode observes};
-    \node[band, fill=black!6, minimum width=5.9cm, align=left, inner sep=5pt,
-          text width=5.4cm] (st) at (8.30,3.35)
-      {\textbf{static}\ \ all shipped code, run or not\\
-       \textcolor{black!60}{not reached: packed and runtime-loaded code}};
-    \node[band, fill=black!12, minimum width=5.9cm, align=left, inner sep=5pt,
-          text width=5.4cm] (dy) at (8.30,2.20)
-      {\textbf{dynamic}\ \ paths the harness triggers\\
-       \textcolor{black!60}{adds: runtime values, unpacked code, traffic}};
-    \node[band, dashed, minimum width=5.9cm, align=left, inner sep=5pt,
-          text width=5.4cm] (hy) at (8.30,1.25)
-      {\textbf{hybrid}\ \ the union of the two, no new primitive};
-    \draw[->, thin] (apk.east) -- (st.west);
-    \draw[->, thin] (apk.east) -- (dy.west);
-  \end{tikzpicture}
+  % Approved imagegen variant; trim removes only the temporary preview label.
+  \includegraphics[width=\linewidth,trim=0 0 0 115bp,clip]
+    {background-apk-analysis.png}
   \caption[Android package contents and analysis modes]{What an application package holds and
   what each mode of analysis reaches. Static observation covers all shipped code and not what
   the code does; dynamic observation covers what the code did, but only along the paths the
@@ -257,71 +225,21 @@ single hyperedge on three vertices from three separate pairwise relations among 
 vertices \cite{zhou2006learning}. Two projections are standard. \emph{Clique expansion} replaces
 each hyperedge by the complete graph on its members, and \emph{star expansion} introduces a new
 vertex per hyperedge joined to each member \cite{agarwal2006higherorder}.
-Figure~\ref{fig:background:hypergraph} shows both the lifting and what the projection costs.
+Figure~\ref{fig:background:hypergraph} shows the hyperedge memberships and the information
+lost in their pairwise projection.
 
 \begin{figure}[tbp]
   \centering
-  \begin{tikzpicture}[
-      every node/.style={font=\small},
-      vtx/.style={circle, draw, fill=white, inner sep=1.2pt, minimum size=13pt, font=\scriptsize},
-      hedge/.style={draw, thick, rounded corners=9pt},
-      lbl/.style={font=\scriptsize\itshape},
-      pnl/.style={font=\small\bfseries}
-    ]
-    % ---- shared vertex layout, identical in all three panels ----
-    \def\vlayout{
-      \node[vtx] (m1) at (0.00,1.30) {$m_1$};
-      \node[vtx] (m2) at (0.95,1.75) {$m_2$};
-      \node[vtx] (m3) at (1.05,0.75) {$m_3$};
-      \node[vtx] (m4) at (2.05,1.20) {$m_4$};
-      \node[vtx] (m5) at (2.10,0.20) {$m_5$};
-      \node[vtx] (m6) at (1.15,-0.30) {$m_6$};
-    }
-    % ================= panel (a): hypergraph =================
-    \begin{scope}[xshift=0cm]
-      \begin{scope}[on background layer]
-        \draw[hedge, fill=black!8]
-          ($(0.00,1.30)+(-0.42,0.10)$) -- ($(0.95,1.75)+(0.05,0.42)$)
-          -- ($(1.05,0.75)+(0.30,-0.34)$) -- cycle;
-        \draw[hedge, fill=black!14]
-          ($(1.05,0.75)+(-0.34,0.28)$) -- ($(2.05,1.20)+(0.34,0.30)$)
-          -- ($(2.10,0.20)+(0.28,-0.36)$) -- cycle;
-        \draw[hedge, fill=black!5]
-          ($(2.10,0.20)+(0.40,-0.02)$) -- ($(1.15,-0.30)+(-0.40,-0.16)$)
-          -- ($(1.15,-0.30)+(-0.10,0.34)$) -- ($(2.10,0.20)+(0.10,0.36)$) -- cycle;
-      \end{scope}
-      \vlayout
-      \node[lbl] at (0.15,2.35) {$e_1,\ \delta=3$};
-      \node[lbl] at (2.75,1.60) {$e_2,\ \delta=3$};
-      \node[lbl] at (2.30,-0.55) {$e_3,\ \delta=2$};
-      \node[pnl] at (1.05,-1.15) {(a) hypergraph};
-    \end{scope}
-    % ================= panel (b): clique expansion =================
-    \begin{scope}[xshift=5.0cm]
-      \vlayout
-      \draw (m1)--(m2); \draw (m2)--(m3); \draw (m1)--(m3);
-      \draw (m3)--(m4); \draw (m4)--(m5); \draw (m3)--(m5);
-      \draw (m5)--(m6);
-      \node[pnl] at (1.05,-1.15) {(b) clique expansion};
-    \end{scope}
-    % ================= panel (c): what cannot be recovered =========
-    \begin{scope}[xshift=10.0cm]
-      \vlayout
-      \draw[very thick] (m1)--(m2); \draw[very thick] (m2)--(m3); \draw[very thick] (m1)--(m3);
-      \draw (m3)--(m4); \draw (m4)--(m5); \draw (m3)--(m5);
-      \draw (m5)--(m6);
-      \node[lbl, align=center] at (0.30,2.45) {one hyperedge\\or three edges?};
-      \draw[->, thin] (0.55,2.10) -- (0.72,1.55);
-      \node[pnl] at (1.05,-1.15) {(c) the ambiguity};
-    \end{scope}
-  \end{tikzpicture}
-  \caption[Pairwise projection of a hypergraph]{The same six methods as a hypergraph and as its
-  clique expansion. Hyperedge $e_3$ joins two vertices, so it is an ordinary graph edge: every
-  graph is a hypergraph. Panel~(c) marks what the projection costs. The triangle over
-  $m_1, m_2, m_3$ arises both from the single hyperedge $e_1$ and from three separate pairwise
-  relations among the same methods, and the projected graph does not distinguish the two. The
-  joint membership of $m_3$ in $e_1$ and $e_2$ is likewise no longer readable. The projection
-  preserves which methods are related and loses that they were related as one group
+  % Approved imagegen variant; trim removes only the temporary preview label.
+  \includegraphics[width=\linewidth,trim=0 0 0 42bp,clip]
+    {background-hypergraph-projection.png}
+  \caption[Pairwise projection of a hypergraph]{The same six methods represented as
+  (a) a hypergraph, (b) its incidence matrix $H$, and (c) its unweighted clique expansion.
+  A matrix entry is one precisely when the method belongs to the corresponding hyperedge.
+  Hyperedge $e_3$ joins two vertices and is therefore an ordinary graph edge. The lower
+  example shows that the triangle over $m_1, m_2, m_3$ arises both from the single hyperedge
+  $e_1$ and from three separate pairwise relations. The projection preserves pairwise
+  adjacency but does not uniquely determine the original hyperedge memberships
   \cite{zhou2006learning}.}
   \label{fig:background:hypergraph}
 \end{figure}

@@ -4,6 +4,15 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-13
 
+- `21:36` **T-014** in-progress -> review - Approved 2.1 A and 2.2 B inserted; caption aligned, strict audit and compile pass, tracked PDFs identical
+- `21:35` **T-014** review -> in-progress - Author selected the imagegen previews 2.1 A and 2.2 B in this task; insert the approved images and adapt panel references
+- `21:26` **T-015** Canvas second pass: 2.1-A widened (analysis titles no longer wrap, lanes 262 px), all type at 6 pt or more at print scale, star-expansion vertices labelled e1-e3, 2.2-B caption names the orange triangle (G has two), wording aligned between 2.1 variants (intent filters; packing, obfuscation).
+- `21:01` **T-015** in-progress -> review - Awaiting the author's choice of one variant per figure before the TikZ redraw
+- `21:01` **T-015** Canvas https://claude.ai/code/artifact/a2ce2bb3-55b1-4d81-8e23-77da646d169c holds 2.1-A two states (at rest / at run time lanes), 2.1-B reach matrix (observable x static/dynamic/hybrid), 2.2-A hypergraph + incidence H + clique + star expansion, 2.2-B two hypergraphs with one clique expansion. Drawn at 2x print scale in the thesis-native palette. Working files are in the session scratchpad; no .tex changed.
+- `21:01` **T-015** backlog -> in-progress - Design canvas drafted: two variants per figure beside the current ones
+- `21:01` **T-015** created: Redesign Figures 2.1 and 2.2
+- `20:41` **T-014** in-progress -> review - Four inspected imagegen previews and prompt records saved separately for author selection; thesis unchanged
+- `20:32` **T-014** created: Preview redesigns for Figures 2.1 and 2.2
 - `20:22` **T-013** in-progress -> review - Minimal feature-importance method statement incorporated; strict audits and compile pass, PDFs identical
 - `20:22` **T-013** Chapter 3 method wording reduced to the requested training-partition -> split impurity -> normalise -> rank sequence; strict audits pass and latexmk succeeds. The log still contains the pre-existing template warnings and an end-group warning outside the edited sentence; PDFs are identical.
 - `20:19` **T-013** review -> in-progress - Tighten the Chapter 3 method statement to the author's requested training-splits-ranking sequence

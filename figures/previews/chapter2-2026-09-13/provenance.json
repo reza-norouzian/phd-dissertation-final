@@ -1,0 +1,22 @@
+{
+  "mode": "built-in image_gen",
+  "purpose": "temporary author-selection previews",
+  "outputs": [
+    {
+      "id": "figure-2-1-variant-a",
+      "source": "/Users/reza/.codex/generated_images/01a09c09-a68e-7aa1-b4e1-85f58b9962e8/exec-21f84aca-ea7c-4d5a-bade-af3aab2fb1d6.png"
+    },
+    {
+      "id": "figure-2-1-variant-b",
+      "source": "/Users/reza/.codex/generated_images/01a09c09-a68e-7aa1-b4e1-85f58b9962e8/exec-31192cf7-cf7d-4a02-ab3e-a0897a31a927.png"
+    },
+    {
+      "id": "figure-2-2-variant-a",
+      "source": "/Users/reza/.codex/generated_images/01a09c09-a68e-7aa1-b4e1-85f58b9962e8/exec-29c959b4-095f-48c4-adcb-4d90fea811ab.png"
+    },
+    {
+      "id": "figure-2-2-variant-b",
+      "source": "/Users/reza/.codex/generated_images/01a09c09-a68e-7aa1-b4e1-85f58b9962e8/exec-1e597d03-84f1-4bc7-8b09-d6d1b7a92407.png"
+    }
+  ]
+}
