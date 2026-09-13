@@ -101,7 +101,7 @@ ax_a.set_yticklabels(
 ax_a.tick_params(axis="y", pad=0)
 ax_a.set_xlim(0, max(vals) * 1.14)
 ax_a.set_ylim(-0.7, len(top) - 0.3)
-ax_a.set_xlabel("Assigned importance (per cent of total)", labelpad=3)
+ax_a.set_xlabel("Importance (per cent of total)", labelpad=3)
 ax_a.xaxis.grid(True, color=GREY_L, linewidth=0.4, zorder=0)
 ax_a.set_axisbelow(True)
 strip(ax_a)

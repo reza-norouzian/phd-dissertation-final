@@ -347,29 +347,32 @@ missing state, and an absent OPC~UA security policy is not encoded as the policy
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth]{nadics-feature-importance.pdf}
-  \caption{Assigned importance of the 63 extraction fields. (a) The fifteen
-  highest-weighted fields, coloured by group. (b) Each group's share of the total weight
+  \caption{Random-forest importance of the 63 extraction fields. (a) The fifteen most
+  important fields, coloured by group. (b) Each group's share of the total importance
   against its share of the field count. (c) Cumulative share over the ranked fields.}
   \label{fig:anomaly:iuno-importance}
 \end{figure}
 
-Figure~\ref{fig:anomaly:iuno-importance} shows those weights normalised over the 63 fields.
-Panel~(a) ranks the fifteen highest. \texttt{s7\_function} leads at 11.9 per cent, because a stop
-or a start is an ordinary S7 operation whose function code is visible in the request, and
-\texttt{role\_violation} follows at 8.0 per cent, because a write from a host whose role does not
-write is anomalous even over an established connection. The schema records the limits of both
-judgements: legitimate maintenance issues the same function codes, and a compromised engineering
-station writes from a role that is permitted to write.
+Figure~\ref{fig:anomaly:iuno-importance} shows the importance of each field in the random forest
+of Section~\ref{sec:anomaly:iuno-results}. The forest was fitted to the training partition; the
+impurity reductions from splits on each field were summed across its trees, normalised over all
+63 fields, and ranked. Panel~(a) shows the fifteen highest, and
+Appendix~\ref{app:nadics-importance} lists all 63. \texttt{s7\_function} leads at 11.9 per cent,
+because a stop or a start is an ordinary S7 operation whose function code is visible in the
+request, and \texttt{role\_violation} follows at 8.0 per cent, because a write from a host whose
+role does not write is anomalous even over an established connection. Both signals have limits:
+legitimate maintenance issues the same function codes, and a compromised engineering station
+writes from a role that is permitted to write.
 
-Panel~(b) sets each group's share of the total weight against its share of the fields. Protocol
-semantics holds the largest share at 36.4 per cent, although it also holds the most fields. The
-comparison that carries information is the share per field: the nine relational fields average
-2.38 per cent each, against 0.74 for the eighteen flow fields and 0.60 for the five process
-fields. Only the process fields receive less weight per field than the flow statistics. That is
-consistent with the position the schema takes: an
+Panel~(b) sets each group's share of the total importance against its share of the fields.
+Protocol semantics holds the largest share at 36.4 per cent, although it also holds the most
+fields. The comparison that carries information is the share per field: the nine relational
+fields average 2.38 per cent each, against 0.74 for the eighteen flow fields and 0.60 for the five
+process fields. Only the process fields receive less importance per field than the flow
+statistics. That is consistent with the position the schema takes: an
 industrial detector built on Argus and Bro flow features alone discards most of what separates an
 S7 attack from S7 polling. Panel~(c) gives the cumulative share. Ten fields reach 54.5 per cent
-of the assigned weight, twenty-four reach 80 per cent and thirty-six reach 90 per cent, so the
+of the total importance, twenty-four reach 80 per cent and thirty-six reach 90 per cent, so the
 tail of the schema is thin and a reduced schema is plausible. \nadics{} exposes an importance
 ranking for exactly this purpose \cite{iuno_ap4}.
 
@@ -935,8 +938,9 @@ attack events and not 1,233 independent trials. The benign monitoring day was a 
 exercise with four active PLCs and executed no attack, so it bounds the false-alarm rate and says
 nothing about recall.
 No experiment reported here trains on one cell and tests for attacks on another, so transfer
-between installations is untested. The field weighting in
-Figure~\ref{fig:anomaly:iuno-importance} states which fields the schema was designed around. Both exercises were
+between installations is untested. The importances in
+Figure~\ref{fig:anomaly:iuno-importance} are impurity decreases on the training partition, so
+they describe what this forest used and do not show which fields detection requires. Both exercises were
 labelled by the team that executed the attacks, and each two-hour baseline covers only the
 operating modes that occurred within it.
 

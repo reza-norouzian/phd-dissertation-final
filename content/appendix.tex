@@ -1,4 +1,31 @@
-\chapter{Supplementary Material}
-\label{app:supplementary}
+% Appendices. \appendix in thesis.tex switches chapter numbering to letters, so every
+% \chapter in this file is an appendix (A, B, ...).
 
-Place supplementary methods, derivations, tables, or additional results here.
+\chapter{Feature Importance of the NADICS Extraction Fields}
+\label{app:nadics-importance}
+
+Figure~\ref{fig:anomaly:iuno-importance} in Section~\ref{sec:anomaly:iuno-corpus} names only the
+fifteen most important fields of the \nadics{} extraction schema. Table~\ref{tab:app:nadics-ranking}
+lists all 63 in rank order, with the importance of each field and the cumulative importance down
+to its rank. The cumulative column gives the thresholds of panel~(c) of
+Figure~\ref{fig:anomaly:iuno-importance} exactly: the first ten fields hold 54.47 per cent of the
+total, the first 24 hold 80.72 per cent and the first 36 hold 90.41 per cent. The remaining 27
+fields share 9.59 per cent. Fields of equal importance keep the order of the source record, and
+the highest process field, \texttt{setpoint\_change\_count}, stands at rank 19.
+
+\newcommand{\nadicsRankingCaption}{Importance of the 63 fields of the \nadics{} extraction schema
+  in the random forest of Section~\ref{sec:anomaly:iuno-results}, in rank order. Importance is the normalised share of the total, and the cumulative column sums
+  the importances down to that rank. The letter of the identifier gives the group of
+  Table~\ref{tab:app:nadics-groups}, and the bar colours follow
+  Figure~\ref{fig:anomaly:iuno-importance}.}
+\input{figures/nadics-feature-importance-ranking}
+
+Table~\ref{tab:app:nadics-groups} gives the group totals behind panel~(b) of
+Figure~\ref{fig:anomaly:iuno-importance}, together with the importance per field that
+Section~\ref{sec:anomaly:iuno-corpus} discusses and the rank of the highest field in each group.
+
+\newcommand{\nadicsGroupsCaption}{Importance by field group. Both shares are percentages of the
+  63-field total. Importance per field is the group share divided by the number of fields in the
+  group, and the last column gives the rank of the group's highest field in
+  Table~\ref{tab:app:nadics-ranking}.}
+\input{figures/nadics-feature-importance-groups}

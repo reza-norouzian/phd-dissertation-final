@@ -35,6 +35,12 @@ cd figures/src && .venv/bin/python nadics-feature-importance.py && cp nadics-fea
 The JSON is the figure's input of record. Editing it and re-running the script is the supported
 way to change the figure; the PDF is never edited by hand.
 
+`nadics-feature-importance-table.py` (Appendix A, Tables A.1 and A.2) reads the same JSON and
+writes two LaTeX fragments straight into `figures/`: `nadics-feature-importance-ranking.tex`
+(all 63 fields, a `longtable`) and `nadics-feature-importance-groups.tex` (the group summary).
+It needs only the Python standard library and is run by `build.sh`. Both fragments are tracked
+and never edited by hand; their captions are defined in `content/appendix.tex`.
+
 ## SWaT figures
 
 `swat/` preserves the supplied context PDFs and screenshots, together with eight original

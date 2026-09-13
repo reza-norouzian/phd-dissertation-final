@@ -50,6 +50,10 @@ for f in nadics-feature-importance; do
   echo "built $f.pdf"
 done
 
+# Appendix A tables, generated from the same JSON as Figure 3.4. The script writes
+# its two LaTeX fragments straight into figures/.
+.venv/bin/python nadics-feature-importance-table.py
+
 # SPARTA plots install themselves in figures/sparta/thesis/. Their shared JSON
 # preserves the reported values and the scripts derive percentage-point changes.
 for f in sparta-sd-comparison sparta-benchmark-deltas; do
