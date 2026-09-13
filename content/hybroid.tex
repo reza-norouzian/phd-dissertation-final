@@ -1,0 +1,873 @@
+\chapter{Multimodal Android Malware Analysis with \hybroid{}}
+\label{chap:hybroid}
+
+% Drafted under T-020 from notes/chapter4-source-records/. Governing decisions:
+% D-022 the released repository is out of evidence and the paper governs;
+% D-023 the corrected CICAndMal2017 category counts; D-024; D-025 the individual
+% contribution; D-026 the two published claims the chapter declines to repeat.
+% Classifier and ROC figures restored under T-002 from Hybroid Section 3.5.
+
+\section{Research Problem and Contribution}
+\label{sec:hybroid:1}
+
+This chapter answers RQ2, stated in Section~\ref{sec:intro:rqs}: \rqTwoText{} It takes up
+gap~\gapref{2}, which records that hybrid systems are rarely measured against each modality on
+its own, so that the gain belonging to the combination cannot be separated from the gain
+belonging to either part \cite{onwuzurike2018family, lindorfer2015marvin}. The question is
+comparative, and the shape of the chapter follows from that. An accuracy figure for the combined
+system answers nothing on its own. What answers RQ2 is the difference between the combined
+system and each of its halves, measured on the same samples under one protocol, and
+Section~\ref{sec:hybroid:11} reports it.
+
+\hybroid{} observes an application twice. It recovers the program structure from the
+application package without running it, and it observes the traffic the application produces
+while running on a physical handset. Both observations are reduced to vectors, the two vectors
+form one input, and a supervised classifier decides whether the application is malicious and, if
+it is, which category it belongs to. Figure~\ref{fig:hybroid:architecture} gives the arrangement.
+The design is described in Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} and the evaluation
+in Sections~\ref{sec:hybroid:9} to~\ref{sec:hybroid:11}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{hybroid-architecture.pdf}
+  \caption{The Hybroid architecture. Every application sample provides a pair of inputs: the
+  application package and a capture of the traffic it generates~(1). Both are analysed in
+  parallel~(2). Androguard decompiles the package into opcodes, basic blocks and a control-flow
+  graph, which are embedded into a 64-dimensional code representation, while Argus turns the
+  capture into bidirectional flows that are aggregated, normalised and reduced to
+  \netfeatures{}~network-flow features. The two representations are concatenated into one joint
+  vector per sample~(3), on which a gradient-boosting classifier is trained and
+  cross-validated~(4) for binary detection and for categorisation into four malware
+  categories~(5). Redrawn by the candidate from the architecture published in
+  \cite{norouzian2021hybroid}.}
+  \label{fig:hybroid:architecture}
+\end{figure}
+
+Three claims are made for the work, and each is stated here in the form the evidence supports
+rather than in the form the source publication used. The first is the flow pipeline: network
+traffic captured from a real device is reduced to a fixed feature vector per application, through
+bidirectional flow records, aggregation, scaling and a selection stage that leaves
+\netfeatures{} features. The second is the program-code pipeline: instruction embeddings learned
+from a large opcode corpus are composed into method-level vectors, which carry an
+application-level function-call graph that a graph embedding converts into a single vector. The
+third is the comparison itself, which measures each modality alone and the two together, under
+one split, for detection and for category classification. The third depends on the first two and
+is what Section~\ref{sec:hybroid:11} rests on.
+
+Two limits on those claims belong here rather than in the limitations section, because they
+qualify what is being claimed rather than what was found. The source publication names three
+components, \texttt{opcode2vec}, \texttt{function2vec} and \texttt{graph2vec}, of which the
+second is never defined anywhere in it and the third names a published method that the work does
+not use. This chapter therefore describes the three steps and does not name them. And the
+comparison in Section~\ref{sec:hybroid:9} is against four reimplemented systems of unequal
+weight, which that section states when it reports the numbers.
+
+The work was published at ISC 2021 \cite{norouzian2021hybroid}, with the candidate first of four
+authors and the paper recording that the first two share first authorship. The candidate's own
+contribution is stated in Section~\ref{sec:intro:publications}, which the affidavit covers: the
+pipeline as a whole and the network-traffic analysis within it are his, as is the framework
+through which the dataset was analysed, and he carried out the experiments and wrote the paper.
+His contribution to the treatment of the graph data is partial, and this chapter does not present
+the program-code pipeline as his own design.
+
+\section{Related Work}
+\label{sec:hybroid:2}
+
+Section~\ref{sec:background:android:analysis} distinguishes static, dynamic and hybrid analysis
+and reports that roughly one work in ten among surveyed deep-learning defences used both
+\cite{liu2023deeplearning}. Section~\ref{sec:background:graphs:pairwise} defines the graph
+objects. Neither is repeated here. What follows places \hybroid{} among the systems it was
+measured against and among the work that has appeared since.
+
+Static detectors read the application package. Features are drawn from the manifest and from the
+code, and the families in use by 2021 were permissions and intents
+\cite{arora2014malware, zulkifli2018android}, API calls
+\cite{aafer2013droidapiminer, peiravian2013machine}, and structures recovered from the bytecode
+\cite{gascon2013structural, li2019android, chen2018android}. DREBIN is the reference point among
+them and one of the baselines in Section~\ref{sec:hybroid:9}: it gathers as many such features as
+it can, from permissions and hardware requests through API calls to network addresses found in
+the code, and embeds them in one vector space in which a linear model can be inspected to say
+which features drove a verdict \cite{arp2014drebin}. Its breadth is also where it is exposed,
+since the manifest entries and the identifiers a static analyser reads can be rewritten without
+altering what the application does \cite{comparetti2010identifying}, which
+Section~\ref{sec:background:android:obfuscation} treats in general terms.
+
+A second static family works below the level of identifiers, on the instruction stream itself.
+Sequences of opcodes have been used directly as features, with the effectiveness of $n$-grams over
+them measured against families of malicious applications \cite{canfora2015effectiveness}, and
+convolutional networks have been trained over raw opcode sequences to learn the relevant patterns
+rather than to enumerate them in advance \cite{mclaughlin2017deep}. That line is the immediate
+precursor of the representation in Section~\ref{sec:hybroid:5}, and the difference is where the
+sequence stops. A model over a flat opcode sequence sees the program as one string. The
+representation used here keeps the opcode alphabet and then organises it, first into methods and
+then into the graph of calls between them.
+
+Graph-based detectors use the structure rather than the identifiers. Adagio hashes neighbourhood
+subgraphs of the function-call graph into an explicit feature map, which lets a linear classifier
+be trained over graph structure at low cost and lets a verdict be traced back to the code
+structures that produced it; it reports detection of 89 per cent of its malware
+\cite{gascon2013structural}. It is the second static baseline in Section~\ref{sec:hybroid:9}.
+apk2vec learns application embeddings from several graph views at once
+\cite{narayanan2018apk2vec}. MaMaDroid takes a different route through the same object,
+abstracting each call target to its package or family before modelling transitions between them,
+which buys stability against the appearance of unseen methods at the cost of the callee's
+identity \cite{onwuzurike2019mamadroid}.
+
+All of these build the object \hybroid{} builds, and what separates them is how a vertex is
+described. Adagio's vertex labels are hand-built from categories of instruction, and so are the
+attributed control-flow graphs used for similarity between binaries
+\cite{xu2017neural, yan2019classifying}. \hybroid{} learns the labels instead
+\cite{bengio2013representation}. That choice has since acquired support it did not have at the
+time: a benchmark study of graph-based Android classifiers reports that they exceed 94 per cent
+accuracy on standard corpora yet lose up to 45 per cent under distribution shift on unseen
+variants of known families, and it names structure-only function-call graphs as an inherent
+limitation of those benchmarks, because topology alone misses the semantic patterns that
+generalisation needs \cite{tran2025quantifying}. That study is a preprint under review. For the
+wider design space of graph representation learning applied to malware, one survey covers the
+extraction and architecture choices in full \cite{bilot2024survey}.
+
+Dynamic detectors observe behaviour. Two branches exist, one reading system-level activity such
+as system calls and API usage, the other reading what crosses the network. \hybroid{} belongs to
+the second, which is cheaper to collect than system-call tracing and which exposes the part of an
+application's behaviour that a remote operator depends on, since exfiltration and command traffic
+have to leave the device to be of use \cite{malik2016credroid, arora2014malware}. Work in this
+branch has ranged from rule-based inspection of what an application transmits
+\cite{malik2016credroid} to learned models over traffic representations
+\cite{wang2017malware, marin2021deepmal}. CICAndMal2017 was built to support it, and its authors
+classify Android malware from flow features alone \cite{lashkari2018toward}, which makes their
+system the dynamic baseline in Section~\ref{sec:hybroid:9}; they later added API calls to the same
+pipeline \cite{taheri2019extensible}.
+
+Granularity is the choice that divides this branch, and it runs from raw packets, which deep
+models have been trained on directly \cite{marin2021deepmal}, through individual flows to whole
+sessions \cite{wang2017malware}. The choice matters
+more than it appears to, because it fixes what a label can attach to.
+Section~\ref{sec:hybroid:7} returns to it.
+
+Hybrid systems combine the two, and a systematic review of that literature is available and
+replaces an enumeration here \cite{jain2026hybrid}. Two
+points from the surrounding literature bear directly on this chapter. Measured under one
+protocol, static analysis has proved at least as effective as dynamic analysis and the
+combination has measured best \cite{onwuzurike2018family}; that comparison has rarely been
+repeated, which is gap~\gapref{2}. And the modality pair used here was taken up again four years
+later by HGDetector, which builds a static function-call graph and a network-behaviour graph from
+the traffic, fuses them through a graph embedding, and evaluates on the same corpus
+\cite{feng2025hgdetector}. Its result is conditional, and the condition is the useful part: the
+gain from fusion is reported as roughly 4 per cent where the traffic features already capture an
+application's behaviour, and 21 to 26 per cent where they do not. Section~\ref{sec:hybroid:11}
+returns to that.
+
+\section{Observation and Threat Model}
+\label{sec:hybroid:3}
+
+What a detector can see bounds what it can claim, and Chapters~\ref{chap:hybroid}
+and~\ref{chap:hgann} differ in exactly that respect. This section fixes the observation model so
+that the two are not read as competing designs.
+
+\hybroid{} observes two things. The first is the Dalvik bytecode recovered from the application
+package by a static analyser, from which methods, their instructions and the calls between them
+are taken. The second is the traffic the application produces while running on a physical
+handset, captured as packets and reduced to bidirectional flow records. Both observations are
+made once, offline, before any verdict is given.
+
+Several things are not observed. System calls are outside the model, as is code loaded at
+runtime, and so is native code reached through the Java Native Interface. The contents of
+encrypted payloads are also outside it, and that limit is measured rather than assumed: across
+the four malware categories, the share of flows using TLS runs from 0.00 to 10.89 per cent, which
+Section~\ref{sec:hybroid:7} reports and Section~\ref{sec:hybroid:12} takes up as a threat to
+validity. The position in which the system is deployed follows from this. It analyses a sample
+together with a capture of its traffic, which places it in an analysis pipeline rather than on
+the handset.
+
+The adversary is non-adaptive. The malware predates the system by several years and was not
+written against this detector, no attacker knowledge is modelled, and no evasion attempt is
+made against the trained model. Grey box in the sense fixed in
+Section~\ref{sec:background:adversarial} is therefore not claimed here, since that term denotes
+a level of attacker knowledge and this evaluation models none.
+Section~\ref{sec:hybroid:12} states what follows from that, and what the attacks published since
+2025 imply for a pipeline built over a function-call graph.
+
+\section{Dataset and Experimental Protocol}
+\label{sec:hybroid:4}
+
+The evaluation uses CICAndMal2017 \cite{lashkari2018toward}, which supplies application packages
+together with the traffic each one produced. Benign applications were collected from Google Play
+across 2015 to 2017 and malicious ones from VirusTotal and the Contagio archive. The traffic was
+captured from three physical handsets rather than from an emulator, with scripted user
+behaviour and live accounts on messaging and social platforms, and in three states: immediately
+after installation, before a reboot, and after it. Real devices are the reason this corpus was
+chosen, since emulator captures do not reproduce the network behaviour of a handset in use.
+
+\begin{table}
+  \caption{CICAndMal2017 source-corpus composition. The category counts are recomputed from the
+  dataset family listing and differ from the published values of 124, 112, 109 and 101, which do
+  not sum to the stated total of 426.}
+  \label{tab:hybroid:dataset}
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    Class & Families & Samples & Share \\
+    \midrule
+    Benign        &     & 1,700 & 80.0\,\% \\
+    \midrule
+    Adware        & 10  &   104 &  4.9\,\% \\
+    Ransomware    & 10  &   101 &  4.8\,\% \\
+    Scareware     & 11  &   112 &  5.3\,\% \\
+    SMS malware   & 11  &   109 &  5.1\,\% \\
+    \midrule
+    Malware       & 42  &   426 & 20.0\,\% \\
+    Total         &     & 2,126 & 100.0\,\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:hybroid:dataset} gives the source-corpus composition. The published category rows
+sum to 446 against the stated 426, and their percentages sum to 101.0. The recount closes on 426
+across 42 families. The 47 exclusions are not identified by class. The dataset documentation
+reports 5,065 benign applications installed, and the 1,700 used here is the number of benign
+captures the distribution provides.
+
+The source corpus pairs 2,126 applications with their traffic. Both analyses excluded the 47
+graph-extraction failures and used the remaining 2,079 applications.
+Model selection and evaluation use five-fold cross-validation with the results averaged over the
+folds. Implementation used Python with
+scikit-learn, TensorFlow and Keras, on a server with 32 cores, 128\,GB of memory and a 16\,GB
+accelerator. Accuracy, precision, recall, the $F_1$ score and the area under the ROC curve
+are reported, with $F_1$ preferred under the class imbalance Table~\ref{tab:hybroid:dataset}
+shows. The averaging convention behind those metrics is not stated in the source, which
+Section~\ref{sec:hybroid:9} returns to.
+
+A second and larger experiment exercised the program-code pipeline alone. It used 45,592
+malicious and 90,313 benign applications drawn from AndroZoo, VirusShare and VirusTotal, which is
+135,905 samples at a malicious share of 33.5 per cent, split at random into 80 per cent for
+training and 20 per cent for testing, and it reached an accuracy of 95.0 per cent with an $F_1$
+score of 96.0 per cent. It is reported here as a check that the program-code pipeline scales
+beyond a corpus of a few thousand samples. It is not a time-aware evaluation, and
+Section~\ref{sec:background:evaluation} sets out why that distinction matters
+\cite{pendlebury2019tesseract}.
+
+\section{Opcode and Method-Level Representation}
+\label{sec:hybroid:5}
+
+Dalvik instructions carry an operation and its operands. Only the operation is embedded here, and
+the reason is that the operands are register references whose values depend on the runtime that
+executes them \cite{aosp2026dalvikbytecode, aosp2026art}, so they cannot be enumerated across
+applications in the way a vocabulary must be. The operation, by contrast, is drawn from a fixed
+alphabet of 216 opcodes, and samples within one malware family that share a malicious pattern
+share the operations that implement it.
+
+The embedding is learned rather than assigned. Each opcode is mapped to a real-valued vector by
+the skip-gram formulation of word2vec, in which the model is trained to predict the operations
+surrounding a given one \cite{mikolov2013distributed}. Training used a corpus of 18,240,542
+opcodes extracted from applications drawn from AndroZoo. Two opcodes that occur in similar
+positions therefore receive similar vectors, so the representation encodes the company an
+operation keeps rather than an arbitrary index assigned to it, which is what a one-hot encoding
+over the same alphabet would give.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.72\linewidth]{hybroid-opcode-powerlaw.pdf}
+  \caption{Opcode frequency across the pre-training corpus. The upper panel names the twenty most
+  common operations, and the lower panel plots all 216 in rank order, where the shape of the decay
+  is the property the embedding relies on. Reproduced from the candidate's own publication
+  \cite{norouzian2021hybroid}, as is Figure~\ref{fig:hybroid:correlation}.}
+  \label{fig:hybroid:powerlaw}
+\end{figure}
+
+Borrowing a technique from language modelling needs a reason beyond convenience, and the
+distribution of the alphabet supplies it. Counting opcodes across the corpus shows the twenty
+most frequent following a power law, as Figure~\ref{fig:hybroid:powerlaw} shows, which is the
+property that holds for words in natural language, which is the setting the skip-gram objective
+was built for \cite{mikolov2013distributed}. The alphabet also behaves better
+here than in the setting the technique came from. Natural language has an open vocabulary and a
+model trained on one corpus meets unseen words in another; the Dalvik instruction set is closed
+at 216 operations for the format the corpus was drawn from, so an embedding trained once covers
+the applications the analyser reads, and the unseen-token case that troubles language models does
+not arise in the same way. This is what makes a transductive method acceptable in a
+detector that must generalise, and Section~\ref{sec:hybroid:6} returns to the point.
+
+Discarding the operands has a cost, and it is specific rather than general. Every call
+instruction receives the same vector whatever it invokes, because the target sits in the operand
+field \cite{haq2021survey}. This is worth stating plainly at the point where the representation is
+built, because the object built next is a graph whose edges are exactly those call targets. The
+vertex features and the edge set are therefore recovered by two passes over the bytecode that
+share no information, and the vertex features are blind to the structure that the edges record.
+
+Above the instruction, a method is represented by combining the vectors of the instructions it
+contains. The source publication calls this a basic-block embedding and gives it as a weighted
+mean, $\tilde{f} = \sum_{i} w_i x_i / \sum_i w_i$, where $x_i$ is the $l$-dimensional embedding of
+the $i$-th opcode. Two things about that definition are carried forward as they stand rather than
+tidied. The weights $w_i$ are not specified anywhere in the source, which leaves the mean
+undefined. And the formula is written over the $n$ opcodes of a function while the prose around it
+calls the result the embedding of a basic block, so the two do not describe the same object.
+Section~\ref{sec:hybroid:12} records both.
+
+What the vector is used for is stated unambiguously, and that is what
+Section~\ref{sec:hybroid:6} needs. It becomes the feature attached to a vertex of the method's
+control-flow graph, whose vertices are basic blocks.
+
+\section{Program-Graph Representation}
+\label{sec:hybroid:6}
+
+Section~\ref{sec:background:graphs:pairwise} defines the control-flow graph, the function-call
+graph, and the composition in which per-method embeddings become the vertex features of a
+call graph. \hybroid{} builds the composition. Control-flow graphs are extracted per method with
+Androguard \cite{desnos2012android}, each one is reduced to a single vector, and those vectors
+describe the vertices of the application's function-call graph, which is the object the
+classifier consumes. Both terms are needed, and they are not interchangeable.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{hybroid-code2vec.pdf}
+  \caption{The program-code branch. The static analyzer extracts the control-flow graph, opcodes
+  and basic blocks from each APK. Opcodes are embedded first, every method is represented from
+  the tagged control-flow graph of the basic blocks it contains, and a graph embedding reduces
+  the resulting function-call graph to a single 64-dimensional feature vector. Redrawn by the
+  candidate from the arrangement published in \cite{norouzian2021hybroid}.}
+  \label{fig:hybroid:code2vec}
+\end{figure}
+
+Figure~\ref{fig:hybroid:code2vec} sets out the branch as a whole. Two properties of that object
+bound what any detector built on it can claim, and both are set out
+in Section~\ref{sec:background:graphs:pairwise}. A call graph recovered without running the
+program over-approximates, because the analysis admits edges that no execution takes. It also
+under-approximates, since calls made through reflection, through code loaded at runtime or through
+native libraries leave no edge for a static analyser to find, and Section~\ref{sec:hybroid:3}
+records that all three are outside what is observed here. The object is in that sense an artefact
+of the analyser rather than a property of the program, since which edges are found depends on the
+toolkit and on how the component lifecycle is modelled. Neither property is
+peculiar to this work. Both mean that the structure being classified is a static estimate of the
+program's shape, and Section~\ref{sec:hybroid:12} states what follows when an adversary is
+allowed to influence that estimate.
+
+Reducing the graph to a vector could be done by counting substructures, which is what the kernel
+methods discussed in Section~\ref{sec:hybroid:2} do \cite{gascon2013structural}. The route taken
+here instead propagates information along the edges and lets the features of a vertex be shaped
+by its neighbourhood.
+
+The reduction from a graph to a vector uses structure2vec \cite{dai2016discriminative}. A
+$p$-dimensional vector $\mu_v$ is attached to each vertex $v$ and initialised at random, then
+updated for $T$ rounds by a function of the vertex's own features and the sum of its neighbours'
+current vectors,
+%
+\begin{equation}
+  \mu_v^{(t+1)} = F\!\left(x_v, \sum_{u \in N(v)} \mu_u^{(t)}\right), \qquad \forall v \in V,
+  \label{eq:hybroid:meanfield}
+\end{equation}
+%
+with $F$ realised as
+%
+\begin{equation}
+  F\!\left(x_v, \sum_{u \in N(v)} \mu_u^{(t)}\right)
+  = \tanh\!\left(W_1 x_v + \sigma\!\left(\sum_{u \in N(v)} \mu_u^{(t)}\right)\right),
+  \label{eq:hybroid:update}
+\end{equation}
+%
+where $W_1$ is trainable and $\sigma$ is an $n$-layer fully connected network,
+%
+\begin{equation}
+  \sigma(l) = P_1\,\mathrm{ReLU}\!\left(P_2 \cdots \mathrm{ReLU}(P_n l)\right).
+  \label{eq:hybroid:sigma}
+\end{equation}
+%
+After $T$ rounds the vertex vectors are averaged and transformed by a second trainable matrix,
+which yields one vector per graph. This is the operator
+Section~\ref{sec:background:learning:messagepassing} describes in words, instantiated on the
+graphs built here. The number of rounds fixes how far information travels: after $T$ updates a
+vertex has been reached by everything within $T$ steps of it, so $T$ sets the size of the
+neighbourhood any single vertex vector summarises. Averaging at the end rather than summing keeps
+the result comparable across graphs of different sizes, which matters when applications differ by
+orders of magnitude in how many methods they contain.
+
+One step in this pipeline is not specified in the source publication, and the chapter states so
+rather than supplying a plausible reconstruction. Equations~\ref{eq:hybroid:meanfield}
+to~\ref{eq:hybroid:sigma} are applied at the level of a method's control-flow graph, and the
+averaging inside that procedure pools the basic blocks of one method. The step that combines the
+resulting per-method vectors into the single 64-dimensional vector standing for the whole
+application is named as the third step of the pipeline and is specified by no equation. Nothing in
+the source refers to a caller or a callee in symbols, so the composition is stated there as a
+design and is reproduced here as one.
+
+A note on transduction closes the description. The opcode embedding is transductive, since
+word2vec needs the whole alphabet at training time. That alphabet is the fixed Dalvik instruction
+set, so the requirement is met by construction rather than by assumption about the corpus. The
+graph embedding is inductive, and graphs in the test partition are unseen when it is trained.
+
+\section{Network-Flow Representation}
+\label{sec:hybroid:7}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{hybroid-dynamic.pdf}
+  \caption{The network branch. Argus reduces a raw capture to bidirectional flow events, the
+  events belonging to one application are aggregated into a single record, every attribute is
+  normalised to a common range, and feature selection retains the \netfeatures{}~most informative
+  features. Redrawn by the candidate from the arrangement published in
+  \cite{norouzian2021hybroid}.}
+  \label{fig:hybroid:dynamic}
+\end{figure}
+
+Section~\ref{sec:background:networks:flows} sets out the flow abstraction.
+Figure~\ref{fig:hybroid:dynamic} gives the branch. Here the captures are processed with Argus \cite{qosient2026argus}, which produces bidirectional records grouped by the
+usual five-tuple of source and destination address, source and destination port, and protocol,
+and reports roughly forty statistics for each record. Two of those statistics are categorical,
+the direction of the transaction and the state flags, and both are one-hot encoded; the rest are
+numeric.
+
+An application produces many flows, and the representation reduces them to one record. The values
+of each feature are averaged across all flow events belonging to one capture, which yields a
+single feature vector per application and matches the granularity of the program-code vector so
+that the two can be combined. Two consequences follow and neither is stated in the source
+publication. The label attaches to the application rather than to any individual flow, which
+avoids the assumption that every flow emitted by a malicious application is itself malicious.
+Against that, averaging discards the order and the timing of the capture, and a small number of
+malicious flows is averaged together with whatever background traffic the handset produced during
+the same window.
+
+The averaged features are scaled to the unit interval by min-max normalisation, on the ground
+that features whose ranges differ by orders of magnitude would otherwise contribute unequally to
+any distance computed over them. That rationale applies to the two learners which were tried and
+dropped rather than to the three reported in Section~\ref{sec:hybroid:8}, since a tree is
+unaffected by any monotone rescaling of a feature. The source publication states that standard
+scaling was considered and rejected.
+
+\begin{table}
+  \caption{The \netfeatures{} network-flow features retained after selection, grouped by the kind
+  of quantity each one measures.}
+  \label{tab:hybroid:flowfeatures}
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    Kind & Features \\
+    \midrule
+    Volume and duration & mean record duration, total bytes, source bytes \\
+    Transport state     & destination TCP window, source loss and retransmission flag, \\
+                        & destination out-of-order flag, transaction direction \\
+    Path and service    & source and destination TTL, source and destination TOS byte \\
+    Connection identity & source and destination TCP base sequence number \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Selection reduced the roughly forty statistics to the \netfeatures{} listed in
+Table~\ref{tab:hybroid:flowfeatures}, using Pearson correlation, an extremely randomised trees
+estimator and a univariate test that keeps the highest-scoring features. Redundancy among the
+survivors was checked with Kendall's correlation, shown in
+Figure~\ref{fig:hybroid:correlation}. The grouping in the table is this chapter's
+addition, and it is there because the four groups do not have equal standing as descriptions of
+application behaviour. Volume, duration and transport state are produced by what the application
+does. The remaining two groups are not: the TTL reflects the path and the operating system of the
+endpoint, the TOS byte is set by few stacks and is commonly zero, and the TCP base sequence
+numbers are required to be unpredictable per connection and so cannot carry behaviour at all.
+Section~\ref{sec:hybroid:12} takes this up, together with a published audit of the same feature
+family in a different corpus.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.82\linewidth]{hybroid-flow-correlation.pdf}
+  \caption{Kendall correlation among the retained flow features, used to check that the selected
+  features are not redundant with one another.}
+  \label{fig:hybroid:correlation}
+\end{figure}
+
+A separate observation concerns what the traffic carried, and
+Table~\ref{tab:hybroid:protocols} records it. Cleartext HTTP accounts for between 29.22 and 61.38
+per cent of flows across the four malware categories, and TLS for between nothing at all and
+10.89 per cent. The remainder, which runs from 27.73 to 70.78 per cent depending on the category, is neither named nor characterised in the source publication. \begin{table}
+  \caption{Share of flows by protocol, per malware category. The two columns do not sum to 100
+  per cent and the source publication does not say what the remainder is.}
+  \label{tab:hybroid:protocols}
+  \centering
+  \begin{tabular}{lrrr}
+    \toprule
+    Category & HTTP & TLS & Unaccounted \\
+    \midrule
+    Adware      & 52.00\,\% &  8.00\,\% & 40.00\,\% \\
+    Ransomware  & 29.22\,\% &  0.00\,\% & 70.78\,\% \\
+    Scareware   & 61.38\,\% & 10.89\,\% & 27.73\,\% \\
+    SMS malware & 52.20\,\% & 10.28\,\% & 37.52\,\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Flow-level features
+were chosen over inspection of payloads for reasons of privacy and cost, and that choice has
+become the only available one since: beyond transport encryption, a substantial share of
+applications encrypt content themselves before sending it, with one measurement of 12,598
+applications finding 22.92 per cent doing so and most of those transmitting device-identifying
+information \cite{pourali2022hidden}.
+
+\section{Multimodal Fusion and Classification}
+\label{sec:hybroid:8}
+
+Two classifiers appear in this pipeline and they do different work, which is worth separating
+before either is described, because a reader who meets both without warning will take one of them
+for a mistake.
+
+The first sits at the end of the program-code branch. A two-layer fully connected network takes
+the graph vector and is trained to discriminate, with malicious samples labelled $+1$, benign
+samples $-1$, and a decision taken at zero. Its purpose is to fit the parameters of the
+representation, since the matrices in Equations~\ref{eq:hybroid:meanfield}
+to~\ref{eq:hybroid:sigma} have to be learned against some objective and detection is the
+objective available. What leaves the branch is the 64-dimensional vector, and the network that
+produced it plays no further part.
+
+One consequence deserves stating, because it bears on Section~\ref{sec:hybroid:10}. The objective
+that fits the program-code representation is binary, and the same representation is then used for
+the five-class task. A representation tuned to separate malicious from benign need not be equally
+informative about which kind of malicious an application is, and nothing in the source
+publication indicates that the embedding was refitted for the second task. Whether the
+categorisation results would improve under a representation fitted to that objective was not
+measured.
+
+The second classifier acts on both modalities. The 64-dimensional program-code vector and the
+\netfeatures{} flow features are taken together as one input, on which a supervised learner is
+trained for detection and, separately, for category classification. The source publication
+describes the two groups as forming a single input vector and does not name the operator that
+combines them, so this chapter does not name it either. The proportions of that input are however
+fixed by the two branch designs and they are uneven: 64 of the 77 dimensions come from the
+program code, so the static half supplies roughly five dimensions in every six. No weighting is
+applied to correct for this, and none is reported as having been considered.
+
+Five learners were tried. Support vector machines and naive Bayes performed worst and were
+dropped, leaving a decision tree, a random forest and a gradient boosting classifier, which are
+the three reported throughout Sections~\ref{sec:hybroid:9} to~\ref{sec:hybroid:11}. No figures
+are given for the two that were dropped, so the margin by which they were rejected is not on
+record. The three that remain are tree-based learners of increasing capacity, which is convenient for
+the comparison in Section~\ref{sec:hybroid:11}: the decision tree fits axis-aligned splits on a
+single model, the random forest averages over many such models, and gradient boosting fits them
+in sequence against the residual of what came before. Reading the three together therefore says
+something about how much capacity the fused representation needs, and not only about which
+learner wins.
+
+Combining the modalities at the level of features, rather than training a model on each and
+combining their decisions, is a design choice, and it was the ordinary one at the time. Its
+consequences were not visible in 2021. Section~\ref{sec:hybroid:11} reports what the measurements
+here show and sets them beside the evidence that has accumulated since.
+
+\section{Binary Detection Results}
+\label{sec:hybroid:9}
+
+\begin{table}
+  \caption{Detection compared with four reimplemented systems, read from the published figures.
+  The four systems differ considerably in weight: DREBIN is a full conference paper, Adagio and
+  CIC 2017 are papers of ten and seven pages, and the SVM entry is a two-page poster. The reported
+  performance values come from Figures~6 and~7 of \cite{norouzian2021hybroid}.}
+  \label{tab:hybroid:baselines}
+  \centering
+  \begin{tabular}{lrrrrr}
+    \toprule
+    System & Accuracy & $F_1$ & Recall & Precision & AUC \\
+    \midrule
+    SVM \cite{dai2015svm}                & 0.939 & 0.860 & 0.856 & 0.865 & 0.876 \\
+    DREBIN \cite{arp2014drebin}          & 0.954 & 0.867 & 0.873 & 0.861 & 0.961 \\
+    Adagio \cite{gascon2013structural}   & 0.893 & 0.932 & 0.913 & 0.953 & 0.867 \\
+    CIC 2017 \cite{lashkari2018toward}   & 0.876 & 0.872 & 0.878 & 0.871 & 0.914 \\
+    \midrule
+    \hybroid{}                           & 0.970 & 0.969 & 0.970 & 0.970 & 0.996 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:hybroid:baselines} reports the comparison published for binary detection
+\cite{norouzian2021hybroid}. \hybroid{} has the highest point value in each column. Two
+qualifications accompany the comparison because they affect how the values can be read.
+
+The first concerns the comparison set. The four systems are not of equal weight, and the SVM
+entry is a two-page poster \cite{dai2015svm}, so the phrase state of the art would carry more
+than the table supports.
+
+The second qualification concerns the metrics. For a binary problem
+in which accuracy is computed over the whole test set and precision and recall over the malicious
+class, the three quantities determine the malicious share $p$ of that set through
+$\mathrm{acc} = 1 - p\left[(1-R) + R(1-P)/P\right]$. Solving for each row of
+Table~\ref{tab:hybroid:baselines} gives 22.0 per cent for the SVM entry, 17.2 for DREBIN, and
+81.0, 49.2 and 50.0 per cent for Adagio, CIC 2017 and \hybroid{}. Depending on the labels of the 47
+exclusions, the evaluated malware share lies between 18.2 and 20.5 per cent. The last three values
+remain incompatible with that interval. The source publication does not state which averaging
+convention produced its figures, and no raw result survives against which to check. The chapter
+therefore preserves the published values and does not treat their differences as estimates made
+under one documented metric convention.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.72\linewidth]{hybroid-detection-roc.pdf}
+  \caption{Receiver operating characteristic curves for binary malware detection, reproduced
+  from the published vector content of Figure~7 in \cite{norouzian2021hybroid}. The source labels the curves as macro
+  averages and reports the AUC values in the legend. It provides neither a selected operating
+  threshold nor fold-level variation.}
+  \label{fig:hybroid:detection-roc}
+\end{figure}
+
+Figure~\ref{fig:hybroid:detection-roc} shows the corresponding threshold curves. \hybroid{} has
+the largest reported AUC at 0.996, followed by DREBIN at 0.961. The dynamic CIC 2017 system has an
+AUC of 0.914, ahead of the SVM and Adagio entries despite its lower accuracy in
+Table~\ref{tab:hybroid:baselines}. The metric therefore changes the ordering of the baselines.
+The AUCs summarise ranking across thresholds, while the paper reports no threshold at which the
+detector would operate. It also supplies no fold-level curves or confidence intervals, so the
+differences remain descriptive point estimates \cite{norouzian2021hybroid}.
+
+Read by modality, three of the four baselines are static and one is dynamic. The comparison still
+mixes the implementation choices of separate systems with the observation modality, so it cannot
+isolate a modality effect. Section~\ref{sec:hybroid:11} uses the within-system comparison for that
+purpose.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{hybroid-detection-classifiers.pdf}
+  \caption{Binary detection by learner and observation modality, with each reported metric in its
+  own panel. Every row carries one marker per modality, joined by a rule spanning the values it
+  reports. The values are the five-fold means printed to two decimal places in Figure~8 of
+  \cite{norouzian2021hybroid}, checked against the bar geometry of that figure. The score axis is
+  truncated to 0.86--0.98, the interval those values occupy. No fold-level scores are published,
+  so the figure carries no error bars. Redrawn by the candidate.}
+  \label{fig:hybroid:detection-classifiers}
+\end{figure}
+
+Figure~\ref{fig:hybroid:detection-classifiers} separates the learner comparison from the external
+baselines. Gradient boosting on the fused representation reaches 0.97 on all three reported
+metrics. Random forest reaches 0.96, while the decision tree reaches 0.91. Network flow alone has
+a higher point value than program code alone for each learner. Under program code alone, random
+forest and gradient boosting both report 0.93 for $F_1$, recall and precision. Gradient boosting
+therefore has the highest fused result, as the paper states, while its program-code result ties
+with random forest at the published precision \cite{norouzian2021hybroid}.
+
+At two-decimal precision, $F_1$, recall and precision coincide in eight of the nine
+configurations. The remaining configuration is gradient boosting over network flow, for which
+recall is 0.96 and the other two values are 0.95. Micro-averaging would make the three metrics
+equal by construction, and rounding could also hide small differences. The paper does not state
+the averaging convention and provides no raw predictions, so neither explanation can be selected
+from the surviving evidence \cite{norouzian2021hybroid}.
+
+\section{Malware-Category Classification}
+\label{sec:hybroid:10}
+
+The second task assigns each sample to one of five mutually exclusive classes, the four malware
+categories of Table~\ref{tab:hybroid:dataset} together with the benign class. The source
+publication calls this multi-label classification throughout; it is multi-class classification
+with a single label per sample, and this chapter uses the latter term
+\cite{norouzian2021hybroid}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{hybroid-categorisation-classifiers.pdf}
+  \caption{Five-class malware-category classification by learner and observation modality, drawn
+  on the same plan as Figure~\ref{fig:hybroid:detection-classifiers}. The score axis is truncated
+  to 0.78--0.96, because this task occupies a lower interval. The values are the five-fold means
+  printed to two decimal places in Figure~9 of \cite{norouzian2021hybroid}, checked against the
+  bar geometry of that figure. Decision-tree recall is 0.86 for program code and for the fused
+  representation, so those two markers are drawn concentrically. No fold-level scores are
+  published, so the figure carries no error bars. Redrawn by the candidate.}
+  \label{fig:hybroid:categorisation-classifiers}
+\end{figure}
+
+Figure~\ref{fig:hybroid:categorisation-classifiers} gives the category-classification results.
+Gradient boosting on the fused representation reaches 0.94 on all three metrics. Random forest
+follows at 0.92 for $F_1$ and 0.93 for recall and precision. The decision-tree result differs: the
+fused representation reaches 0.85 for $F_1$ and precision, below the program-code values of 0.87,
+while recall is equal at 0.86. The paper's general statement that combined features give the best
+performance therefore has one exception in its own reported figure
+\cite{norouzian2021hybroid}.
+
+Table~\ref{tab:hybroid:perclass} gives the area under the ROC curve for each class, for the
+gradient boosting classifier on the combined vector. The macro average of 0.976 is reported as a
+macro accuracy in the source publication, which its own figure legend contradicts; it is an
+average of areas under the curve \cite{norouzian2021hybroid}.
+
+\begin{table}
+  \caption{Area under the ROC curve per class, gradient boosting on the combined representation,
+  with the pre-exclusion counts of Table~\ref{tab:hybroid:dataset}. Values are read from Figure~10
+  of \cite{norouzian2021hybroid}.}
+  \label{tab:hybroid:perclass}
+  \centering
+  \begin{tabular}{lrr}
+    \toprule
+    Class & Samples & AUC \\
+    \midrule
+    Benign        & 1,700 & 0.995 \\
+    Ransomware    &   101 & 0.991 \\
+    Scareware     &   112 & 0.979 \\
+    Adware        &   104 & 0.963 \\
+    SMS malware   &   109 & 0.946 \\
+    \midrule
+    Macro average &       & 0.976 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.72\linewidth]{hybroid-categorisation-roc.pdf}
+  \caption{Per-class receiver operating characteristic curves for gradient boosting on the fused
+  representation, reproduced from the published vector content of Figure~10 in
+  \cite{norouzian2021hybroid}. The legend
+  reports a macro-average AUC of 0.976 and the AUC of each class. The paper provides no selected
+  operating threshold or fold-level variation.}
+  \label{fig:hybroid:categorisation-roc}
+\end{figure}
+
+Figure~\ref{fig:hybroid:categorisation-roc} preserves the threshold curves from which the AUC
+values in Table~\ref{tab:hybroid:perclass} were read. Benign and ransomware have the largest
+reported areas, 0.995 and 0.991. SMS malware has the smallest at 0.946. These values measure class
+ranking across thresholds. They do not provide the per-class precision and recall at the decision
+rule used for the five-class result, which the paper does not report
+\cite{norouzian2021hybroid}.
+
+The averaging convention for the global precision, recall and $F_1$ values is also unstated.
+Benign applications remain the majority after the exclusions, so the reported value of 0.94
+cannot be interpreted as equal performance across the five classes. Per-class precision and
+recall, the fold-level values, and any dispersion measure are unavailable in the paper
+\cite{norouzian2021hybroid}.
+
+\section{Modality Comparison}
+\label{sec:hybroid:11}
+
+This section answers RQ2. Figures~\ref{fig:hybroid:detection-classifiers}
+and~\ref{fig:hybroid:categorisation-classifiers} compare the two single modalities with their
+fusion on the same samples, under one protocol, for the three reported learners
+\cite{norouzian2021hybroid}.
+
+\begin{table}
+  \caption{Difference between the fused score and the better of the two single-modality scores.
+  Positive values favour fusion. The differences are computed from Figures~8 and~9 of
+  \cite{norouzian2021hybroid}, whose values are printed to two decimal places.}
+  \label{tab:hybroid:fusion-effects}
+  \centering
+  \begin{tabular}{llrrr}
+    \toprule
+    Task & Learner & $\Delta F_1$ & $\Delta$ recall & $\Delta$ precision \\
+    \midrule
+    Detection      & Decision tree     & $+0.01$ & $+0.01$ & $+0.01$ \\
+    Detection      & Random forest     & $+0.02$ & $+0.02$ & $+0.02$ \\
+    Detection      & Gradient boosting & $+0.02$ & $+0.01$ & $+0.02$ \\
+    \midrule
+    Categorisation & Decision tree     & $-0.02$ & $ 0.00$ & $-0.02$ \\
+    Categorisation & Random forest     & $+0.01$ & $+0.01$ & $+0.02$ \\
+    Categorisation & Gradient boosting & $+0.03$ & $+0.02$ & $+0.03$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The single-modality ordering changes with the task. Network flow has the higher reported $F_1$
+for detection under all three learners: 0.90 against 0.89, 0.94 against 0.93, and 0.95 against
+0.93. Program code has the higher value for categorisation: 0.87 against 0.80, 0.91 against 0.88,
+and 0.91 against 0.90. This reversal is consistent across the three learners reported in the
+paper. The experiment does not identify a causal mechanism for it
+\cite{norouzian2021hybroid}.
+
+Table~\ref{tab:hybroid:fusion-effects} isolates the point differences that answer RQ2. Fusion adds
+one or two points of $F_1$ in binary detection. For categorisation, it reduces decision-tree
+$F_1$ by two points and increases the ensemble results by one and three points. Recall for the
+decision tree is unchanged. The reported evidence therefore supports a modest fusion improvement
+for detection and a learner-dependent result for category classification
+\cite{norouzian2021hybroid}.
+
+The paper reports no fold-level values or dispersion measure. The one- and two-point differences
+cannot be assigned statistical significance, and the two-decimal rounding prevents a finer
+comparison. The chapter therefore reports their magnitude and direction as published point
+estimates \cite{norouzian2021hybroid}.
+
+\section{Limitations and Threats to Validity}
+\label{sec:hybroid:12}
+
+\paragraph{Encryption, and the age of the corpus.} The strongest limit on external validity is
+measurable from the material in Section~\ref{sec:hybroid:7}. Between 0.00 and 10.89 per cent of
+the flows in each malware category use TLS, so the evaluation traffic is overwhelmingly
+cleartext, and no conclusion about detection over encrypted flows follows from it. The gap has
+widened since the capture. Cleartext was permitted by default up to Android 8.1 and has been
+disabled by default from Android 9 onwards \cite{aosp2026networksecurity}, and applications
+increasingly encrypt content themselves in addition \cite{pourali2022hidden}. A detector fitted
+to 2017 traffic would meet a different protocol mix today, and the flow statistics of
+Table~\ref{tab:hybroid:flowfeatures} would be observable while the composition of the traffic
+they summarise would not be the same.
+
+\paragraph{Part of the flow representation may not describe behaviour.} Two of the four groups in
+Table~\ref{tab:hybroid:flowfeatures} are open to this objection. The TCP base sequence numbers
+are required to be unpredictable per connection and cannot encode anything about an application.
+The TTL and TOS values describe the path and the endpoint rather than the sender. The concern has a
+documented precedent. In a widely used intrusion-detection corpus, the time-to-live features
+inadvertently fingerprint the operating systems of the hosts involved, and an audit of that
+corpus removed them as unjustifiably performant \cite{flood2024bad}. That audit covers different corpora, so the finding does not
+transfer, although the mechanism might. Both classes here were captured from the same three
+handsets, which leaves little room for the source-side values to separate them, whereas the
+destination-side values describe remote endpoints, and command servers and application backends
+are different populations of hosts. Whether the mechanism acted here was never measured, and the
+feature matrices do not survive, so it stands as an unresolved threat rather than a finding.
+
+\paragraph{The metric convention is unstated.} Section~\ref{sec:hybroid:9} shows that the values
+reported for three of the five compared systems cannot be reconciled with a single confusion
+matrix on an evaluation cohort whose malicious share lies between 18.2 and 20.5 per cent.
+Section~\ref{sec:hybroid:9} also records that precision, recall and $F_1$ coincide at the reported
+two-decimal precision in eight of nine detection configurations. An unstated averaging convention
+and rounding can both produce this pattern. The paper supplies no raw predictions with which to distinguish them
+\cite{norouzian2021hybroid}. The comparison should be read as indicative rather than as a precise
+ranking.
+
+\paragraph{The larger experiment is not time-aware.} The 135,905-sample experiment of
+Section~\ref{sec:hybroid:4} used a random split. Training and test samples are therefore drawn
+from the same period, no temporal ordering is enforced, and no area under the time-decay curve is
+reported. Section~\ref{sec:background:evaluation} sets out why an evaluation of this kind
+overstates what a detector will achieve against samples that appear after it was trained
+\cite{pendlebury2019tesseract}. That experiment is reported here as a check that the pipeline
+scales to a larger corpus, and nothing about robustness over time is claimed from it.
+
+\paragraph{Obfuscation.} Graph features could not be extracted from 47 obfuscated applications,
+which is 2.2 per cent of the source corpus. The source publication
+states in two places that the graph structure is unaffected by obfuscation, which those 47 failures
+contradict. The defensible version of the claim is narrower: identifiers and manifest entries can
+be renamed without changing the call structure, so a representation built on structure is
+insensitive to the transformations that defeat name-based features, and it remains sensitive to
+packers and to transformations that rewrite the structure itself.
+
+\paragraph{Two steps are unspecified.} The weights of the method-level mean in
+Section~\ref{sec:hybroid:5} are not given, which leaves that mean undefined as published. The step
+that composes the per-method vectors into the application-level vector in
+Section~\ref{sec:hybroid:6} is not described by any equation. Both are recorded as gaps in the
+source rather than reconstructed here.
+
+\paragraph{Fusion is not uniformly beneficial.} Section~\ref{sec:hybroid:11} reports the decision
+tree on the category task, where the combined representation scores below the program code alone.
+The paper states that combined features give the best performance, while its category figure
+reports $F_1$ and precision of 0.85 for the combined decision tree against 0.87 for program code
+alone \cite{norouzian2021hybroid}.
+
+\paragraph{The threat model is non-adaptive, and the exposure is structural.} No adversary aware
+of this detector is modelled, and no evasion attempt was made against it. That limit has a
+specific shape here rather than a generic one. The representation is built over the application's
+function-call graph, and attacks published since operate on exactly that object at the level of
+the code: semantics-preserving rewriting that injects methods and call edges reaches the input of
+the pipeline before any feature is computed, reported at 87.9 per cent attack success against
+graph-summary detectors under white-box access \cite{song2026fcghunter}, and a related attack
+reports an average of 85.17 per cent across seven detectors whose set includes graph neural
+networks, under a perturbation budget of five per cent \cite{li2025efficient}.
+Neither was run against \hybroid{}, so nothing here shows it robust and nothing shows it broken.
+One asymmetry is worth stating as a hypothesis rather than as a result: the call edges those
+operators inject are made unreachable by construction, so they generate no traffic, and the flow
+half of the representation would be unchanged by them. Whether that translates into graceful
+degradation is untested.
+
+\section{Chapter Summary}
+\label{sec:hybroid:13}
+
+This chapter presented \hybroid{}, which detects and categorises Android malware from two
+observations of the same application: the structure of its code, recovered without running it and
+represented as a function-call graph whose vertices carry embeddings learned from the
+instructions of each method and from the control flow between its basic blocks, and the traffic it produces on a physical handset, reduced to \netfeatures{}
+features of its bidirectional flows. On CICAndMal2017 the combined representation reaches an
+accuracy of 97.0 per cent for detection, and 0.94 on precision, recall and $F_1$ for category
+classification, in both cases with a gradient boosting classifier
+\cite{norouzian2021hybroid}.
+
+The within-system contrasts in Section~\ref{sec:hybroid:11} answer RQ2. Fusion adds one or two
+points of $F_1$ for detection over the better single modality. For category classification the
+difference ranges from minus two points for the decision tree to plus three for gradient boosting;
+random forest gains one point. Network flow leads program code in detection, while program code
+leads network flow in category classification for each reported learner. These are point
+differences rounded to two decimals, and the paper reports no fold-level dispersion from which to
+test their statistical significance \cite{norouzian2021hybroid}.
+
+Chapter~\ref{chap:hgann} keeps the question of context and changes where the context is sought.
+Here it was sought across two sources of evidence, one static and one dynamic, at the cost of
+requiring a traffic capture for every sample. There it is sought within the program alone, by
+representing relations that involve more than two functions at once, for a detector that needs
+only the application package.

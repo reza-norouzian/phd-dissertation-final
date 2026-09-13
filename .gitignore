@@ -1,0 +1,86 @@
+# macOS and editor metadata
+.DS_Store
+._*
+.idea/
+.vscode/
+*.code-workspace
+*~
+*.swp
+*.swo
+*.tmp
+
+# LaTeX compilation byproducts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.ist
+*.loa
+*.lof
+*.log
+*.lot
+*.maf
+*.mtc
+*.mtc0
+*.nav
+*.nlo
+*.nls
+*.out
+*.run.xml
+*.snm
+*.synctex
+*.synctex.gz
+*.synctex(busy)
+*.toc
+*.vrb
+*.xdv
+
+# LaTeX packages and bibliography tools
+*.acn
+*.acr
+*.alg
+*.auxlock
+*.dvi
+*.ent
+*.fff
+*.glsdefs
+*.lox
+*.mw
+*.nlg
+*.nlm
+*.nlu
+*.pytxcode
+*.slg
+*.sls
+*.tdo
+*.xdy
+
+# Generated output: the compiled thesis is tracked so that PDF changes are reviewable in git.
+# Everything else latexmk writes into that directory stays out.
+output/pdf/*
+!output/pdf/thesis.pdf
+
+# Figure sources: the matplotlib figures build inside a local virtualenv created by
+# figures/src/build.sh from figures/src/requirements.txt. The environment and the
+# screen-resolution PNG preview are byproducts; the vector PDF in figures/ is tracked.
+.venv/
+figures/src/.venv/
+figures/src/*.png
+
+# Reference vault: the PDFs themselves are not committed (size and publisher licences).
+# references/MANIFEST.tsv is committed, so the record of what was checked survives.
+references/pdf/
+references/.manifest.lock
+
+# The root thesis.pdf is a tracked copy of output/pdf/thesis.pdf, written by $success_cmd
+# in .latexmkrc after every successful compile. Do not ignore it.
+
+/tmp

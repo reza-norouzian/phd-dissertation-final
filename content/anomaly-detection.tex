@@ -1,0 +1,991 @@
+\chapter{Anomaly Detection in IoT and Industrial Control Systems}
+\label{chap:anomaly}
+
+\section{Scope, Research Question, and Contributions}
+\label{sec:anomaly:scope}
+\label{sec:anomaly:1}
+
+This chapter answers RQ1.1 and RQ1.2, the two subquestions of RQ1 stated in
+Section~\ref{sec:intro:rqs}, and takes up gap~\gapref{1}. Three pieces of work support the
+answer. The first represents service-to-service communication in an IoT middleware as a graph
+and flags relations absent from that graph. The second is \nadics{}, a learning framework for
+network and process data, together with its S7 and PROFINET extractor and its integration in
+IUNO. The third studies a multivariate reconstruction detector over SWaT process data by
+combining elements of MAD-GAN and TadGAN.
+
+Each contribution observes its own setting. The service-graph study represents inter-service
+messages as graph relations. In the industrial work, the \nadics{} extractor reduces packet
+captures to connection records, while the SWaT study represents process measurements as
+multivariate time windows. No common protocol evaluates all three settings, so the chapter
+treats them as related but separate experimental strands.
+
+The evidence also differs in kind. The service-graph contribution was disseminated at the 2018
+Passive and Active Measurement Conference (PAM)
+\cite{aubet2018graph}. The original industrial framework is supported by released code and
+IUNO deliverables \cite{iuno_ap4,iuno_ap7}. The SWaT study is recorded in an unpublished
+internal report written by the candidate. Because that report is a research record, it is not a
+bibliography item. The candidate designed the method, implemented the experimental pipeline, ran
+and analysed the experiments, and wrote the report. Section~\ref{sec:anomaly:gan} reports the
+empirical evaluation of the SWaT detector.
+
+\section{Observation Models and Datasets}
+\label{sec:anomaly:observation}
+
+The contribution strands observe different events. In the IoT middleware, the monitor sits at
+the Knowledge Agent, the entry point of the Virtual State Layer through which services exchange
+data \cite{pahl2016distributed}. It observes an inter-service message rather than a packet.
+Vertices are service addresses, and an edge records an observed communication relation. The
+message also exposes metadata such as the operation performed \cite{pahl2018graphbased}.
+
+{\nadics{} receives tabular records. Its network path takes connection features derived from S7, PROFINET, 
+or conventional network traffic. The SWaT path does not model communication. It consumes the sensor and actuator
+values of a six-stage water-treatment process, sampled once per second
+\cite{goh2016swatdataset,mathur2016swat}.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Observation units used in Chapter~\ref{chap:anomaly}. The rows are not numerically
+  comparable because their labels, sampling processes, and validation protocols differ.}
+  \label{tab:anomaly:observations}
+  \small
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm}
+    *{3}{>{\raggedright\arraybackslash}X}@{}}
+    \toprule
+    Study & Unit observed & Representation & Decision \\
+    \midrule
+    IoT service graph &
+      inter-service message &
+      vertices and whitelisted relations &
+      known or unknown relation \\
+    \nadics{} in IUNO &
+      packet-derived connection record &
+      protocol and flow features &
+      binary or attack-class label \\
+    SWaT GAN study &
+      sensor and actuator sample &
+      multivariate time window &
+      anomalous or normal timestamp \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The studies use different decision rules. The service-graph method stores the inter-service
+relations observed during its learning phase and flags a later relation that is absent from the
+graph. The GAN study uses mixed normal and attack windows for fitting, combines reconstruction
+and critic scores, and applies an adaptive threshold that assigns a binary prediction to each
+timestamp. Both methods depend on representative fitting data: an attack present during learning
+may be incorporated into the learned
+representation. The \nadics{} evaluation on the S7-300 corpus uses labelled classification
+instead, so it addresses a different decision problem. It holds out whole capture sessions. Its
+attack share of 4.54 per cent was set by the executed attacks and does not reproduce the class
+ratio of routine operation.
+
+\section{Communication Graphs for IoT Services}
+\label{sec:anomaly:service-graphs}
+
+The lineage set out in Section~\ref{sec:background:networks:industrial} places communication
+whitelisting before service-oriented IoT deployments. Flow whitelists were built for control
+networks \cite{barbosa2013flow}, and communication patterns were modelled per host pair
+soon afterwards \cite{yoon2014communication}. The service-graph contribution acknowledges that lineage and identifies
+its proposed difference: an IoT deployment changes as services are added or removed, so its
+communication model must support interactive revision rather than a fixed learning phase
+\cite{aubet2018graph}.
+
+The model is compact. Services are vertices, observed relations are edges, and each node maintains
+its own graph. A learning phase runs when a service starts and labels every relation observed
+during that period as normal. A relation absent from the model later raises a notification. The
+site owner may legitimate it, after which the system relabels the edge as normal. Detection runs
+on the node hosting the service, so the design does not require central collection
+\cite{aubet2018graph}.
+
+The intended distinguishing property was a portable model attached to service metadata. A service
+moved to another node would then carry its learned relations with it. The study also states that
+the implementation identifies services by concrete local addresses, which prevents that
+portability. Semantic service discovery would have been required for site-independent identities.
+
+Two costs were reported. Memory is modelled per vertex as 100 bytes plus 88 bytes for every
+incident edge, and a factor of 1.33 accounts for the stacked hash tables that hold the graph.
+That factor enters twice, once inside the per-vertex expression and once over the vertex set, so
+twenty services with ten relations each occupy 33.7~KB. The second cost is latency: about 6~ms
+added to an inter-service round trip of 24~ms, measured over configurations of ten to forty
+services \cite{aubet2018graph}.
+
+\begin{figure}[tbp]
+  \centering
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{servicegraph-latency.pdf}
+    \caption{Added latency.}
+    \label{fig:anomaly:servicegraph-latency}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{servicegraph-changes.pdf}
+    \caption{Graph changes over time.}
+    \label{fig:anomaly:servicegraph-changes}
+  \end{subfigure}
+  \caption{The two measurements reported for the service-graph design. Panel~(a) gives the
+  inter-service round-trip time with and without detection for ten to forty services. Panel~(b)
+  gives the vertex and edge counts of one node's graph over a single run, with the learning
+  phases and the interval of anomalous behaviour shaded. Reproduced from
+  \cite{aubet2018graph}, to whose measurement design the candidate contributed.}
+  \label{fig:anomaly:servicegraph}
+\end{figure}
+
+Figure~\ref{fig:anomaly:servicegraph} reproduces both measurements. In the latency panel the two
+distributions overlap heavily. Medians without detection rise from roughly 14~ms at ten services
+to roughly 27~ms at forty, and every configuration carries a long upper tail past the 160~ms axis
+limit. Neither the repetition count nor the statistic behind the quoted 6~ms and 24~ms is stated,
+so both values are best read as an aggregate over the four configurations. The added cost does not
+grow between ten and forty services.
+
+Panel~(b) covers one run of about fourteen minutes. Learning phases cluster in the first three
+minutes as services start, and another follows at minute seven when a service is added. The graph
+then settles at fourteen vertices and ten edges. One anomalous interval is recorded shortly after
+minute ten, and the edge count returns to its earlier value once it ends, so the trace records the
+detection but no legitimation by the site owner.
+
+No labelled attack set was used, and that interval holds a previously unseen connection rather
+than an executed attack, so the study reports no detection rate and no false-positive rate. A
+whitelist emits a verdict, so even a labelled trace yields no threshold curve without a change of
+method. RQ1.1 is answered here at the level of representation, update procedure, and measured
+overhead.
+
+\section{The NADICS Framework and IUNO Integration}
+\label{sec:anomaly:nadics}
+\label{sec:anomaly:5}
+
+\nadics{}, Network Anomaly Detection for Industrial Control Systems, is a Python framework
+built at the Chair of IT Security of the Technical University of Munich to detect attacks
+against PLC and SCADA installations from network traffic. By design, it was limited to
+detection. The framework is organised in three modules. Preprocessing turns recorded traffic
+into a labelled feature table, encodes the string columns, scales the numeric ones, and
+resamples a corpus whose classes are imbalanced. The learning module holds the estimators behind
+one interface, so that classical models and neural models can be exchanged by name without the
+pipeline being rewritten: the released repository contains the scikit-learn estimators, the IUNO
+deliverable additionally reports a deep neural network and a convolutional network
+\cite{iuno_ap4}, and the generative adversarial detector of Section~\ref{sec:anomaly:gan} was
+added later at the same interface for multivariate process data. Postprocessing carries the
+verdict to whoever acts on it. The released code leaves this stage open, because alarm handling
+depends on the security policy and the network layout of the individual site. The S7 and
+PROFINET extractor existed as a separate project artefact, so the released repository takes a
+feature table as its input.
+
+The design follows from the data situation in industrial control. No public corpus of labelled
+traffic from a real industrial network was available \cite{iuno_ap4}, so the estimator that
+performs well depends on the plant and on how its labels were produced. Fixed interfaces around
+the learning stage let the models be compared under a single protocol on whatever corpus a site
+can supply. They also let feature importances be inspected, so that dimensionality and the
+false-positive rate can be reduced.
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\linewidth, trim=5 157 5 5, clip]%
+    {nadics_arch_IUNO_overall_pipeline.pdf}
+  \caption{Architecture of the \nadics{} framework. Malicious traffic is generated in a real
+  industrial environment, dissected into protocol-characteristic features, and classified by the
+  anomaly detection engine. The stage structure follows the one reported in the IUNO
+  deliverable \cite{iuno_ap4}.}
+  \label{fig:anomaly:nadics-arch}
+\end{figure}
+
+Figure~\ref{fig:anomaly:nadics-arch} shows the pipeline as it was deployed in IUNO. Two data
+artefacts separate its three stages. The first stage produced the corpus. Attacks of five classes
+(authentication bypass, CPU stop and start, reconnaissance, denial of service and brute force)
+were executed in a real industrial environment against Siemens S7-300 controllers that exchanged
+S7comm traffic with a control server, and the traces were labelled both in binary form and by
+attack class \cite{iuno_ap4}. In the second stage, the public analysers TShark, Bro-IDS and
+Argus were combined with dissectors written for S7 and PROFINET, and the TUM feature extractor
+reduced each network connection to one labelled feature vector, written as CSV or JSON
+\cite{iuno2017d42,iuno_ap4}. The third stage is the framework proper. It reads that dataset, fits
+one of the registered estimators, applies the resamplers and the outlier tests, and reports which
+features carried the decision. Detections reached the visual security control room as JSON event
+messages over the authenticated message bus of the IUNO aggregation system \cite{iuno_ap4}, and
+acting on them belonged to the control room \cite{iuno_ap7}.
+
+The modules map onto these stages at the dataset. Preprocessing spans the second stage and the
+input side of the third, where encoding, scaling and resampling are applied to the table, while
+learning and postprocessing both sit in the third stage. Corpus generation lies outside the
+framework and appears in the figure because the labels had to be produced somewhere. Inside the
+engine, a layout file declares the full columns, the feature subset, the label column, and the
+string features that require encoding. Learning methods sit in registries that map a name to an
+estimator. The original repository holds thirteen classifiers, four novelty or outlier
+detectors, fifteen resamplers, and two boosting meta-estimators. The framework calls only
+\texttt{fit} and \texttt{predict}, following the scikit-learn estimator protocol
+\cite{pedregosa2011scikit}. It fits min--max scaling on the training partition and applies the
+fitted transformation to the test partition.
+
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight]{iuno-VW_testbed.pdf}
+  \caption{The IUNO test environment at the Volkswagen plant in Wolfsburg. Four servers, three
+  network segments and a Siemens plant network reproduce the production setting in which
+  \nadics{} ran as the TUM detection tool on the virtualisation host. The network TAPs fitted at
+  the relevant interfaces are omitted from the drawing \cite{iuno2017d42}.}
+  \label{fig:anomaly:iuno-testbed}
+\end{sidewaysfigure}
+
+Figure~\ref{fig:anomaly:iuno-testbed} shows where the framework ran. The environment was built
+at the Volkswagen plant in Wolfsburg from hardware of the kind used in regular production
+\cite{iuno2017d42}. A Hirschmann industrial switch carries three segments, the intranet, the
+demilitarised zone and the plant network, and manually configured Eagle routers separate them.
+The first of four servers runs the WinCC and OPC~UA clients that originate test traffic, together
+with a Nagios instance and the database of the aggregation system. The second is the
+virtualisation host for the detection tools contributed by AISEC, DFKI, SIT and TUM, and the
+third serves the visual control room to the intranet. The fourth combines the WinCC server with
+the collector, which gathers traffic from the plant network and passes it, bundled and
+pre-filtered, to the detection tools, so \nadics{} was one of four detectors reading the same
+collector output. Siemens controllers occupy the plant network behind a Scalance switch. The
+collector observed that network passively at the plant switch, never in line with the traffic,
+which matches the detection-only design: an alert could reach the control room, but nothing in
+the path could stop a packet.
+
+The IUNO deliverables describe the tool and its environment but print no measured result for it
+\cite{iuno_ap4}. The values below come from the experimental records of the project and cover
+the corpus and its feature schema, the detection results on the held-out session, the alarm
+burden over a benign monitoring period, and the throughput of the extractor on the prototype
+collector.
+
+\subsection{The S7-300 Corpus}
+\label{sec:anomaly:iuno-corpus}
+
+The corpus was recorded in 2018 in the environment of Figure~\ref{fig:anomaly:iuno-testbed},
+where six Siemens S7-300 controllers exchanged routine polling and control traffic with
+WinCC-based services. Complete selected channels were kept, together with ARP and DCP traffic and
+the connection attempts belonging to those channels. No random packet sampling was applied.
+
+Recording opened with a two-hour clean baseline, which was excluded from the corpus totals. That
+interval fixed the communication relationships, the polling behaviour and the protocol activity
+expected under the operating modes present at the time. Six capture sessions followed, with 24
+hours of labelled traffic in total. The collector recorded 12,616,875 Ethernet frames in that
+period, an average of 146.03 frames per second. The captured frames hold 2,317,074,962 bytes,
+and the six capture files occupy about 2.519~GB in the classic PCAP format.
+
+Twenty-five controlled attack episodes were executed during the sessions, five repetitions of
+each of the five classes the deliverable names \cite{iuno_ap4}. Background communication
+continued while they ran. Table~\ref{tab:anomaly:iuno-episodes} lists the duration of every
+episode. The shortest lasted 3~min 07~s and the longest 9~min 55~s, and together they cover
+2~h 51~min 05~s. Episodes also differed in the channels they touched and in how often a
+connection was re-established. Labels were assigned
+from the execution logs and from inspection of the packet traces, and only the communications an
+episode actually affected received an attack label, so background traffic concurrent with an
+attack keeps the normal label. Two attack types were never run against one channel at the same
+time.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Composition of the S7-300 corpus and its partitions. Whole capture sessions were
+  assigned to the partitions, four to training and one to each of the other two, and every
+  attack episode lies entirely within one partition. The episode column counts executed attacks,
+  not records.}
+  \label{tab:anomaly:iuno-corpus}
+  \small
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    Class & Corpus & Train & Validation & Test & Episodes \\
+    \midrule
+    Normal                 & 113,751 & 76,556 & 18,587 & 18,608 &    \\
+    Authentication bypass  &   1,058 &    441 &    269 &    348 &  5 \\
+    CPU stop and start     &     593 &    359 &     90 &    144 &  5 \\
+    Reconnaissance         &   1,803 &  1,070 &    366 &    367 &  5 \\
+    Denial of service      &   1,230 &    765 &    278 &    187 &  5 \\
+    Brute force            &     725 &    445 &     93 &    187 &  5 \\
+    \midrule
+    Total                  & 119,160 & 79,636 & 19,683 & 19,841 & 25 \\
+    Capture time (h:min:s) & 24:00:00 & 16:01:57 & 3:56:27 & 4:01:36 & \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[tbp]
+  \centering
+  \caption{Duration of the 25 attack episodes in minutes and seconds. Each attack type has three
+  training episodes, one validation episode and one test episode.}
+  \label{tab:anomaly:iuno-episodes}
+  \small
+  \begin{tabular}{@{}llrrr@{}}
+    \toprule
+    Class & Training episodes & Validation & Test & All five \\
+    \midrule
+    Authentication bypass & 5:33, 4:01, 5:50 & 7:16 & 9:34 & 32:14 \\
+    CPU stop and start    & 7:03, 8:23, 3:07 & 4:04 & 7:39 & 30:16 \\
+    Reconnaissance        & 6:42, 9:40, 7:28 & 9:55 & 8:27 & 42:12 \\
+    Denial of service     & 6:41, 9:39, 7:07 & 7:46 & 5:38 & 36:51 \\
+    Brute force           & 8:05, 3:16, 4:06 & 4:15 & 9:50 & 29:32 \\
+    \midrule
+    Total                 &                  &      &      & 171:05 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Extraction produced 119,160 feature records. Of these, 113,751 are normal and 5,409 carry one of
+the five attack labels, an attack share of 4.54 per cent. Table~\ref{tab:anomaly:iuno-corpus}
+gives the composition. The training sessions hold 79,636 records, the validation session 19,683
+and the test session 19,841. Each attack type contributes three training episodes and one
+episode to each of the remaining partitions, and because episodes differ in duration and in the
+channels they touch, the attack records of a class are not divided between the partitions in a
+fixed proportion. An episode, its recovery interval and the windows that depend on it stay inside
+a single partition, and no rolling window crosses a partition boundary. The attack counts must
+not be read as a count of attacks. A single episode of a few minutes generates many records,
+and the corpus averages about 216 affected records per episode.
+
+The extraction schema has 63 fields in five groups: 18 flow fields, 13 timing fields, 18
+protocol fields, nine relational fields and five process fields. Forty-six are numerical, eleven
+categorical and six binary, and encoding of the categorical fields expands the input
+dimensionality of the model. The flow group follows the output of Argus and Bro-IDS, which the
+extractor wrapped. The UNSW-NB15 intrusion-detection corpus derives most of its features from
+the same two tools \cite{moustafa2015unsw}, so this group coincides with the flow columns of
+that corpus. Protocol fields cover S7 message and function codes,
+addressed memory areas, address entropy and error codes, together with COTP and OPC~UA fields.
+Relational fields describe the communication partners, the age of an edge, and the number of
+distinct destinations and ports observed in the preceding minute. The process group reads one
+preconfigured anchor tag per channel, whose identity and units are held as metadata, so a value
+delta is never computed across unrelated tags. Unobservable protocol fields carry an explicit
+missing state, and an absent OPC~UA security policy is not encoded as the policy \emph{None}.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{nadics-feature-importance.pdf}
+  \caption{Assigned importance of the 63 extraction fields. (a) The fifteen
+  highest-weighted fields, coloured by group. (b) Each group's share of the total weight
+  against its share of the field count. (c) Cumulative share over the ranked fields.}
+  \label{fig:anomaly:iuno-importance}
+\end{figure}
+
+Figure~\ref{fig:anomaly:iuno-importance} shows those weights normalised over the 63 fields.
+Panel~(a) ranks the fifteen highest. \texttt{s7\_function} leads at 11.9 per cent, because a stop
+or a start is an ordinary S7 operation whose function code is visible in the request, and
+\texttt{role\_violation} follows at 8.0 per cent, because a write from a host whose role does not
+write is anomalous even over an established connection. The schema records the limits of both
+judgements: legitimate maintenance issues the same function codes, and a compromised engineering
+station writes from a role that is permitted to write.
+
+Panel~(b) sets each group's share of the total weight against its share of the fields. Protocol
+semantics holds the largest share at 36.4 per cent, although it also holds the most fields. The
+comparison that carries information is the share per field: the nine relational fields average
+2.38 per cent each, against 0.74 for the eighteen flow fields and 0.60 for the five process
+fields. Only the process fields receive less weight per field than the flow statistics. That is
+consistent with the position the schema takes: an
+industrial detector built on Argus and Bro flow features alone discards most of what separates an
+S7 attack from S7 polling. Panel~(c) gives the cumulative share. Ten fields reach 54.5 per cent
+of the assigned weight, twenty-four reach 80 per cent and thirty-six reach 90 per cent, so the
+tail of the schema is thin and a reduced schema is plausible. \nadics{} exposes an importance
+ranking for exactly this purpose \cite{iuno_ap4}.
+
+One record covers a non-overlapping ten-second window of an activity-bearing connection or
+channel, and a shorter final record is written when a session closes. PROFINET RT traffic is
+keyed at layer 2, since it carries no transport-layer connection. The windowing refines the
+per-connection unit of Figure~\ref{fig:anomaly:nadics-arch} so that a change during a long-lived
+session can be scored while the session is still open. Channels that fall silent emit no record.
+
+Three definitions were adjusted so that no record depends on information from after its own
+window closes. The duration field measures the exported segment and not the eventual lifetime of
+an open connection, while a separate field retains the time elapsed since the underlying
+connection opened. The ratio of unanswered requests counts only those requests whose one-second
+response deadline had already expired at window closure, and pending requests are excluded from
+both the numerator and the denominator. Trailing source and timing state is held over 60
+seconds, and the period features are computed from past observations. Encoders, imputation and
+scaling were fitted on the training partition alone, and the classifier together with its
+preprocessing was then held fixed for validation and testing.
+
+\subsection{Detection Results}
+\label{sec:anomaly:iuno-results}
+
+The classifier is a random forest of 300 trees with a maximum depth of 16 and a minimum leaf
+size of five. Class weighting was applied per bootstrap sample, and the training data were not
+resampled. Two decisions were read from the same fitted model: a binary verdict of normal
+against attack, and an assignment to one of six classes, the normal class and the five attack
+types. Every figure below comes from the held-out test session, which holds 18,608 normal and
+1,233 attack records.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Six-class confusion matrix on the 19,841-record test session, with rows giving the
+  true class. Predicted classes are abbreviated: N normal, AB authentication bypass, CS CPU stop
+  and start, RC reconnaissance, DS denial of service, BF brute force. The last three columns
+  give precision, recall and $F_1$ for the class of that row.}
+  \label{tab:anomaly:iuno-confusion}
+  \small
+  \setlength{\tabcolsep}{4.5pt}
+  \begin{tabular}{@{}lrrrrrrrrr@{}}
+    \toprule
+    & \multicolumn{6}{c}{Predicted class} & \multicolumn{3}{c}{Score (\%)} \\
+    \cmidrule(lr){2-7}\cmidrule(l){8-10}
+    True class & N & AB & CS & RC & DS & BF & Prec. & Rec. & $F_1$ \\
+    \midrule
+    Normal                & 18,518 &  21 &   5 &  31 &  18 &  15 & 99.74 & 99.52 & 99.63 \\
+    Authentication bypass &     22 & 292 &   8 &  12 &   1 &  13 & 88.75 & 83.91 & 86.26 \\
+    CPU stop and start    &      3 &   1 & 134 &   2 &   3 &   1 & 90.54 & 93.06 & 91.78 \\
+    Reconnaissance        &      9 &   7 &   0 & 337 &   6 &   8 & 84.25 & 91.83 & 87.87 \\
+    Denial of service     &      5 &   0 &   0 &   4 & 178 &   0 & 85.99 & 95.19 & 90.36 \\
+    Brute force           &      9 &   8 &   1 &  14 &   1 & 154 & 80.63 & 82.35 & 81.48 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:anomaly:iuno-confusion} reports the six-class confusion matrix together with the
+per-class scores. Collapsing the same predictions into the binary decision gives 18,518 true
+negatives, 90 false positives, 48 false negatives and 1,185 true positives. Binary accuracy is
+99.30 per cent, attack precision 92.94 per cent and attack recall 96.11 per cent, for an attack
+$F_1$ of 94.50 per cent. The false-positive rate over normal records is 0.484 per cent and the
+balanced accuracy 97.81 per cent. On the six-class task, accuracy reaches 98.85 per cent, the
+macro-$F_1$ 89.56 per cent and the weighted $F_1$ 98.86 per cent.
+
+Accuracy is the least informative of these numbers. Normal records make up 93.79 per cent of the
+test partition, so a detector that never fired would already score 93.79 per cent, and the gap
+between the weighted and the macro $F_1$, 98.86 against 89.56 per cent, measures how much of the
+six-class figure the normal class carries. Per-class recall is highest for denial of service at
+95.19 per cent and lowest for brute force at 82.35 per cent, with authentication bypass close
+behind at 83.91 per cent. Most errors of these two classes fall on other attack classes.
+Authentication bypass loses 22 of its 348 records to the normal class and 34 to the other attack
+types, while brute force loses nine of its 187 records to the normal class and 24 to the other
+attack types, 14 of them to reconnaissance. Both attacks reuse the protocol operations of
+legitimate engineering access, so a window holding only a few such operations offers little that
+separates them from ordinary traffic or from each other.
+
+All of these scores are computed over records. They show that the extracted features separate
+the five executed attacks from the surrounding traffic of this plant under a session-disjoint
+split.
+
+\subsection{Benign Operation and Alarm Burden}
+\label{sec:anomaly:iuno-field}
+
+A second exercise measured what the detector does when nothing malicious happens. It ran in the
+Volkswagen environment with four active PLCs and ordinary supervisory traffic. A separate
+two-hour baseline preceded 24 hours of benign monitoring. Over that day the collector recorded
+8,472,913 frames, an average of 98.07 frames per second. The captured frames hold 2,186,039,471
+bytes, about 2.322~GB in the classic PCAP format, and the extractor emitted 83,847 records.
+Engineering work and planned device restarts took place during the period and count as benign.
+
+The detector classified 83,740 records as normal and 107 as attacks, all of them false, a
+record-level false-positive rate of 0.128 per cent. Positives were merged into alarm episodes
+before presentation to the control room: positives that share a source, a destination and a
+predicted attack class belong to one episode, and an episode closes once 60 seconds pass without
+a further positive. One notification opens an episode, and later positives update it. Nine alarm
+episodes were raised over the day, 0.375 per hour on average, and each was assigned a benign
+cause. Engineering workstation activity accounts for 43 positive records in three episodes and
+OPC~UA reconnections for 28 records in two. Brief communication interruptions produced 23
+records in two episodes, and planned device restarts 13 records in two.
+
+No attack was executed during this period, so every alarm it raised was false. Its 0.128 per
+cent record rate lies below the 0.484 per cent of the test session, whose normal records also
+include the recovery intervals of executed attacks. The recovered causes share a structure that
+matters for deployment: each is a legitimate departure from routine polling, so the alarm burden
+of this design follows the rate at which such events occur in the plant.
+
+\subsection{Extractor Throughput on Constrained Hardware}
+\label{sec:anomaly:iuno-pi}
+
+The extractor was also exercised on a Raspberry Pi 3 Model B. The deliverable of June 2017
+names Raspberry Pi boards as the prototype platform \cite{iuno2017d42}. The board carries four
+cores at 1.2~GHz, 1~GB of RAM and 100~Mbit/s Ethernet. Only the extraction stage ran on it,
+comprising selected-field capture and dissection of S7 and PROFINET traffic, the bounded rolling
+feature computations and emission of CSV or JSON. Model fitting and inference remained on the
+server, and archival of full packet captures to the SD card was excluded. Each load replayed
+traffic over 100 configured communication channels with varying channel activity for about ten
+minutes.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Extraction workloads on the Raspberry Pi 3 prototype. Input frames are the frames
+  presented to the extraction pipeline, and processed frames exclude those dropped before
+  processing. Rates and CPU utilisation are averages over the replay, and CPU utilisation refers
+  to the capacity of the whole device. The emission delay runs from the close of a window to the
+  emission of its record.}
+  \label{tab:anomaly:iuno-pi}
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Quantity & Light load & Moderate load & Overload \\
+    \midrule
+    Replay duration (s)                 &  600.14 &    599.87 &    600.09 \\
+    Input frames                        & 599,827 & 1,498,463 & 2,100,731 \\
+    Dropped frames                      &       4 &       361 &   245,897 \\
+    Processed frames                    & 599,823 & 1,498,102 & 1,854,834 \\
+    Frame loss (\%)                     & 0.00067 &   0.02409 &  11.70531 \\
+    Input rate (frames/s)               &  999.48 &  2,497.98 &  3,500.69 \\
+    Processed rate (frames/s)           &  999.47 &  2,497.38 &  3,090.93 \\
+    Feature records                     &   5,842 &     5,887 &     5,781 \\
+    \midrule
+    Mean CPU utilisation (\%)           &    22.6 &      43.1 &      50.4 \\
+    Peak extractor memory (MiB)         &     302 &       381 &       436 \\
+    95th-percentile emission delay (ms) &      96 &       234 &       817 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:anomaly:iuno-pi} reports the three loads. At the moderate load, 1,498,463 frames
+were presented in 599.87 seconds and 361 were dropped, a loss of 0.024 per cent at a processed
+rate of 2,497.38 frames per second. This input rate is about 17 times the average frame rate of
+the corpus capture. The extractor used 43.1 per cent of the CPU capacity of the device on average
+and at most 381~MiB of memory. The 95th percentile of the delay from the close of a window to the
+emission of its record was 234~ms, a delay that excludes the ten seconds in which the window
+accumulates. The light load lost four of its 599,827 frames at 22.6 per cent CPU utilisation.
+The overload row does not describe a supported rate: 11.71 per cent of the input was dropped,
+and the processed rate stayed at 3,090.93 frames per second against an input rate of 3,500.69.
+Mean CPU utilisation reached 50.4 per cent there, and the 95th-percentile emission delay rose to
+817~ms. The three runs emitted 5,842, 5,887 and 5,781 records, fewer than the 6,000 that 100
+continuously active channels would give in ten-second windows over ten minutes, because channel
+activity varied.
+
+\section{A GAN-Based Multivariate Detector for SWaT}
+\label{sec:anomaly:gan}
+
+This section reports an empirical evaluation of a generative adversarial network (GAN) for
+detecting abnormal behaviour in an industrial water-treatment process. The study examines how
+the representation of process measurements and their temporal context influence the balance
+between detecting anomalous observations and generating false alarms. Its design combines the
+multivariate approach of MAD-GAN \cite{li2019madgan} with the encoder, cycle-consistency
+objective and Wasserstein critics described in TadGAN \cite{geiger2020tadgan}. The reported
+results were measured on the SWaT evaluation cohort and compare five input representations.
+
+The detector operates on process measurements from the Secure Water Treatment (SWaT) testbed.
+SWaT comprises six treatment stages, with programmable logic controllers coordinating sensors
+and actuators and a supervisory network connecting the controllers to SCADA
+(Figure~\ref{fig:anomaly:swat-architecture}). The process dataset contains 51 sensor and
+actuator variables recorded at a nominal frequency of one observation per second
+\cite{goh2016swatdataset}. These variables describe the physical behaviour of the plant,
+allowing the detector to consider changes in individual measurements together with relationships
+among measurements across the treatment process.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{swat/thesis/swat-ics-architecture.pdf}
+  \caption{SWaT process and control architecture. Network levels follow the SWaT convention.
+  The field-network symbols indicate sensors and actuators within each stage; the detector
+  consumes their recorded values. Adapted from the supplied diagram and the dataset
+  description \cite{goh2016swatdataset}.}
+  \label{fig:anomaly:swat-architecture}
+\end{figure}
+
+The dataset documentation describes 36 attacks distributed across four categories
+(Figure~\ref{fig:anomaly:swat-taxonomy}): 26 single-stage, single-point attacks; four
+single-stage, multiple-point attacks; two multiple-stage, single-point attacks; and four
+multiple-stage, multiple-point attacks \cite{goh2016swatdataset}. These categories describe the
+scope of the interventions. They do not imply that all attacks produce equally observable process
+changes. An intervention affecting one sensor or actuator may also influence measurements
+elsewhere in the plant, while an attack with little physical effect may remain difficult to
+identify from process data alone. The aggregate calculations in this section concern anomalous
+timestamps and do not establish the number of individual attacks detected.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{swat/thesis/swat-attack-taxonomy.pdf}
+  \caption{SWaT attack categories and their counts in the dataset paper
+  \cite{goh2016swatdataset}. Stage and point locations are schematic examples. The
+  arrangement describes attack scope and carries no ranking of detection difficulty.}
+  \label{fig:anomaly:swat-taxonomy}
+\end{figure}
+
+The source collection campaign comprises seven days of normal operation followed by four days
+containing attacks \cite{goh2016swatdataset}. Preprocessing removes the first 21,600 observations
+from the normal-operation trace, which cover the initial six-hour stabilisation period
+(Figure~\ref{fig:anomaly:swat-campaign}). The empirical study uses all 449,919 timestamps of the
+attack-period recording. Its first 56,240 timestamps are divided between the training and
+validation partitions, which also receive separate portions of the normal-operation recording.
+The later 393,679 attack-period timestamps form the test set. They comprise 51,453 anomalous and
+342,226 normal timestamps, so anomalous observations account for 13.07\% of the test cohort.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{swat/thesis/swat-collection-campaign.pdf}
+  \caption{SWaT collection campaign and the partition used in the GAN study. The campaign
+  follows the dataset paper \cite{goh2016swatdataset}. After the initial normal-operation
+  exclusion, the first 56,240 attack-period timestamps support training and validation; the
+  later 393,679 timestamps form the test set.}
+  \label{fig:anomaly:swat-campaign}
+\end{figure}
+
+All three partitions contain normal observations and labelled attack examples. Each attack
+episode is confined to one partition, and no window crosses a partition boundary or a
+discontinuity in the recordings. Partitioning precedes imputation, scaling, feature selection
+and window construction. Representations, model settings and detection thresholds are selected
+from the training and validation data. The model is therefore developed on earlier observations
+and evaluated on later observations that were not used for training or model selection.
+
+The GAN objective does not require class annotations during gradient-based fitting.
+Nevertheless, the complete procedure includes supervised feature selection and model
+selection, and training includes attack observations. The resulting evaluation therefore
+concerns a detector developed with prior exposure to attacks. It does not establish detection
+performance for previously unseen attack types or a wholly unsupervised development process.
+
+\subsection{Model and Training}
+\label{sec:anomaly:gan-method}
+
+The model contains four jointly trained networks: an encoder, a generator, a data critic and a
+latent critic (Figure~\ref{fig:anomaly:gan-pipeline}). For an input window $X$, the encoder $E$
+maps the observed process sequence to a latent representation $E(X)$. The generator $G$ maps
+this representation back to the observation space, producing the reconstruction
+\[
+  \widehat{X}=G(E(X)).
+\]
+Latent samples $z$ are drawn from a standard normal distribution. The data critic compares
+observed windows with generated windows $G(z)$, encouraging the generator to reproduce the
+distribution of the training sequences. The latent critic compares encoded observations $E(X)$
+with samples from the latent prior. A cycle-consistency term penalises discrepancies between an
+observed window and its reconstruction,
+\[
+  \mathcal{L}_{\mathrm{cyc}}
+  =\mathbb{E}_{X}\!\left[\left\lVert X-G(E(X))\right\rVert_2\right].
+\]
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{swat/thesis/swat-gan-pipeline.pdf}
+  \caption{Multivariate GAN detection pipeline. (a) The four networks are trained together on
+  earlier windows containing normal and attack observations; validation data select the
+  representation, the settings and the threshold. (b) The later 393,679 test timestamps are
+  scored with the trained networks; the latent critic has no part in the score $a_t$ of
+  Equation~\ref{eq:anomaly:gan-score}. The blue tag marks the input representation, the only
+  factor varied between runs, and orange tags mark the steps that used attack ground truth. The
+  window length is fixed at 60 samples. The scaler and PCA are fitted on training data and
+  reused for validation and testing. The candidate implemented every processing step shown.}
+  \label{fig:anomaly:gan-pipeline}
+\end{figure}
+
+Training combines the two Wasserstein objectives with this reconstruction constraint. The
+encoder provides a direct mapping from process observations to latent representations, while
+the cycle-consistency term encourages those representations to retain information required to
+reconstruct the input. The data critic supplies an additional measure of how closely an observed
+sequence resembles the learned training distribution. The latent critic contributes to training
+and is not included in the anomaly score at inference \cite{geiger2020tadgan}.
+
+At inference, each test window is encoded and reconstructed using the fitted model.
+Discrepancies between the observed and reconstructed sequences provide a reconstruction score
+(Figure~\ref{fig:anomaly:gan-reconstruction}). The data critic supplies a second score for the
+observed window. Before combination, the scores require a common orientation, such that larger
+values indicate greater deviation from the reference behaviour. Their normalisation must also
+prevent a product of two negative standardised values from being interpreted as strong anomalous
+evidence. The reported score therefore uses non-negative, consistently oriented normalised
+components:
+\begin{equation}
+  a_t=\widetilde{r}_t\,\widetilde{c}_t.
+  \label{eq:anomaly:gan-score}
+\end{equation}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{swat/report-originals/report-fig-4.15-reconstruction.png}
+  \caption{Observed signals (blue) and their reconstructions (orange) for two dimensions,
+  reproduced at the original embedded resolution from Figure 4.15 of the internal report. The
+  repeated red trace is the aggregate reconstruction discrepancy across dimensions, shared by
+  the two displayed signals. It precedes the combination of
+  Equation~\ref{eq:anomaly:gan-score}.}
+  \label{fig:anomaly:gan-reconstruction}
+\end{figure}
+
+The transformation parameters are estimated from the development data and held fixed during
+evaluation. This scoring rule combines reconstruction discrepancy with the critic's assessment of
+the observed sequence. A high reconstruction discrepancy alone does not establish that an attack
+occurred, because changes during normal operation may also be difficult to reconstruct.
+Similarly, a critic score is interpreted through the fitted scoring and thresholding procedure
+rather than as a calibrated probability of attack.
+
+Overlapping windows produce several reconstructions and critic assessments for some timestamps.
+For the offline evaluation, reconstructed values are averaged at each corresponding
+timestamp and variable before calculating the multivariate reconstruction discrepancy. Critic
+outputs from windows covering the same timestamp are also averaged. Each observation then
+receives one combined anomaly score and one final prediction. Observations near a sequence
+boundary are aggregated over the windows available within their own partition. This convention
+ensures that overlapping windows do not cause a timestamp to be counted repeatedly in the
+confusion matrix.
+
+An adaptive threshold converts the combined score into a binary anomaly prediction. The threshold
+rule, its historical context length and any interval-merging parameters are chosen using
+validation data and fixed before the test cohort is scored. Test ground truth is used only for the
+final performance calculation. The historical context used by the threshold is a separate
+parameter from the 60-second window used by the neural networks. Because the stated aggregation
+uses windows extending beyond the timestamp being scored, the evaluation measures offline
+detection. It does not measure causal online performance or real-time detection delay.
+
+\subsection{Input Representations and Settings}
+\label{sec:anomaly:gan-inputs}
+
+The representation comparison includes the complete set of 51 process variables, two principal
+component analysis (PCA) configurations, an autoencoder representation and a selected feature
+subset. The full representation retains the original measurements and actuator states. It
+provides the broadest input coverage but also exposes the model to redundant relationships and
+normal operational variation across the process.
+
+PCA represents the measurements through orthogonal combinations of the original variables. The
+five-component configuration imposes stronger compression, whereas the 24-component
+configuration retains 99\% of the variance in the training data. Retained variance
+is a property of the fitted representation and does not measure the proportion of
+attack-relevant information preserved. A low-variance direction may still distinguish an attack
+from normal operation. The two PCA configurations therefore represent different balances between
+compression and retention of potentially informative changes.
+
+The autoencoder provides a learned nonlinear representation before GAN processing. Its purpose
+is to retain relationships that support reconstruction while reducing the dimensionality of the
+input. The feature-selection branch combines correlation analysis with chi-squared selection,
+recursive feature elimination, LASSO and Random Forest importance. Supervised selectors use
+training ground truth only. Any non-negative transformation needed by chi-squared selection is fitted
+within the training partition, separately from the subsequent scaling used for GAN inputs. The
+identities of selected variables and the autoencoder bottleneck dimension remain implementation
+specifications; the aggregate performance results do not identify them.
+
+Imputation and scaling are fitted on the training partition and applied consistently to
+validation and test observations. PCA and the preprocessing autoencoder are likewise fitted
+using training data. Features supplied to the GAN are scaled using a training-derived
+transformation with a reference range of $[-1,1]$. An observation outside the training range
+need not fall inside this interval. Automatic clipping is not applied because it could suppress
+an informative deviation. These transformations preserve the separation between model
+development and final evaluation.
+
+For a representation with $d$ features, each input window contains 60 consecutive observations
+and has dimensions $60\times d$. The window advances by one observation. At the nominal sampling
+frequency, this corresponds to a 60-second context with a one-second stride. An uninterrupted
+sequence of 393,679 observations would yield 393,620 complete windows, but its performance
+denominator remains 393,679 timestamps after aggregation. The 60-second setting is adopted for
+the reported evaluation; no claim of optimality across other window lengths is made.
+
+The final configuration uses Adam with a learning rate of 0.0005, a latent dimension of
+20, a batch size of 64 and 50 training epochs. All representation variants use the same
+evaluation cohort and counting convention. Their input dimensions vary, so comparison requires
+explicit control of the architecture and development procedure. A difference between variants
+cannot automatically be attributed to dimensionality reduction if network capacity or tuning
+effort also differs.
+
+The reference computing platform comprises an AMD EPYC 7551P processor with 32 cores, 125\,GB of
+RAM and a TITAN X GPU with 12\,GB of memory. These specifications describe the reported execution
+environment. They do not establish training duration, inference throughput or memory
+consumption. Reducing the input dimension from 51 variables to 24 components constitutes a
+52.94\% reduction in input dimensionality; computational savings would require direct
+measurement.
+
+\subsection{Detection Results}
+\label{sec:anomaly:gan-results}
+
+Table~\ref{tab:anomaly:gan-representations} presents the measured performance of
+the five input configurations. Each row uses the same class totals: 51,453 anomalous timestamps
+and 342,226 normal timestamps. Precision describes the proportion of predicted anomalous
+timestamps that fall within recorded attack periods. Recall describes the proportion of actual
+anomalous timestamps that are detected. $F_1$ is the harmonic mean of precision and recall, while the
+false-positive rate is the proportion of normal timestamps incorrectly flagged. All table entries
+are calculated from integer confusion counts and rounded to two decimal places.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Measured timestamp-level performance of the input representations. Each timestamp
+  is counted once and no point adjustment is applied.}
+  \label{tab:anomaly:gan-representations}
+  \small
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Input representation & Precision (\%) & Recall (\%) & $F_1$ (\%) & False-positive rate (\%) \\
+    \midrule
+    All 51 variables           & 70.00 & 94.50 & 80.43 & 6.09 \\
+    PCA: 5 components          & 75.00 & 86.50 & 80.34 & 4.34 \\
+    PCA: 24 components         & 73.00 & 92.00 & 81.41 & 5.12 \\
+    Autoencoder representation & 72.00 & 86.50 & 78.59 & 5.06 \\
+    Selected feature subset    & 71.00 & 84.00 & 76.96 & 5.16 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The complete representation has the highest recall, at 94.50\%, together with the
+highest false-positive rate, at 6.09\%. This profile represents a detector that identifies a
+larger proportion of anomalous observations while also flagging more normal observations. The
+five-component PCA configuration has the highest precision, at 75.00\%, and the lowest
+false-positive rate, at 4.34\%, accompanied by lower recall of 86.50\%. In these results,
+stronger compression therefore corresponds to fewer false-positive timestamps and more
+missed anomalous timestamps.
+
+The 24-component PCA configuration provides an intermediate balance, with precision of 73.00\%,
+recall of 92.00\% and an $F_1$ score of 81.41\%. Relative to the complete representation, its
+precision is 3.00 percentage points higher and its recall is 2.50 percentage points lower. Its
+$F_1$ score is approximately 0.98 percentage points higher. It is consequently adopted as the
+final configuration on the basis of its numerical $F_1$ balance. This designation
+does not imply a statistically established advantage or preference under every operational cost
+model.
+
+The autoencoder representation has a precision of 72.00\% and recall of 86.50\%,
+corresponding to an $F_1$ score of 78.59\%. The selected feature subset has precision of
+71.00\%, recall of 84.00\% and $F_1$ of 76.96\%. These values show lower detection coverage
+for the two configurations. They do not identify a causal mechanism: loss of
+relevant input information, differences in representation learning and changes in model
+capacity would require separate investigation.
+
+The final 24-component PCA evaluation produced the confusion matrix in
+Table~\ref{tab:anomaly:gan-confusion}: 47,337 of the 51,453 anomalous timestamps are detected
+and 17,508 of the 342,226 normal timestamps are flagged as anomalous.
+
+\begin{table}[tbp]
+  \centering
+  \caption{Timestamp-level confusion matrix for the final 24-component PCA configuration. Counts
+  refer to individual timestamps after aggregation of overlapping window outputs.}
+  \label{tab:anomaly:gan-confusion}
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Actual class & Predicted anomalous & Predicted normal & Total \\
+    \midrule
+    Anomalous & 47,337 (TP) &   4,116 (FN) &  51,453 \\
+    Normal    & 17,508 (FP) & 324,718 (TN) & 342,226 \\
+    \midrule
+    Total     & 64,845      & 328,834      & \textbf{393,679} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The performance measures follow directly from these counts and are calculated from the
+unrounded values:
+\begin{alignat*}{3}
+  \mathrm{Precision} &= TP/(TP+FP)          &&= 47{,}337/64{,}845   &&= 73.00\%,\\
+  \mathrm{Recall}    &= TP/(TP+FN)          &&= 47{,}337/51{,}453   &&= 92.00\%,\\
+  F_1                &= 2TP/(2TP+FP+FN)     &&= 94{,}674/116{,}298  &&= 81.41\%,\\
+  \mathrm{FPR}       &= FP/(FP+TN)          &&= 17{,}508/342{,}226  &&= 5.12\%,\\
+  \mathrm{Accuracy}  &= (TP+TN)/(TP+FN+FP+TN) &&= 372{,}055/393{,}679 &&= 94.51\%.
+\end{alignat*}
+
+The recall of 92.00\% means that the detector flags approximately 92 of every 100 anomalous
+timestamps. It does not mean that 92\% of attack episodes are detected. Long attacks contribute
+more timestamps than short attacks, so the same timestamp-level recall could arise from
+different distributions of detection across attack episodes. Precision of 73.00\% means that
+approximately 27\% of flagged timestamps fall within recorded normal periods. This proportion
+differs from the false-positive rate of 5.12\%, whose denominator includes all normal
+timestamps.
+
+Accuracy is interpreted alongside the class distribution. Since normal observations account for
+86.93\% of the cohort, a rule assigning every observation to the normal class would achieve
+86.93\% accuracy while detecting no anomalous timestamps. The measured accuracy of 94.51\%
+therefore provides supplementary information, whereas recall, precision and $F_1$ directly
+describe the balance relevant to identifying the anomalous class.
+
+No point adjustment is applied. A timestamp inside an attack interval counts as a true
+positive only if that timestamp is predicted anomalous. Detecting one observation does not
+automatically convert all other observations in the interval into true positives. Contiguous
+positive predictions may be grouped into alarm intervals for display or operational analysis,
+but grouping does not retrospectively alter the timestamp-level classifications used in the
+matrix.
+
+\subsection{Interpretation and Evaluation Scope}
+\label{sec:anomaly:gan-scope}
+
+The measured results describe a detector with high coverage of anomalous timestamps and a
+substantial false-positive burden. At the nominal one-second cadence, 17,508 false-positive
+observations correspond to approximately 4.86 hours of normal observations being
+flagged. This duration does not identify the number of alarms presented to an operator. A
+sustained interval and many isolated detections could contribute the same number of
+false-positive timestamps while requiring very different responses. Likewise, the 4,116 missed
+anomalous timestamps correspond to 68.6 minutes of anomalous observations, but their
+operational significance depends on which attacks and phases of process disruption they
+represent.
+
+Attack-level assessment requires matching detected intervals to the retained attack episodes.
+Relevant outcomes include the number of episodes detected, the time between attack onset and
+the first qualifying detection, and the duration of detection within each episode. A minimum
+overlap or persistence rule must be specified before those outcomes are calculated. Attacks
+without a qualifying detection remain missed episodes and cannot be omitted from the
+interpretation of detection delay. The denominator is the number of attack episodes present in
+the evaluation cohort, which cannot be inferred solely from the 36 attacks described for the
+source dataset.
+
+False alarm episodes similarly require an explicit grouping rule and a normal-operation exposure
+denominator. Their rate can be expressed as the number of distinct false alarm episodes per day
+of evaluated normal operation. Neither this rate nor the distribution of alarm durations follows
+from the confusion matrix alone. Timestamp-level precision also depends on the prevalence of
+anomalous observations: its value in a cohort containing 13.07\% anomalous timestamps does not
+establish the precision expected during deployment with a different attack prevalence.
+
+The comparison between representations specifies a modest difference in $F_1$ rather than
+evidence of a universal advantage for PCA. The complete input configuration retains the highest
+recall, while the five-component PCA representation produces the fewest false-positive
+timestamps relative to normal observations. The preferred configuration therefore depends on the
+relative consequences of missed anomalous behaviour and unnecessary alarms. Retention of 99\% of
+training variance provides a description of the 24-component representation, not a guarantee of
+detection coverage or robustness.
+
+The report gives no run-to-run variability from independently initialised training runs.
+A repeated-run analysis under the same partition and model-selection procedure should calculate
+precision, recall, $F_1$ and false-positive rate for each run, followed by their means and
+standard deviations. Resampling-based uncertainty estimates must account for temporal dependence
+and clustering within attack episodes because individual timestamps are not independent.
+
+Further evaluation would separate the contributions of reconstruction scoring, critic scoring
+and their combination, and examine window length under a common validation procedure.
+Precision-recall curves would characterise changes across thresholds; their area cannot be
+derived from one confusion matrix. Training duration, inference throughput and peak memory use
+would establish computational cost on the stated hardware. The model topology, loss weights,
+normalisation rule, threshold parameters, software versions, feature identities and partition
+records would form the implementation record needed for reproducibility.
+
+Tables~\ref{tab:anomaly:gan-representations} and~\ref{tab:anomaly:gan-confusion} report the
+empirical scope of this evaluation. The chronological partition prevents the later test
+observations from entering training or model selection. The report does not give the division of
+the first 56,240 attack-period timestamps between training and validation, and incomplete
+configuration records limit independent reproduction of the experiment.
+
+\section{Limitations, Validity, and Individual Contribution}
+\label{sec:anomaly:limitations}
+
+\paragraph{Scope of the service-graph evidence.}
+The artefact behind RQ1.1 is a two-page contribution to PAM 2018 on which the candidate is the
+fourth of four authors. The peer-reviewed anomaly-detection paper from the same group uses clustering rather
+than a graph, and the short paper that does use a graph is framed as access control
+\cite{pahl2018all,pahl2018graphbased}. The portable service model was proposed but not
+implemented. RQ1.1 therefore carries no measured detection result.
+
+\paragraph{Scope of the industrial evaluation.}
+The S7-300 result rests on 25 attack episodes recorded in one plant over 24 hours, and the
+held-out partition holds a single episode of each class. Records taken from one episode are
+correlated, so the per-class scores of Table~\ref{tab:anomaly:iuno-confusion} summarise five
+attack events and not 1,233 independent trials. The benign monitoring day was a separate
+exercise with four active PLCs and executed no attack, so it bounds the false-alarm rate and says
+nothing about recall.
+No experiment reported here trains on one cell and tests for attacks on another, so transfer
+between installations is untested. The field weighting in
+Figure~\ref{fig:anomaly:iuno-importance} states which fields the schema was designed around. Both exercises were
+labelled by the team that executed the attacks, and each two-hour baseline covers only the
+operating modes that occurred within it.
+
+\paragraph{Sampling and selection.}
+The GAN study develops the model on the first 56,240 attack-period timestamps and evaluates it
+on the later 393,679 timestamps. Training and validation also use separate normal-operation
+data, and attack episodes do not cross partition boundaries. This chronological split prevents
+test observations from entering training or model selection, but it remains within one SWaT
+campaign. The S7-300 evaluation holds out whole capture sessions. Neither study tests transfer
+to another installation or an operational class ratio. No repeated runs or uncertainty
+intervals are reported, so small differences between configurations cannot be interpreted as
+stable improvements.
+
+\paragraph{Simple baselines.}
+On SWaT, simple tests on process values have matched much more elaborate detectors under a
+common protocol \cite{wolsing2022simple}. Reimplementing published intrusion detectors in one
+framework has likewise left simple baselines competitive \cite{bilot2025sometimes}. No such
+baseline is reported for the GAN study or for the S7-300 evaluation, so neither result shows
+that its model outperforms a simple rule on the same data.
+
+\paragraph{Individual contribution.}
+The candidate designed and implemented \nadics{}, its model interface, and the S7 and PROFINET
+extractor. He produced the labelled S7-300 attack corpus. For the process study, he designed and
+implemented the multivariate GAN pipeline, its preprocessing variants, dynamic architecture,
+training, scoring, and evaluation on SWaT. He analysed the results and wrote the internal
+report. His contribution to the service-graph study was the
+concept and the measurement design. The IUNO deliverables attribute authorship at document level
+\cite{iuno_ap4,iuno_ap7}, so this account rests on the candidate's attestation and on the
+surviving artefacts rather than on passage-level attribution.
+
+\section{Chapter Summary}
+\label{sec:anomaly:summary}
+
+RQ1.1 asks how service relationships can be represented as communication graphs. The reported
+design stores observed service relations as a node-local whitelist and permits a site owner to
+revise it as the deployment changes. Its memory and latency costs were measured. Detection
+quality was not.
+
+RQ1.2 asks how a modular framework can analyse network and process features for anomaly
+detection in industrial systems. \nadics{} separates dataset layout, preprocessing, and learners
+behind fixed interfaces. On the S7-300 corpus recorded inside IUNO the framework reaches 94.50
+per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
+rate of 0.484 per cent, and a benign day with four active PLCs raised nine alarm episodes, all of
+them false. For SWaT process windows, the GAN evaluation reports
+92.00 per cent timestamp recall at a false-positive rate of 5.12 per cent with 24 PCA
+components. The full input gives the highest recall and five components the lowest
+false-positive rate, so the preferred representation depends on the relative cost of missed
+anomalies and false alarms.
+
+Together, these mechanisms close gap~\gapref{1} at the implementation level. No study shows
+transfer across time, sites, or adaptive attacks, which motivates Chapters~\ref{chap:advml}
+and~\ref{chap:discussion}.

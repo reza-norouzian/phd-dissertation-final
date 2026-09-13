@@ -1,0 +1,1268 @@
+\chapter{Higher-Order Android Malware Analysis with \hgann{}}
+\label{chap:hgann}
+
+% Drafted under T-021 from notes/chapter5-source-records/. Governing decisions:
+% D-027 and D-058 the Drebin binary corpus and empirical matrix; D-028 no ablation, the confound
+% is declared and Chapter 1 carries no isolation claim; D-029 the individual contribution;
+% D-008 the split of hypergraph formalism between Chapter 2 and this chapter;
+% D-010 the qualified duplication wording. Revised under T-005 and D-046 from
+% notes/chapter5-source-records/mathematical-revision-proposal.md: restored construction
+% algorithm, operator analysis, complexity bounds, metric-consistency findings.
+% The five figures are the author's own, supplied on 11 September 2026 (T-006, D-047); see
+% figures/hgann-mal/README.md. They replace the earlier TikZ pipeline and hyperedge diagrams.
+
+\section{Research Problem and Relation to Hybroid}
+\label{sec:hgann:1}
+
+This chapter answers RQ3, stated in Section~\ref{sec:intro:rqs}: \rqThreeText{} It takes up
+gap~\gapref{3}. What that gap records is an asymmetry in the evidence. The cost of projecting a
+group relation onto pairwise edges has been measured \cite{kang2024low, wang2024graphs}, and the
+conditions under which the projection loses nothing are known \cite{agarwal2006higherorder,
+chitra2019randomwalks}, yet the benefit of avoiding it in Android malware analysis rests on a
+single published study \cite{zhang2023android}. The weighting usually applied alongside the
+higher-order encoding carries its own unsettled evidence \cite{fang2025kaa}.
+
+\hgann{} represents an application as a hypergraph whose vertices are the methods of its
+function-call graph. Three families of hyperedge are laid over those vertices. The first records
+proximity in the call graph, the second groups methods whose learned representations are close,
+and the third follows a backward program slice from a call site that reaches a security-sensitive
+API. The three are merged into one incidence structure, a hypergraph operator with learned
+attention over hyperedges reduces the application to a single vector, and a classifier with two
+heads decides malicious against benign and, separately, the class within a labelled taxonomy.
+The source publication numbers the pipeline in eleven stages \cite{norouzian2025hgannmal}, and the
+chapter keeps those numbers. Stages 0 to 2 catalogue and unpack the packages and recover the call
+graph and the slices, and Stage 3 computes the node features. Stages 4 to 6 build and assemble the
+hypergraph, Stage 7 forms mini-batches, Stage 8 is the attention operator, and Stages 9 and 10 are
+the read-out and the two heads. The construction is described in Sections~\ref{sec:hgann:4}
+to~\ref{sec:hgann:8} and the evaluation in Sections~\ref{sec:hgann:9} to~\ref{sec:hgann:13}.
+
+Three claims are made for the work, and each is stated here in the form the evidence supports.
+The first is the construction: a method-level function-call graph is lifted to a hypergraph by
+three rules of different kinds, one topological, one semantic and one derived from a program
+slice, with a weight on the third that rises with the number of data-transmission calls the slice
+contains. The second is the operator: membership in a hyperedge is weighted by a learned score
+rather than by a binary indicator, so the aggregation is trained rather than fixed by the
+incidence structure. The third is the comparison, which measures the resulting system against two
+pairwise graph networks and two hypergraph operators without attention, on two corpora and three
+tasks, under one protocol.
+
+Two limits belong here rather than in the limitations section, because they qualify what is being
+claimed rather than what was found. The comparison changes the hyperedge vocabulary and the
+aggregation together, so a difference in the totals cannot be assigned to either change on its
+own; Section~\ref{sec:hgann:13} states what experiment would separate them and
+Section~\ref{sec:hgann:14} carries the consequence. And the field this work enters is narrow. A
+sweep of the published record finds one other hypergraph-based Android malware detector
+\cite{zhang2023android}, so the comparison against hypergraph baselines is a comparison against
+operators taken from other domains rather than against competing Android systems.
+
+\subsection*{Relation to \hybroid{}}
+
+Chapter~\ref{chap:hybroid} and this chapter answer one question about context in two ways, and
+they are not stages of a single development. \hybroid{} widens the evidence base: it observes the
+application twice, once as a program and once as a source of network traffic, and asks what the
+combination adds. \hgann{} keeps to one source of evidence and widens the relation instead: it
+asks what is gained when a group of methods can be recorded as a group rather than as a set of
+pairs. The first buys context by paying for a second observation, with the acquisition cost that
+Chapter~\ref{chap:hybroid} reports. The second buys context inside an observation already made.
+Chapter~\ref{chap:discussion} takes up that trade directly, and it is the reason the two chapters
+sit next to each other.
+
+Their results are not comparable, and no comparison between them is offered anywhere in this
+dissertation. The corpora differ, the class definitions differ, and the protocols differ. Where
+the source publication of this chapter cites \hybroid{} as third-party prior work on hybrid
+analysis, it is naming the candidate's own earlier work, and this chapter states the relationship
+rather than repeating that framing.
+
+The work was published at ISC 2025 \cite{norouzian2025hgannmal}, the candidate first of two
+authors with his supervisor as the second. The method, its implementation, the experiments and the
+manuscript are the candidate's own.
+Section~\ref{sec:intro:publications} states the same in the form the affidavit covers.
+
+\section{Related Work}
+\label{sec:hgann:2}
+
+Section~\ref{sec:background:graphs} defined the representations and
+Section~\ref{sec:background:learning} the operators. What this section adds is the systems: which
+of them have been built for Android, what they represent, and where the work of this chapter sits
+among them.
+
+\subsection*{Graph representations of Android applications}
+
+Detection over program graphs predates graph neural networks. Adagio embedded call graphs with a
+neighbourhood hash kernel and classified the result \cite{gascon2013structural}, and MaMaDroid
+abstracted call sequences to package or family level before modelling transitions between them
+\cite{onwuzurike2019mamadroid}. Their learned successors keep the graph and train the
+representation over it. The survey that organises this line covers control-flow graphs, call
+graphs, dependency graphs, heterogeneous application-and-API graphs, system-call graphs and
+network-flow graphs, and no hypergraph operator appears among them \cite{bilot2024survey}.
+
+One of those successors is close enough to this chapter to be worth stating in detail. MsDroid
+gives up the whole program and works on local snippets around security-sensitive APIs, one
+subgraph per snippet, classifying the subgraphs and combining their verdicts; it locates malicious
+snippets under application-level labels alone, and it returns an explanation naming the control
+flows responsible \cite{he2023msdroid}. The localisation is the same instinct that produces the
+slice-aware hyperedges of Section~\ref{sec:hgann:7}, reached through a different construct.
+MsDroid cuts subgraphs out of the call graph, while this chapter keeps one graph and lays a
+hyperedge over the methods a slice touches.
+
+What every member of the line shares is the restriction Section~\ref{sec:background:graphs}
+describes. An edge relates two methods. A behaviour realised by several methods acting together
+is representable only as a set of pairs, and the grouping is not recoverable from that set.
+
+\subsection*{Hypergraph learning}
+
+Learning over hypergraphs supplies the missing construct. HGNN defined a spectral convolution over
+the incidence structure \cite{feng2019hypergraph}, its successor generalised the propagation with
+a random-walk transition matrix and is the operator this chapter calls HGNN+ and the source
+publication calls HGNNP \cite{gao2023hgnn}, and attention was carried across by making membership
+itself real-valued and learned \cite{bai2021hypergraphattention}. The line has since moved again:
+a stability-oriented successor from the same group supersedes the operator used as a baseline here
+\cite{gao2026hgnnv2}, which is where a comparison run today would start.
+
+\subsection*{Hypergraphs for Android malware, and how narrow that field is}
+
+A sweep of the published record finds exactly one prior application of hypergraph learning to
+Android malware, and it is worth describing precisely, both because it is the only true competitor
+and because the source publication of this chapter misattributes it once in its own text
+\cite{zhang2023android}. That work builds a function-call graph at method granularity, describes
+each vertex by six centrality measures together with a one-hot encoding of what the function does,
+and forms hyperedges by two rules: the $K$-order call neighbours of a function, and the set of
+functions sharing a permission. It evaluates HGNN, HGNN+, HyperGCN and UniGNN against GCN, GIN and
+GraphSAGE, on Malnet-Tiny and on Drebin, and it reports its best Drebin result as 97.1 per cent
+accuracy with HGNN+. Its hyperedge weights are fixed in advance and no learned weighting is
+evaluated anywhere in it, so every member of a hyperedge contributes equally to the aggregation.
+
+\hgann{} differs from that work in three respects. It adds a third construction rule that neither
+topology nor permissions supply, taking a hyperedge from the backward slice of a
+security-sensitive call site, so that a group of methods jointly implicated in reaching a
+sensitive API becomes one object. It weights that family by the transmission and access calls the
+slice contains, which is the only place in the construction where a hyperedge carries a weight
+other than one. And it replaces fixed membership with a learned score, which is the change RQ3
+asks about. Being the second entrant in a two-member field is itself worth stating plainly: the
+hypergraph baselines in Section~\ref{sec:hgann:10} are general operators applied to this
+chapter's own representation, because there is almost nothing else to compare against.
+
+\subsection*{The comparison that the published record does not support}
+
+A reader will want the two Android hypergraph systems placed side by side, and the published
+figures do not allow it. Zhang et al.\ report 97.1 per cent accuracy for HGNN+ on the
+twenty-family Drebin task over 4,664 samples under an 80/20 split \cite{zhang2023android}, while
+Section~\ref{sec:hgann:11} reports 95.0 per cent for \hgann{} and 93.3 per cent for the same
+operator on the same task over the same samples under a 70/20/10 split. Setting those numbers
+against each other would compare implementations, feature sets, splits and training regimes at
+once.
+
+The clearest evidence that such a comparison misleads is contained in the pair itself. One
+operator, HGNN+, on one corpus and one task, differs by 3.8 points of accuracy between the two
+papers, and that difference is larger than three of the four margins this chapter reports over its
+own baselines. The problem is not peculiar to these two publications. A recent study that
+re-implemented twelve Android detectors under one toolchain names unfair comparison as a
+field-wide defect, on the ground that published approaches are evaluated on datasets of different
+sizes, different ratios of benign to malicious samples and different training and test proportions
+\cite{liu2026unraveling}, which is the same objection in general form \cite{arp2022dos,
+daoudi2021lessons}. This chapter therefore reports what its own protocol measures and makes no
+claim against the published figures of the other work.
+
+\subsection*{What the evaluation literature requires}
+
+Three further lines bear on the chapter and are taken up where they apply rather than here.
+Methodological work on machine learning in security names the pitfalls that this chapter's
+evaluation has to be checked against \cite{arp2022dos}, and studies of detector behaviour under
+obfuscation, drift and adversarial perturbation give the conditions under which published accuracy
+figures fail to hold \cite{gao2024comprehensive, zhang2020apigraph, liu2026unraveling}. Attacks
+aimed specifically at graph-based Android detection show what an adversary can do to the
+representation itself \cite{zhao2021structural, song2026fcghunter, li2025efficient}.
+Section~\ref{sec:hgann:14} states what each of them implies for the results reported here.
+
+\section{Observation and Threat Model}
+\label{sec:hgann:3}
+
+Everything this chapter measures follows from one decision about what is observed. \hgann{} reads
+the application package and does not run it. The manifest and the Dalvik bytecode are the whole
+of the evidence, which fixes both the cost of the analysis and the limits on what it can see.
+
+The cost is low and it scales. No device, no emulator and no scripted interaction is needed, and
+the analysis of one application is independent of every other, so the pipeline parallelises across
+a corpus without coordination. The second modality of Chapter~\ref{chap:hybroid} depends on
+traffic that the CICAndMal2017 authors captured on physical handsets, and
+Section~\ref{sec:discussion:3} compares the two observation requirements directly.
+
+The limits are the standard limits of static analysis on Android, stated in
+Section~\ref{sec:background:android:analysis}, and three of them bear on the representation this
+chapter builds. Code loaded at runtime through the class loader is absent from the recovered
+bytecode, so no vertex exists for it. Reflective invocation resolves a target from a string at
+runtime, so the call edge is missing from a statically recovered call graph unless the analyser
+models the reflection explicitly, which the pipeline described here does not. Packing and native
+payloads move the interesting behaviour outside the DEX files that are parsed at all. Each of the
+three removes vertices or edges from the object the model consumes, and a representation that is
+built on relations between methods is affected by a missing method more than a representation
+built on a bag of permissions.
+
+The adversary assumed by the evaluation is not adaptive. The corpora are historical collections,
+their samples were written without knowledge of this detector, and no sample is modified in
+response to what the detector learns. That assumption is standard for the reported task and it is
+also the assumption Chapter~\ref{chap:advml} argues should be stated rather than left implicit,
+which is why it is stated here. It has a consequence the chapter does not evade: an adversary who
+rewrites the application changes the call graph the extraction recovers, and everything downstream
+of that graph inherits the change. Section~\ref{sec:hgann:14} works that exposure out against the
+published attacks on function-call-graph detectors.
+
+\section{APK Processing and Function-Call Graph Extraction}
+\label{sec:hgann:4}
+
+Stage 0 builds a catalogue. Every application package under a root directory is hashed
+with SHA-256, and the hash is joined against the label list distributed with the corpus, so each
+sample carries a benign label or a family label before any analysis runs. Working from the hash
+rather than from the file name matters for a corpus assembled from several sources, since it makes
+duplicate files visible; Section~\ref{sec:hgann:9} returns to what was and was not done with that
+information.
+
+In Stage 1 each package is decompressed with \texttt{apktool} and the Python \texttt{zipfile}
+module, which yields the manifest and every \texttt{classes*.dex} file the package contains.
+Applications built with multi-dex are therefore covered, and the bytecode of all of them enters
+the next stage. The reported runs used apktool, MobSF, Androguard with its DAD decompiler and a
+ready-made code2vec model.
+
+Androguard \cite{desnos2012android}, which the source runs beside MobSF in Stage 2a, disassembles
+the DEX files and produces the object the rest of the chapter is built on: a function-call graph
+$G = (V, E)$ at method granularity, in which a
+vertex is a method identified by its class, its name and its descriptor, and a directed edge
+records that one method may invoke another. The same pass emits a flat list of pairs that records,
+for each method, which framework APIs it calls. That list is what allows a flagged API to be
+located at its call sites rather than merely counted, and Section~\ref{sec:hgann:5} uses it for
+exactly that.
+
+Two properties of this object were fixed in Section~\ref{sec:background:graphs:pairwise} and are
+not restated here beyond their consequences. A statically recovered call graph
+over-approximates, so an edge in $G$ records that an invocation is possible and not that it
+occurs. And the recovered graph depends on the analyser: a different toolkit, or a different
+treatment of the component lifecycle and of callbacks registered with the framework, yields a
+different vertex and edge set for the same application. Both properties travel through every
+construction in Section~\ref{sec:hgann:7}, because each of the three hyperedge rules is defined
+over $G$ or over an artefact derived from it.
+
+\section{Security-Sensitive API Identification and Program Slicing}
+\label{sec:hgann:5}
+
+Stage 2 decides which parts of an application are worth isolating. In Stage 2a two tools run over
+each package. MobSF parses the manifest, disassembles the bytecode and reports the permissions an
+application requests together with the framework APIs it uses. Of the permissions reported, only
+those whose status is \emph{dangerous} in the platform's own classification are retained, which
+narrows attention to the capabilities that guard user data and device functions
+\cite{aosp2026permissions}.
+
+The APIs reached from those capabilities are then sorted into two classes by a hand-written rule.
+An \emph{access} API reads something the user would consider private, and the examples the source
+publication names are contacts, location, short messages and storage. A \emph{transmission} API
+moves data off the device, with HTTP clients, raw sockets and \texttt{sendTextMessage} as its
+examples. The pairing is deliberate. Data exfiltration is a sequence in which something is read
+and then sent, and a rule that marks both ends of that sequence gives the construction in
+Section~\ref{sec:hgann:7} something to join into one group. The source publication describes the
+classification as a heuristic.
+
+Stage 2b then computes a backward slice for every call site of a marked API. The variables that reach
+the call site are identified first, and the control-flow graph of the enclosing code is walked
+backwards, keeping only the blocks and statements that influence those variables. What the stage
+stores is a compact control-flow graph per slice. The purpose is localisation rather than
+verification: the slice does not establish that data flows from a source to a sink, in the sense
+that a taint analysis would \cite{arzt2014flowdroid}, and it is not offered as evidence of
+exfiltration. It marks a neighbourhood of code that participates in reaching a sensitive call, and
+that neighbourhood becomes one hyperedge.
+
+\section{Node Features}
+\label{sec:hgann:6}
+
+In Stage 3 each vertex of the call graph receives a feature vector assembled from four groups,
+listed in Table~\ref{tab:hgann:features} and drawn in Figure~\ref{fig:hgann:node-features}. The
+groups are concatenated and the result is standardised to zero mean and unit variance across the
+corpus, giving the feature matrix $X$ with one row per method. The figure labels the blocks
+$h_{\text{op}}$, $s_{\text{struct}}$, $a_{\text{api}}$ and $c_{\text{2v}}$, and the last of them is
+the embedding written $c_v$ in Section~\ref{sec:hgann:7}. With $O$ the opcode vocabulary, the
+width is $F = \lvert O \rvert + 328$.
+
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-node-features.pdf}
+  \caption[Construction of the node feature vector in Stage 3]{Construction of the node feature
+  vector in Stage~3. For each method $v$ of the function-call graph, an opcode histogram, four
+  structural centrality metrics, four suspicious-API flags and counts, and a 320-dimensional
+  code2vec embedding are computed from the artefacts of Stages~1 to~2b. The four blocks are
+  concatenated into $x_v$ and z-score normalised, which yields the node-feature matrix
+  $X \in \mathbb{R}^{\lvert V \rvert \times F}$ consumed by the hypergraph constructor in
+  Stage~6.}
+  \label{fig:hgann:node-features}
+\end{sidewaysfigure}
+
+\begin{table}
+  \caption{The four groups of node feature. The width of the first group is the size of the
+  opcode vocabulary.}
+  \label{tab:hgann:features}
+  \centering
+  \begin{tabular}{llp{58mm}}
+    \toprule
+    Group & Width & What it records \\
+    \midrule
+    Opcode histogram   & vocabulary   & the distribution of Dalvik instructions in the method body \\
+    Structural metrics & 4            & in-degree, out-degree, PageRank and betweenness centrality of the method in $G$ \\
+    API indicators     & 4            & whether the method reaches an access API and whether it reaches a transmission API, with the counts of each within the slices attached to it \\
+    Semantic embedding & 320          & a code2vec representation of the decompiled method body \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The first group describes what a method does at instruction level, and it is the feature the
+program-code branch of Chapter~\ref{chap:hybroid} also rests on, there as a learned embedding of
+the opcode sequence rather than as a histogram. Operand values are not used, which removes the
+constants and register numbers that vary between builds of the same code. The histogram can be
+taken as raw counts or weighted by inverse document frequency across the corpus.
+
+The second group places the method in the call graph rather than describing its body, and it is
+the only group that changes when the graph changes. The third connects the vertex to the analysis
+of Section~\ref{sec:hgann:5}, so that a method reaching a sensitive API is distinguishable before
+any hyperedge is built. Both are small, and together they contribute eight of the dimensions.
+
+The fourth group is the largest. code2vec represents a method as a bag of paths through its
+abstract syntax tree and learns a fixed-width vector from that bag \cite{alon2019code2vec}. The
+published method consumes Java source, and the released model was trained on a corpus of Java
+source, whereas the input here is Dalvik bytecode recovered from a distributed package. The
+candidate confirms that the two were bridged by decompilation: each method was decompiled to Java
+with DAD, the decompiler built into Androguard, and embedded with a ready-made, pre-trained
+code2vec model. The source publication records neither step, and the width it reports differs
+from the released model's.
+
+The embedding of a method therefore depends on how completely the decompiler recovers its source,
+as well as on the model. That dependence matters for the construction too. The semantic hyperedges
+of Section~\ref{sec:hgann:7} are built from cosine similarities between these embeddings, so the
+decompiler and the model shape one of the three construction rules as well.
+
+\section{Hyperedge Construction}
+\label{sec:hgann:7}
+
+The lifting from a graph to a hypergraph is where the representation is decided. Stages 4A to 4C
+apply three rules of different kinds to the same vertex set, and Stages 5 and 6 merge and assemble
+what they produce. Write $\mathcal{H} = (\mathcal{V}, \mathcal{E}, w)$ for the result, with
+$\mathcal{V} = V$ the methods of the call graph. Figure~\ref{fig:hgann:hyperedge-generation} draws
+one hyperedge of each kind together with the parameters of its rule. Its panels keep the names
+$H_{\mathrm{K}}$, $H_{\mathrm{SEM}}$ and $H_{\mathrm{API}}$ that the source gives the three lists,
+which Equation~\ref{eq:hgann:merge} writes as the candidate sets $\mathcal{C}_{\text{topo}}$,
+$\mathcal{C}_{\text{sem}}$ and $\mathcal{C}_{\text{sus}}$.
+
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-hyperedge-generation.pdf}
+  \caption[Hyperedge generation in Stage 4]{Hyperedge generation in Stage~4: three complementary
+  constructions over one vertex set of methods. (4A)~Topological hyperedges take the $K$-hop ball
+  around every method in the call graph, with $K = 3$ and uniform weight $w = 1$. (4B)~Semantic
+  hyperedges are $k$-nearest-neighbour groups in the 320-dimensional code2vec space, with $k = 5$,
+  admitted only above the similarity floor $\tau \approx 0.80$. (4C)~Slice-aware hyperedges are
+  built from the backward slices of Stage~2b, extended with shortest paths of length at most $L_p$
+  between slice members, and weighted $w = 1 + 0.2\,\#\text{transmit} + 0.1\,\#\text{access}$.
+  A candidate with fewer than 2 or more than 64 members is rejected. Node colour marks hyperedge
+  membership only.}
+  \label{fig:hgann:hyperedge-generation}
+\end{sidewaysfigure}
+
+\paragraph{Topological hyperedges.} The source collects, for each method $v$, its callers and
+callees up to order $K$. Let $\vec{d}_G(v,u)$ be the number of call edges on a shortest directed
+path from $v$ to $u$, with $\vec{d}_G(v,u) = \infty$ when there is none, and let
+$\operatorname{dist}_G(v,u) = \min\{\vec{d}_G(v,u), \vec{d}_G(u,v)\}$. Then
+\begin{equation}
+  e_{\text{topo}}(v) = \{\, u \in V : \operatorname{dist}_G(v, u) \le K \,\}, \qquad K = 3 ,
+  \label{eq:hgann:topo}
+\end{equation}
+holds $v$ together with its callers and callees up to $K$ steps away. This convention follows the
+wording of the source. A distance measured with call directions ignored would also admit the other
+callees of a caller and would give larger hyperedges, and the source does not record which
+convention the implementation used.
+This is the rule the earlier hypergraph work on Android uses, there in combination with a
+permission-based rule \cite{zhang2023android}. It records a neighbourhood as one object rather
+than as a set of pairs, which is the whole of the higher-order claim at this point: a vertex and
+its $K$-hop neighbourhood enter the operator together.
+
+\paragraph{Semantic hyperedges.} A nearest-neighbour search over the code2vec embeddings, computed
+with the FAISS library, groups methods whose representations are close. Write
+$c_v \in \mathbb{R}^{320}$ for the embedding of method $v$, the fourth group of
+Table~\ref{tab:hgann:features}; the full feature vector $x_v$ also carries the other three groups,
+and the search uses the embedding alone. The candidate confirms that the search compares cosine
+similarities, $\operatorname{sim}(a, b) = a^{\top} b / (\lVert a \rVert\, \lVert b \rVert)$, and
+that it runs within one application. With $\mathcal{N}_k(v)$ the $k$ methods of the same
+application, other than $v$, that score highest under $\operatorname{sim}$,
+\begin{equation}
+  e_{\text{sem}}(v) = \{v\} \cup \{\, u \in \mathcal{N}_k(v) : \operatorname{sim}(c_v, c_u) \ge \tau \,\},
+  \qquad k = 5, \quad \tau \approx 0.80 .
+  \label{eq:hgann:sem}
+\end{equation}
+The original algorithm, whose test panel~4B of Figure~\ref{fig:hgann:hyperedge-generation}
+reproduces, names the search output $D$, a letter that suggests a distance, and keeps a neighbour
+when $D \ge \tau$. The test agrees with the cosine similarity, since for a distance the inequality
+would run the other way. The query
+method is included and is not counted among its $k$ neighbours, so
+$\lvert e_{\text{sem}}(v) \rvert \le k + 1$; the source does not say whether its search counted the
+query itself. Nothing in this rule refers to the call graph, which is the point of including it:
+two methods that never call one another, and that sit in different parts of the application, are
+joined when they do the same kind of work. The source names polymorphic malware and code reuse as
+the intended cases. Because the search stays inside one application, a semantic hyperedge joins
+methods of that application only, and code shared across a family can make the hyperedges of
+different applications alike without joining them.
+
+\paragraph{Slice-aware hyperedges.} Each backward slice $s$ from Section~\ref{sec:hgann:5} yields
+one hyperedge over the methods the slice contains, extended by the methods on short call paths
+between them. Let $F_s$ be that member set, fixed before any path is added. For a directed path $P$
+in the call graph, let $V(P)$ be its methods and $\ell(P)$ its number of call edges, and let
+$P_{uv}$ be a shortest path from $u$ to $v$. Then
+\begin{equation}
+  e_{\text{sus}}(s) = F_s \;\cup
+  \bigcup_{\substack{u, v \in F_s,\ u \ne v\\ P_{uv} \text{ exists},\ \ell(P_{uv}) \le L_p}}
+  V(P_{uv}) .
+  \label{eq:hgann:sus}
+\end{equation}
+Only pairs of original members are joined, so a method that one path adds does not start further
+paths. The original algorithm loops over the pairs of the set it is enlarging, and freezing $F_s$ is
+the convention adopted here to make the result independent of the loop order. A pair with no
+directed path contributes nothing. Where several shortest paths exist, the one chosen decides which
+methods join. This family carries the only non-unit weight in the hypergraph:
+\begin{equation}
+  w(e_{\text{sus}}(s)) = 1 + 0.2\,\#\text{transmit}(s) + 0.1\,\#\text{access}(s) ,
+  \label{eq:hgann:weight}
+\end{equation}
+so a slice that both reads private data and sends it weighs more than one that only reads, and the
+transmission end weighs twice the access end. The weight is a construction heuristic, so it cannot
+be read as a probability of exfiltration.
+
+\paragraph{Merging.} Each rule proposes candidate triples $(e, w, t)$ of a member set, a weight and
+a type tag. Collected as a multiset and passed through the post-processing of the source, they give
+\begin{equation}
+  \mathcal{C} = \mathcal{C}_{\text{topo}} \uplus \mathcal{C}_{\text{sem}} \uplus \mathcal{C}_{\text{sus}} ,
+  \qquad
+  \mathcal{E} = \operatorname{Post}_{\eta}\bigl( \{\, (e, w, t) \in \mathcal{C} :
+  2 \le \lvert e \rvert \le c_{\max} \,\} \bigr) ,
+  \qquad c_{\max} = 64 .
+  \label{eq:hgann:merge}
+\end{equation}
+The lower bound removes singletons, which carry no relation, and with them every slice that has a
+single member, since such a slice has no pair to join. The upper bound is described in the source
+publication as necessary for stable message passing. Its prose says that hyperedges are capped,
+whereas its algorithm rejects a candidate outside the interval. This chapter follows the algorithm:
+truncation would need a rule for choosing which members to keep, and none is given. Rejection has a
+consequence of its own. A method whose $K$-step neighbourhood holds more than 64 methods loses its
+topological hyperedge entirely, so the topological family omits exactly the methods with the
+largest neighbourhoods.
+
+The operator $\operatorname{Post}_{\eta}$ removes duplicates. Two candidates with the same members
+can carry different weights or tags, as a slice hyperedge and a topological one over the same
+methods would, and the policy $\eta$ that decides which weight and which tag survive is not
+recorded; this chapter does not supply one. Filtering can also leave a method in no hyperedge, for
+instance an isolated method that belongs to no slice and has no semantic neighbour above $\tau$.
+Its degree is then zero and the normalisation of Section~\ref{sec:hgann:8} is undefined for it, and
+the source does not say whether such methods were dropped or handled in another way.
+
+Each surviving hyperedge is tagged with its family in one byte, and the incidence matrix $H$ and
+the diagonal weight matrix $W$ are assembled from the result and serialised per application.
+Algorithm~\ref{alg:hgann:construction} restores the construction procedure of the source
+publication with the conventions above written into it. It also adds the post-processing and the
+sparse assembly, which the output line of the original announces and its body omits. The type tag
+records something the operator never reads. The layer described in
+Section~\ref{sec:hgann:8} consumes $H$, $W$ and $X$, so a hyperedge's family influences the model
+only through its weight, and since two of the three families carry weight one, the topological and
+semantic hyperedges are indistinguishable to the operator once they are built. That is a design
+gap rather than an error, and Section~\ref{sec:hgann:13} names it as the cleanest available
+extension.
+
+\begin{algorithm}[tbp]
+  \caption[Construction and assembly of the \hgann{} hypergraph]{Construction and assembly of the
+  \hgann{} hypergraph. Stages 4A to 4C restore the algorithm of the source publication
+  \cite{norouzian2025hgannmal} with the conventions of Equations~\ref{eq:hgann:topo}
+  to~\ref{eq:hgann:sus} written in; stages 5 and 6 add the post-processing and assembly that its
+  prose describes.}
+  \label{alg:hgann:construction}
+  \small
+  \textbf{Input:} call graph $G = (V, E)$; embeddings $c_v$; slices $s \in \mathcal{S}$ with
+  member sets $F_s$; parameters $K$, $k$, $\tau$, $L_p$, $c_{\max}$; duplicate policy $\eta$\par
+  \textbf{Output:} sparse incidence matrix $H$, weight matrix $W$, type tags $t$
+  \begin{algorithmic}[1]
+    \Statex \textbf{Stage 4A: topological hyperedges}
+    \State $\mathcal{C} \gets \varnothing$ \Comment{multiset of candidates}
+    \For{$v \in V$}
+      \State $e \gets \{u \in V : \operatorname{dist}_G(v,u) \le K\}$
+      \If{$2 \le \lvert e \rvert \le c_{\max}$}
+        \State $\mathcal{C} \gets \mathcal{C} \uplus \{(e, 1, \texttt{topo})\}$
+      \EndIf
+    \EndFor
+    \Statex \textbf{Stage 4B: semantic ($k$-NN) hyperedges}
+    \State $(I, S) \gets \textsc{Faiss}(\{c_v\}_{v \in V}, k)$
+      \Comment{$k$ others per method; $S$ holds cosine similarities}
+    \For{$v \in V$}
+      \State $e \gets \{v\} \cup \{I_{v,j} : S_{v,j} \ge \tau\}$
+      \If{$2 \le \lvert e \rvert \le c_{\max}$}
+        \State $\mathcal{C} \gets \mathcal{C} \uplus \{(e, 1, \texttt{sem})\}$
+      \EndIf
+    \EndFor
+    \Statex \textbf{Stage 4C: slice-aware hyperedges}
+    \For{$s \in \mathcal{S}$}
+      \State $e \gets F_s$; \ $w \gets 1 + 0.2\,\#\text{transmit}(s) + 0.1\,\#\text{access}(s)$
+      \For{$(u, v) \in F_s \times F_s$ with $u \ne v$} \Comment{$F_s$ is not enlarged}
+        \If{$P_{uv}$ exists and $\ell(P_{uv}) \le L_p$}
+          \State $e \gets e \cup V(P_{uv})$
+        \EndIf
+      \EndFor
+      \If{$2 \le \lvert e \rvert \le c_{\max}$}
+        \State $\mathcal{C} \gets \mathcal{C} \uplus \{(e, w, \texttt{sus})\}$
+      \EndIf
+    \EndFor
+    \Statex \textbf{Stage 5: post-processing}
+    \State $\mathcal{E} \gets \operatorname{Post}_{\eta}(\mathcal{C})$
+      \Comment{policy $\eta$ not recorded}
+    \Statex \textbf{Stage 6: sparse assembly}
+    \For{$j = 1, \ldots, \lvert \mathcal{E} \rvert$, with $(e_j, w_j, t_j)$ the $j$-th element
+      of $\mathcal{E}$}
+      \State $H_{vj} \gets 1$ for every $v \in e_j$; \ $W_{jj} \gets w_j$; \ $t(j) \gets t_j$
+    \EndFor
+    \State \Return $H$, $W$, $t$
+  \end{algorithmic}
+\end{algorithm}
+
+\section{Hypergraph Attention Model}
+\label{sec:hgann:8}
+
+The operator is defined over the structure fixed in
+Section~\ref{sec:background:graphs:hypergraphs}, whose notation is used here without restatement:
+the incidence matrix $H$, the weighted vertex degree $d(v)$ and the hyperedge degree $\delta(e)$
+with their diagonal matrices $D_v$ and $D_e$, and the diagonal weight matrix $W$. Write
+$n = \lvert \mathcal{V} \rvert$, and assume for now that $d(v) > 0$ for every method;
+Section~\ref{sec:hgann:7} records that filtering can violate this. The hypergraph Laplacian is
+\begin{equation}
+  L = I - P_0 , \qquad P_0 = D_v^{-1/2} H W D_e^{-1} H^{\top} D_v^{-1/2} ,
+  \label{eq:hgann:laplacian}
+\end{equation}
+and for a signal $f \in \mathbb{R}^{n}$ over the methods it has the energy
+\begin{equation}
+  f^{\top} L f = \frac{1}{2} \sum_{e \in \mathcal{E}} \frac{w(e)}{\delta(e)}
+  \sum_{u, v \in e} \left( \frac{f_u}{\sqrt{d(u)}} - \frac{f_v}{\sqrt{d(v)}} \right)^{2} ,
+  \label{eq:hgann:energy}
+\end{equation}
+where the inner sum runs over ordered pairs \cite{zhou2006learning}. The energy is small when the
+degree-normalised signal varies little inside the constructed groups, and each hyperedge counts in
+proportion to its weight and in inverse proportion to its size. It describes the operator and is
+not a term of the training loss. One layer of hypergraph convolution propagates through $P_0$:
+\begin{equation}
+  X^{(l+1)} = \sigma\!\left( D_v^{-1/2} H W D_e^{-1} H^{\top} D_v^{-1/2} X^{(l)} \Theta^{(l)} \right) ,
+  \label{eq:hgann:conv}
+\end{equation}
+with $\Theta^{(l)}$ the learned projection of layer $l$ and $\sigma$ a non-linearity. Read from
+right to left, the operator gathers vertex states into the hyperedges that contain them, averages
+within each hyperedge through $D_e^{-1}$, scales by the hyperedge weight, and returns the result to
+the member vertices with the symmetric normalisation of $D_v^{-1/2}$. One layer therefore couples
+every pair of methods that share a hyperedge. The matrix $P_0$ is positive semidefinite and similar
+to the row-stochastic matrix $D_v^{-1} H W D_e^{-1} H^{\top}$, so its eigenvalues lie in $[0,1]$.
+Equation~\ref{eq:hgann:conv} thus multiplies each eigencomponent of $L$ with eigenvalue $\lambda$ by
+$1 - \lambda$, and the components with the highest energy are damped most. This is the smoothing
+behind the low-pass bias recorded in Section~\ref{sec:background:learning:hypergraphconvolution}.
+
+\subsection*{Attention over hyperedges}
+
+Equation~\ref{eq:hgann:conv} weights a vertex's hyperedges by $W$, which is fixed when the
+hypergraph is built. Attention replaces the binary membership indicator by a learned real value,
+so that the strength with which a vertex participates in a hyperedge is trained
+\cite{bai2021hypergraphattention}. The layer index is dropped from here on. Let
+$X \in \mathbb{R}^{n \times F}$ hold the input states as rows, let
+$\Theta \in \mathbb{R}^{F \times F'}$ be the projection, and set $Y = X\Theta$, with
+$y_v \in \mathbb{R}^{F'}$ the row of method $v$ read as a column vector. A hyperedge is first
+represented by the mean of the projected states of its members,
+\begin{equation}
+  z_e = \frac{1}{\delta(e)} \sum_{u \in e} y_u ,
+  \label{eq:hgann:hedgerep}
+\end{equation}
+and the coefficient joining a vertex to one of its hyperedges is the normalised score
+\begin{equation}
+  \alpha(v, e) = \frac{\exp\bigl( \sigma( a^{\top} [\, y_v \,\Vert\, z_e \,] ) \bigr)}
+                      {\sum_{e' \ni v} \exp\bigl( \sigma( a^{\top} [\, y_v \,\Vert\, z_{e'} \,] ) \bigr)} ,
+  \label{eq:hgann:attn}
+\end{equation}
+with $a \in \mathbb{R}^{2F'}$ a learned vector and $\Vert$ concatenation. Collecting the
+coefficients into $H_{\text{att}}$, whose entry at $(v,e)$ is $\alpha(v,e)$ where $H$ has a one and
+zero elsewhere, gives the layer actually used:
+\begin{equation}
+  X' = \sigma\!\left( D_v^{-1/2} H_{\text{att}} W D_e^{-1} H_{\text{att}}^{\top} D_v^{-1/2}
+              X \Theta \right) .
+  \label{eq:hgann:attnprop}
+\end{equation}
+The degree matrices are those of the binary $H$, as in the source publication; degrees recomputed
+from $H_{\text{att}}$ would define a different layer. Gradients reach $H_{\text{att}}$ as well as
+$X$ and $\Theta$, so the membership weights are learned. The support is not. $H_{ve} = 0$ implies
+$\alpha(v,e) = 0$, and a finite score gives every present membership a positive coefficient, so
+training reweights the memberships the construction produced and cannot add a method to a
+hyperedge or remove one.
+
+Equations~\ref{eq:hgann:hedgerep} and~\ref{eq:hgann:attn} state the additive form of the score,
+which the source publication leaves as an uninstantiated similarity function and which the
+candidate confirms is what was implemented. The published formulation also writes the score
+between two vertices while indexing it by a hyperedge; the form above resolves that by scoring a
+vertex against a representation of the hyperedge, which is what the implementation computes.
+
+\subsection*{The messages between methods}
+
+Expanding Equation~\ref{eq:hgann:attnprop} shows what one method receives from another. The layer
+runs in two stages. Each hyperedge first forms a message, and each method then combines the
+messages of its hyperedges:
+\begin{equation}
+  \mu_e = \frac{1}{\delta(e)} \sum_{u \in e} \frac{\alpha(u,e)}{\sqrt{d(u)}}\, y_u ,
+  \qquad
+  x'_v = \sigma\biggl( \frac{1}{\sqrt{d(v)}} \sum_{e \ni v} w(e)\, \alpha(v,e)\, \mu_e \biggr) .
+  \label{eq:hgann:messages}
+\end{equation}
+Substituting the first expression into the second gives one matrix of couplings between methods,
+\begin{equation}
+  X' = \sigma\bigl( P_{\text{att}} X \Theta \bigr) ,
+  \qquad
+  P_{\text{att}}(v,u) = \frac{1}{\sqrt{d(v)\, d(u)}} \sum_{e \ni v,u} \frac{w(e)}{\delta(e)}\,
+  \alpha(v,e)\, \alpha(u,e) .
+  \label{eq:hgann:coupling}
+\end{equation}
+Two methods interact only through the hyperedges they share, and each shared hyperedge adds one
+term. In that term the coefficient of the sender and the coefficient of the receiver appear as a
+product. The construction weight $w(e)$ is a separate factor, so the slice heuristic of
+Equation~\ref{eq:hgann:weight} and the learned coefficients act on a message independently. The
+coefficients depend on the layer input through Equations~\ref{eq:hgann:hedgerep}
+and~\ref{eq:hgann:attn}, which makes $P_{\text{att}}$ a function of $X$; for a fixed input it is a
+symmetric matrix.
+
+The key $z_e$ and the message $\mu_e$ are different aggregations over the same members. The key is
+an unweighted mean, whereas the message weights each member $u$ by $\alpha(u,e) / \sqrt{d(u)}$, so
+attention changes the average inside a hyperedge as well as the weighting across the hyperedges of
+a method. It does not change the sign of any term. Every member enters $\mu_e$ with a positive
+coefficient, so before the non-linearity each output is the projection of a non-negative
+combination of input states, and one layer cannot form a difference between two members of a
+hyperedge. The high-frequency component that standard hypergraph convolution discards has been
+characterised \cite{li2026highpass}. Attention changes the proportions of that average and keeps
+every coefficient positive, so the propagation of one layer remains an averaging of member states.
+
+Grouping the sum in Equation~\ref{eq:hgann:coupling} by hyperedge gives a structural statement:
+\begin{equation}
+  P_{\text{att}} = \sum_{e \in \mathcal{E}} \frac{w(e)}{\delta(e)}\, \psi_e \psi_e^{\top} ,
+  \qquad
+  (\psi_e)_v = \frac{\alpha(v,e)}{\sqrt{d(v)}} ,
+  \label{eq:hgann:rankone}
+\end{equation}
+with $\alpha(v,e) = 0$ for $v \notin e$. Each hyperedge adds a positive semidefinite matrix of rank
+one, and because every weight is positive, $P_{\text{att}}$ is positive semidefinite for every
+input. The statement concerns the propagation matrix at a fixed input. It carries no guarantee about
+the convergence of training.
+
+Because $\alpha(v,e)$ depends on both the method and its hyperedge, two different hyperedge
+groupings can produce the same fixed matrix $P_0$ yet different attentive propagation matrices.
+The reported experiments do not determine whether the learned model used this capacity or whether
+it caused the measured accuracy differences.
+
+\subsection*{What the mechanism can and cannot be claimed to do}
+
+Two further properties bound what the chapter claims for the operator.
+
+The first concerns the ranking that the score induces. Splitting $a = (a_1, a_2)$ across the
+concatenation writes the argument of $\sigma$ in Equation~\ref{eq:hgann:attn} as $q_v + b_e$, with
+a query term and a hyperedge key
+\begin{equation}
+  q_v = a_1^{\top} y_v , \qquad b_e = a_2^{\top} z_e .
+  \label{eq:hgann:split}
+\end{equation}
+If $\sigma$ is strictly increasing, then for a fixed layer input and any two hyperedges $e_1$ and
+$e_2$ that contain $v$,
+\begin{equation}
+  \alpha(v, e_1) > \alpha(v, e_2) \iff b_{e_1} > b_{e_2} .
+  \label{eq:hgann:ranking}
+\end{equation}
+The proof is short. Because $\sigma$ and $\exp$ are strictly increasing, the numerators of
+Equation~\ref{eq:hgann:attn} are ordered as the keys are, and the two coefficients share one
+positive denominator. Any two methods therefore rank the hyperedges they share in the same order,
+and the keys alone fix that order. Methods can still attend to different hyperedges, since each
+normalises over its own. A non-decreasing activation such as ReLU can merge two hyperedges into a
+tie but cannot reverse their order between methods. The argument is the one Brody et al.\ give for
+the additive score of pairwise graph attention \cite{brody2022gatv2}, applied to the score of
+Equation~\ref{eq:hgann:attn}. It holds for each attention head separately and says nothing about
+hypergraph attention with other scoring functions. Under either kind of activation, the restriction
+on wording that the chapter keeps is thus a result for this operator: within one layer, \hgann{}
+can learn which hyperedges matter, and it cannot reverse their order from one method to another.
+
+The query term does not cancel, however. With $\sigma$ a leaky ReLU of slope 0.2 and keys $-1$
+and $1$, the coefficients are approximately $0.23$ and $0.77$ for $q_v = 0$, and $0.12$ and $0.88$
+for $q_v = 2$. The order agrees and the values differ. Cancellation is exact when $\sigma$ is affine
+on the arguments of one method, as a leaky ReLU is when they share a sign.
+
+The second concerns normalisation. Uniform coefficients do not reproduce
+Equation~\ref{eq:hgann:conv}, because the degrees in Equation~\ref{eq:hgann:attnprop} are those of
+the binary $H$. Let $r_v$ be the number of hyperedges containing $v$ and
+$R = \operatorname{diag}(r_v)$. Equal scores give $H_{\text{att}} = R^{-1} H$ and hence
+\begin{equation}
+  P_{\text{att}} = R^{-1} P_0 R^{-1} ,
+  \label{eq:hgann:uniform}
+\end{equation}
+which reduces to $P_0 / r^2$ when every method lies in $r$ hyperedges, and to $P_0 / 4$ in the
+example above. An ablation that replaced the learned coefficients by uniform ones would therefore
+change the scale of propagation as well as its weighting. A comparison with the non-attentive
+operator needs a stated normalisation convention before a difference can be read as an effect of
+attention.
+
+\subsection*{Read-out and classification}
+
+Applications differ in size, so the vertex states are collapsed into one vector per application.
+Two variants are named in the source publication, an unweighted mean over the vertices and a
+learned attention pooling.
+
+Training and inference run on batches. The source assembles a batch of $B$ applications by placing
+their incidence and weight matrices on a block diagonal and stacking their feature matrices,
+\begin{equation}
+  H_{\mathcal{B}} = \operatorname{diag}(H_1, \ldots, H_B) , \qquad
+  W_{\mathcal{B}} = \operatorname{diag}(W_1, \ldots, W_B) , \qquad
+  X_{\mathcal{B}} = \begin{bmatrix} X_1 \\ \vdots \\ X_B \end{bmatrix} ,
+  \label{eq:hgann:batch}
+\end{equation}
+together with an index that maps each row of $X_{\mathcal{B}}$ to its application. No hyperedge
+spans two blocks, so degrees, keys, coefficients and messages are all computed inside one
+application. The output for an application therefore does not depend on the other applications in
+its batch, and the read-out uses the index to pool each block on its own.
+
+The layer is also equivariant under relabelling. Let $\Pi$ reorder the methods of an application
+and $Q$ its hyperedges, and write $\Phi(X, H, W)$ for the output of
+Equation~\ref{eq:hgann:attnprop}. Then
+\begin{equation}
+  \Phi(\Pi X, \Pi H Q^{\top}, Q W Q^{\top}) = \Pi\, \Phi(X, H, W) , \qquad
+  g(\Pi X, \Pi H Q^{\top}, Q W Q^{\top}) = g(X, H, W) ,
+  \label{eq:hgann:invariance}
+\end{equation}
+where $g$ is the application vector. The first identity holds because the degree matrices, the keys
+and the coefficients all permute with $H$, and the second because both read-outs are symmetric in
+the vertex states. The prediction therefore does not depend on the order in which method rows or
+hyperedge columns are stored. This concerns the hypergraph once it is built. It gives no resistance
+to obfuscation, and order-dependent choices earlier in the pipeline, such as tie-breaking among
+nearest neighbours or among shortest paths, can change $H$ itself.
+
+That vector passes through a shared multi-layer perceptron with two hidden layers, rectified
+linear activations and dropout, and then into two heads. The first emits a single logit whose
+sigmoid is the probability that the application is malicious. The second emits one logit per class
+of the labelled taxonomy, normalised by a softmax. Training minimises the sum of the two
+objectives,
+\begin{equation}
+  \mathcal{L} = \lambda_{\text{bin}} \operatorname{BCE}(z_{\text{bin}}, y_{\text{bin}})
+              + \lambda_{\text{fam}} \operatorname{CE}(z_{\text{fam}}, y_{\text{fam}}) ,
+  \label{eq:hgann:loss}
+\end{equation}
+weighted by two constants.
+
+Equation~\ref{eq:hgann:loss} applies both terms unconditionally. On the corpus of
+Section~\ref{sec:hgann:12}, benign
+applications form one of the labelled classes and the second term is defined for them. On the
+corpus of Section~\ref{sec:hgann:11} the classes are twenty malware families. A benign application
+has no family among them, and neither has a malicious application from one of the smaller
+families, so the family term has no target for either. One well-defined specification averages each
+term over the training samples that carry its label,
+\begin{equation}
+  \mathcal{L} = \frac{\lambda_{\text{bin}}}{\lvert \mathcal{D}_{\text{bin}} \rvert}
+  \sum_{i \in \mathcal{D}_{\text{bin}}} \operatorname{BCE}(z_{\text{bin},i}, y_{\text{bin},i})
+  + \frac{\lambda_{\text{fam}}}{\lvert \mathcal{D}_{\text{fam}} \rvert}
+  \sum_{i \in \mathcal{D}_{\text{fam}}} \operatorname{CE}(z_{\text{fam},i}, y_{\text{fam},i}) ,
+  \label{eq:hgann:maskedloss}
+\end{equation}
+with $\mathcal{D}_{\text{bin}}$ and $\mathcal{D}_{\text{fam}}$ the non-empty sets of samples that
+have a binary label and a class label.
+
+\section{Datasets, Tasks, and Split Policy}
+\label{sec:hgann:9}
+
+Two corpora are used, and they answer to different needs. Drebin is the reference collection of
+the field, which makes results on it comparable with a long line of published work, and its family
+labels support a classification task that a category taxonomy cannot. CICMalDroid is newer, it
+carries benign applications alongside malicious ones, and its labels are categories of behaviour
+rather than families. Using both guards against a conclusion that holds only for one collection,
+which is the reason the source publication gives for the second corpus.
+
+\subsection*{Drebin}
+
+Drebin is the malicious part of a larger collection gathered between August 2010 and October 2012
+from the Google Play Store, from Chinese and Russian alternative markets, from Android websites and
+malware forums, and from the whole of the Malgenome project \cite{arp2014drebin}. Every sample in
+that collection was submitted to VirusTotal and judged by ten antivirus scanners; an application
+was counted as malicious when at least two of the ten flagged it, applications labelled adware were
+then removed, and 5,560 malicious samples remained. The family names are taken from the labels of
+one of the ten scanners. The source publication of this chapter counts 179 families in the set
+\cite{norouzian2025hgannmal}, a figure the dataset paper does not state. Family sizes are heavily
+skewed, so the classification task uses the twenty largest, which cover 4,664 of the samples and
+are drawn with their sizes in Figure~\ref{fig:hgann:class-distribution}(a). The 159 smaller
+families hold the other 896 samples, 16.1 per cent of the set, and they are left out of the
+family task only, since binary detection uses all 5,560 malicious samples.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{hgann-mal/hgann-mal-class-distribution.pdf}
+  \caption[Class distribution of the two corpora]{Class distribution of the two corpora.
+  (a)~The twenty largest Drebin families, the classes of the \familyclassification{} task. The
+  159 smaller families, with 896 samples, take no part in that task and remain in binary
+  detection. (b)~The five CICMalDroid 2020 categories of the published distribution
+  \cite{mahdavifar2020dynamic}; Benign is the negative class of binary detection on this corpus.
+  The long tail of Drebin is the reason the source publication reports an F1 score, which it
+  labels Macro-F1, alongside accuracy.}
+  \label{fig:hgann:class-distribution}
+\end{figure}
+
+Three properties of that construction bear on the results. The malicious label is a vote of two
+scanners out of ten, which is a lower bar than a majority and admits samples the other eight
+consider harmless. The ground truth for \familyclassification{} is one vendor's naming, which is a
+convention rather than a taxonomy of behaviour. And the 123,453 benign packages the original
+DREBIN work evaluated against are not part of what is distributed, which is why a negative class
+had to be found elsewhere.
+
+Binary detection needs a negative class, and Drebin supplies none, so the benign side was drawn at
+random from AndroZoo \cite{allix2016androzoo}. AndroZoo collects Android applications by crawling
+Google Play, the Chinese markets Anzhi and AppChina, and several smaller repositories; the crawl
+began in late 2011 and has continued since, and the collection held more than three million
+applications when it was first described. Every application in it has been submitted to
+VirusTotal, and what the collection stores per application is the number of antivirus products
+that flagged it, together with the compilation date of its bytecode, its size and the market it
+came from.
+About 9,470 benign applications were used against the full set of 5,560 malicious ones, giving a
+corpus of roughly 15,030 in which malware is 37.0 per cent.
+
+Turning that stored count into a benign label requires a threshold, and the threshold is a
+decision rather than a property of the data. The AndroZoo authors report the flagged share at one
+antivirus product and again at ten, and state that antivirus results have to be treated with care;
+the two thresholds give very different populations. Section~\ref{sec:hgann:14} states what
+follows from assembling the two classes from different collections.
+
+\subsection*{CICMalDroid}
+
+CICMalDroid 2020 was collected between December 2017 and December 2018 and holds five categories,
+four malicious and one benign. Its benign class is not a separate acquisition: applications that
+fell into none of the four malicious categories were taken as benign and then checked against
+VirusTotal. Its published distribution, drawn in Figure~\ref{fig:hgann:class-distribution}(b),
+holds 11,598 applications, which is not the number collected: 17,341 applications were
+gathered, 13,077 executed successfully in the dataset authors' sandbox, and the labelled
+distribution retains 11,598 after the analysis records of the remainder failed to parse
+\cite{mahdavifar2020dynamic}. This chapter uses the published distribution, so it inherits a
+selection made by dynamic analysis, and Section~\ref{sec:hgann:14} records what that implies for a
+static detector. The categories are far more even than the Drebin families, since the largest
+holds 3.1 times as many samples as the smallest.
+
+\subsection*{Three tasks, and they are not interchangeable}
+
+Binary detection separates malicious from benign, and it is reported on both corpora. On Drebin
+the negative class is the AndroZoo sample described above; on CICMalDroid it is the 1,795 benign
+applications of Figure~\ref{fig:hgann:class-distribution}(b) against the remaining 9,803.
+
+The \familyclassification{} task assigns a malicious application to one of the twenty Drebin
+families. No benign application takes part, and the task presupposes that the sample is malicious.
+
+The \categoryclassification{} task assigns an application to one of the five CICMalDroid
+categories, one of which is Benign. It therefore includes the detection decision within a wider
+one.
+
+The distinction is kept throughout this chapter and throughout the dissertation, because the three
+tasks have different priors, different error costs and different trivial baselines, and reporting
+them under one name would make the numbers look comparable when they are not.
+
+The two corpora do not even agree on what counts as malicious. Drebin removed every application
+its scanners labelled adware, while CICMalDroid keeps Adware as one of its four malicious
+categories. A sample of the kind Drebin discarded is therefore a positive case on one corpus and
+absent from the other, which is one more reason the figures in
+Sections~\ref{sec:hgann:11} and~\ref{sec:hgann:12} are not read against each other.
+
+\subsection*{Split policy}
+
+Each corpus is divided at random into 70 per cent for training, 20 per cent for testing and 10 per
+cent for validation, and the same division is used for every method in the comparison, so the
+baselines and \hgann{} see the same samples. At that test fraction the smallest Drebin family, with
+41 samples, places about eight samples in the test partition in expectation, so a per-family score
+for the smallest classes would rest on a handful of decisions. Two properties of that policy are
+stated here and their consequences are worked out in Section~\ref{sec:hgann:14}: the division is
+random rather than ordered by time, so training and test samples come from the same period, and
+no deduplication or hash-aware grouping was applied, although Drebin is known to contain
+repackaged near-duplicates.
+
+\section{Binary Detection Results}
+\label{sec:hgann:10}
+
+Binary detection asks one question of an application: malicious or not. It is reported on both
+corpora, and the two experiments differ in a way that matters for reading the numbers. On
+CICMalDroid the benign applications belong to the corpus, and the task uses the 1,795 benign
+samples against the 9,803 malicious ones. On Drebin they do not, because Drebin holds malware
+only, so the benign side was assembled separately as Section~\ref{sec:hgann:9} describes.
+Table~\ref{tab:hgann:binary} reports both. Figures~\ref{fig:hgann:f1} and~\ref{fig:hgann:accuracy}
+plot its F1 and accuracy columns together with those of the multiclass table in
+Section~\ref{sec:hgann:11}, for all four task and corpus combinations.
+
+\begin{table}
+  \caption{Binary detection, in per cent, as published. The source labels the first column
+  Macro-F1 and states no averaging convention. Section~\ref{sec:hgann:14} shows that the \hgann{}
+  values on Drebin are positive-class values for the malicious class, and that several rows cannot
+  follow one convention. Best value in each column in bold.}
+  \label{tab:hgann:binary}
+  \centering
+  \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
+    \toprule
+    & \multicolumn{4}{c}{Drebin and AndroZoo} & \multicolumn{4}{c}{CICMalDroid} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    Method & F1 & Prec. & Rec. & Acc. & F1 & Prec. & Rec. & Acc. \\
+    \midrule
+    GCN            & 92.2 & 92.2 & 91.5 & 92.8 & 90.6 & 90.6 & 90.6 & 90.9 \\
+    GraphSAGE      & 92.1 & 92.1 & 92.5 & 93.3 & 91.0 & 91.1 & 91.1 & 91.5 \\
+    \midrule
+    HGNN           & 96.2 & 95.8 & 96.3 & 96.8 & 94.2 & 94.8 & 94.3 & 94.6 \\
+    HGNN+          & 96.1 & 95.9 & 96.1 & 97.1 & 95.9 & 96.1 & 96.5 & \textbf{97.7} \\
+    \hgann{}       & \textbf{97.8} & \textbf{97.8} & \textbf{97.6} & \textbf{98.3}
+                   & \textbf{96.2} & \textbf{96.2} & \textbf{97.6} & 97.6 \\
+    \midrule
+    Majority class & & & & 63.0 & & & & 84.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{hgann-mal/hgann-mal-f1.pdf}
+  \caption[F1 of the five methods on both corpora and both tasks]{F1 on both corpora and both
+  tasks, as published in Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}. The source labels
+  these values Macro-F1, and Section~\ref{sec:hgann:14} shows that several rows cannot follow one
+  averaging convention. The vertical axis is truncated at 80 so that differences among the
+  hypergraph methods remain visible. HGNNP is the source publication's name for HGNN+.}
+  \label{fig:hgann:f1}
+\end{figure}
+
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-accuracy.pdf}
+  \caption[Accuracy against the majority baseline and the strongest baselines]{Accuracy reported
+  in Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}, divided at the majority baseline, at
+  GraphSAGE and at HGNN+, which the figure labels HGNNP after the source publication. Variability
+  across runs and the isolated contribution of attention are not established by these reported
+  results.}
+  \label{fig:hgann:accuracy}
+\end{sidewaysfigure}
+
+Three readings follow, and they are of unequal strength.
+
+The clearest is the gap between the pairwise and the higher-order representations. On Drebin every
+hypergraph operator sits above every pairwise one, by between 3.5 and 5.5 points of accuracy and
+between 3.9 and 5.7 points of F1, and the ordering holds on CICMalDroid as well.
+Figure~\ref{fig:hgann:accuracy} shows the same step on all four combinations: HGNN+ exceeds the
+best pairwise operator, GraphSAGE in every case, by 3.8 to 6.7 points of accuracy, and in each
+combination this step is larger than the difference between \hgann{} and HGNN+. All four
+baselines were re-implemented on this pipeline and consumed the same call graph and the same node
+features, so the difference belongs to
+the representation rather than to the input. That is the comparison RQ3 asks for first, and it is
+the one the evidence supports best.
+
+The second is the gap between \hgann{} and the two hypergraph operators without attention. On
+Drebin it is 1.2 points of accuracy against the stronger of them, and on CICMalDroid it is not
+there at all: HGNN+ holds the best accuracy at 97.7 against 97.6, while \hgann{} holds the better
+recall at 97.6 against 96.5 and the better F1 at 96.2 against 95.9. A system that leads on three
+columns of four, and trails by one tenth of a point on the fourth, is level with its baseline on
+that corpus rather than ahead of it. The source publication reads the same pattern as a
+precision-recall trade-off, which is one explanation among several; single runs without dispersion
+cannot separate a trade-off from noise, and Section~\ref{sec:hgann:14} returns to that.
+
+The third concerns the base rate, and it is the reason the last row of the table is there. A
+constant predictor scores 63.0 per cent on the Drebin corpus, where benign applications are the
+majority, and 84.5 per cent on CICMalDroid, where they are 15.5 per cent of the samples. Reported
+accuracy stands 35.3 points above the trivial baseline in the first case and 13.1 points above it
+in the second. Neither figure is diminished by this, but the second is much less impressive than
+97.6 per cent sounds, and the source publication reports no such baseline.
+
+\subsection*{Drebin confusion matrix and class balance}
+
+The Drebin binary experiment evaluated \hgann{} on 1,112 malicious and 1,894 benign applications.
+The classifier identified 1,085 malware samples and missed 27. It raised 24 false alarms among
+the benign applications and classified 1,870 as benign. These 51 errors across 3,006 decisions
+give a false-positive rate of 1.3 per cent.
+
+The experiment used a corpus with 37.0 per cent malware, whereas deployments may contain a lower
+share. A separate sensitivity calculation holds recall and the false-positive rate fixed while
+reducing the malware share to 10 per cent. Under this assumption, precision falls from 97.8 to
+about 89.5 per cent because benign applications outnumber malicious applications nine to
+one. This calculation illustrates the effect of class balance under fixed rates, as discussed in
+Section~\ref{sec:background:evaluation}.
+
+\section{Malware-Family Classification on Drebin}
+\label{sec:hgann:11}
+
+The second task assigns a malicious application to the family it belongs to. It runs on the 4,664
+Drebin samples of the twenty largest families, shown in
+Figure~\ref{fig:hgann:class-distribution}(a), and no
+benign application takes part. Results are in the left panel of Table~\ref{tab:hgann:multi}.
+
+\begin{table}
+  \caption{Multiclass classification, in per cent, as published. The Drebin task assigns a
+  malicious application to one of twenty families; the CICMalDroid task assigns an application to
+  one of five categories, of which Benign is one. The two tasks are not comparable with each other.
+  Section~\ref{sec:hgann:14} identifies two rows whose three columns cannot follow one averaging
+  convention.}
+  \label{tab:hgann:multi}
+  \centering
+  \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
+    \toprule
+    & \multicolumn{4}{c}{Drebin, 20 families} & \multicolumn{4}{c}{CICMalDroid, 5 categories} \\
+    \cmidrule(lr){2-5} \cmidrule(lr){6-9}
+    Method & F1 & Prec. & Rec. & Acc. & F1 & Prec. & Rec. & Acc. \\
+    \midrule
+    GCN            & 86.1 & 85.9 & 86.2 & 87.8 & 82.4 & 82.0 & 82.4 & 82.7 \\
+    GraphSAGE      & 86.3 & 86.7 & 86.2 & 88.0 & 82.3 & 82.2 & 82.6 & 83.4 \\
+    \midrule
+    HGNN           & 92.0 & 92.1 & 92.4 & 92.0 & 88.7 & 88.8 & 88.8 & 89.0 \\
+    HGNN+          & 92.3 & 92.5 & 92.5 & 93.3 & 89.3 & 89.5 & 89.8 & 90.1 \\
+    \hgann{}       & \textbf{94.2} & \textbf{94.1} & \textbf{93.8} & \textbf{95.0}
+                   & \textbf{94.0} & \textbf{94.1} & \textbf{94.0} & \textbf{94.2} \\
+    \midrule
+    Majority class & & & & 19.8 & & & & 33.7 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The ordering repeats: pairwise operators lowest, non-attentive hypergraph operators four to five
+and a half points of accuracy above them, and \hgann{} 1.7 points above the better of those. Against
+the trivial baseline the margin is wide here, since the largest family covers 19.8 per cent of the
+samples.
+
+One property of the task deserves more caution than the totals invite. The twenty families range
+from 925 samples down to 41, a ratio above twenty to one. Read as a macro average, which is how
+the source labels it, an F1 of 94.2 per cent would require the smallest families to be classified
+nearly as well as the largest, since every class contributes equally to that average.
+Section~\ref{sec:hgann:14} shows that the printed precision and recall of the same row exclude any
+reading in which the three columns share one convention. The classes are also one vendor's
+labels rather than an agreed taxonomy, as Section~\ref{sec:hgann:9} records, so a disagreement
+between the model and the label is not always an error of the model. The families are further
+related to one another: several of the twenty are known to contain repackaged applications built from shared
+code. Shared code gives the applications of one family similar semantic hyperedges, each built
+inside its own application under Section~\ref{sec:hgann:7}, and it is also the condition under
+which duplication inflates a measured score. Section~\ref{sec:hgann:14} returns to that threat.
+
+\section{Malware-Category Classification on CICMalDroid}
+\label{sec:hgann:12}
+
+The third task assigns an application to one of the five CICMalDroid categories. Benign is one of
+them, so this task subsumes the detection question rather than sitting beside it, and an
+application misclassified between two malicious categories is a different kind of error from one
+misclassified as benign. Results are in the right panel of Table~\ref{tab:hgann:multi}.
+
+The margin over the non-attentive operators is 4.7 points of F1 and 4.1 of accuracy, the widest of
+the four task and corpus combinations reported anywhere in this chapter. The narrowest, on the
+same corpus, is binary detection, where Section~\ref{sec:hgann:10} found no margin at all. The
+ranking of the four combinations does not depend on the measure. Over the strongest baseline, the
+F1 margins in Figure~\ref{fig:hgann:f1} are 4.7 points here, 1.9 and 1.6 on the Drebin family and
+binary tasks and 0.3 on CICMalDroid binary detection, which is also the order of the accuracy
+margins. That pattern is worth stating plainly because it constrains what may be concluded:
+whatever the model
+adds, it adds most where the decision is between several classes and least where it is between
+two. A representation that groups methods by shared behaviour would plausibly help most in exactly
+that setting, since categories such as adware and riskware are separated by what an application
+does with what it collects rather than by whether it collects anything. The observation is offered
+as a reading of the pattern and not as a finding, since one run per configuration cannot support
+more.
+
+\section{Ablation, Efficiency, and Interpretability Analysis}
+\label{sec:hgann:13}
+
+\subsection*{The ablation that was not run}
+
+\hgann{} differs from the hypergraph baselines in two ways at once. It builds a different set of
+hyperedges, fusing a topological, a semantic and a slice-aware family where the baselines take
+$k$-hop and permission-based ones \cite{zhang2023android}, and it weights membership by a learned
+score instead of a fixed indicator. Both changes are present in every number in
+Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}, and no experiment in this chapter varies
+one while holding the other. The measured differences are therefore differences between two
+systems, and they do not establish that attention is what produces them.
+
+Four experiments would settle it, and they are recorded here so that the gap is specified rather
+than merely admitted. First, the baseline operator without attention, run over the identical fused
+hyperedge set, which isolates the aggregation. Second, \hgann{} run over topological hyperedges
+alone, which isolates the vocabulary. Third, a leave-one-out over the three hyperedge families,
+which apportions the vocabulary's contribution among them. Fourth, a sweep over $K$, $k$, $\tau$,
+$c_{\max}$, $L_p$ and the two weight constants, none of which is varied anywhere in the source
+publication. The first two are the ones that bear on RQ3; the second two would tell a reader how
+sensitive the construction is to choices made once and never revisited.
+Equation~\ref{eq:hgann:uniform} adds a condition to the first: uniform coefficients also rescale
+propagation, so that comparison has to fix a normalisation convention before its difference can be
+attributed to attention.
+
+The question is not idle. On pairwise graphs, over node-property benchmarks and against
+non-attentive baselines, no unmodified attentive model has been shown to outperform all of those
+baselines on any dataset or task tested \cite{fang2025kaa}, and the scoring functions of both the
+original and the revised formulations realise only finitely many neighbour rankings at bounded
+width \cite{brody2022gatv2, fang2025kaa}. Neither result was stated for hyperedges, as
+Section~\ref{sec:background:learning:attention} records. The static-ranking argument carries over
+to the score used here, as Equation~\ref{eq:hgann:ranking} shows, while the finite-ranking bound
+has not been examined for hyperedge scores. What the two results establish is that the attribution
+cannot be assumed, and the evidence needed to make it was not gathered.
+
+\subsection*{Efficiency}
+
+The stated procedure admits bounds. Let $n$ be the number of methods, $m$ the number
+of retained hyperedges, $\lvert \mathcal{S} \rvert$ the number of slices and
+$\nu = \operatorname{nnz}(H) = \sum_{e \in \mathcal{E}} \lvert e \rvert$ the number of stored
+memberships. Algorithm~\ref{alg:hgann:construction} proposes at most one topological and one
+semantic candidate per method and one candidate per slice, and post-processing only removes
+candidates. Semantic hyperedges hold at most $k + 1$ methods under the convention of
+Equation~\ref{eq:hgann:sem}, and the others at most $c_{\max}$. Hence
+\begin{equation}
+  m \le 2n + \lvert \mathcal{S} \rvert , \qquad
+  \nu \le (c_{\max} + k + 1)\, n + c_{\max} \lvert \mathcal{S} \rvert
+  = 70\, n + 64\, \lvert \mathcal{S} \rvert ,
+  \label{eq:hgann:sizes}
+\end{equation}
+and the representation grows linearly in the numbers of methods and slices. For one attention head
+with input width $F$ and output width $F'$, a sparse evaluation of Equation~\ref{eq:hgann:attnprop}
+computes the projection, the keys, the scores and the two incidence products in
+\begin{equation}
+  T_{\text{layer}} = O(nFF' + \nu F') , \qquad
+  M_{\text{layer}} = O\bigl(nF + (n + m)F' + \nu + FF'\bigr)
+  \label{eq:hgann:cost}
+\end{equation}
+time and memory, where $m \le \nu / 2$ because every retained hyperedge has at least two members.
+The bound follows the two stages of Equation~\ref{eq:hgann:messages} and never forms
+$P_{\text{att}}$. That matrix can be far denser than $H$, since two methods are coupled whenever
+they share a hyperedge: it can hold up to $\sum_e \lvert e \rvert^2 \le c_{\max} \nu$ non-zero
+entries, and the cap bounds this density. Further heads and layers add their own terms.
+
+Construction costs more. With $\lvert E \rvert$ call edges, breadth-first searches from every
+method build the topological hyperedges in $O(n(n + \lvert E \rvert))$. An exhaustive search within
+one application evaluates the similarity of $O(n^2)$ pairs of 320-dimensional embeddings, and since
+the FAISS index is unspecified, no sub-quadratic bound can be claimed for it. The slice paths need
+one breadth-first search from each member of each slice,
+$O\bigl(\sum_s \lvert F_s \rvert (n + \lvert E \rvert)\bigr)$ in total. The cap is applied after a
+candidate is built, so it does not limit the cost of candidates that are then rejected, and
+centrality computation and the semantic embedding add costs outside these bounds. None of these
+quantities is a measurement. The claim in the source publication that the approach is inexpensive
+because it is static is true of the analysis. For the representation, the bounds above are the only
+evidence, and those for construction are quadratic in the number of methods.
+
+\subsection*{Interpretability}
+
+The slice-aware hyperedges are the part of the construction that could carry an explanation. Each
+one is anchored at a call site of a security-sensitive API and covers the methods a backward slice
+passes through, so an attention weight on such a hyperedge points at a concrete region of code and
+at the API that made it interesting. Reporting the highest-weighted hyperedges for a sample, with
+the call sites they contain, would turn a score into something an analyst can check.
+Equation~\ref{eq:hgann:ranking} makes that report compact: within one layer and head every method
+ranks its hyperedges by the same keys $b_e$, so one ranked list of keys per application summarises
+what the layer attends to.
+
+That was not done. The source publication states interpretability as future work, and no attention
+weight is inspected, visualised or reported anywhere in it. A single retrained model on one corpus would be enough: the weights of
+one application, ranked, with the API call at the anchor of each hyperedge, would turn this
+section from a description of what the design permits into a result about what the model attends
+to. It is named here because it is the cheapest substantial improvement available to the design,
+and because the construction was built in a way that makes it reachable.
+
+\subsection*{One design gap, and it is the cleanest extension available}
+
+Section~\ref{sec:hgann:7} records that every hyperedge is tagged with the family that produced it,
+and that the operator never reads the tag. A hyperedge reaches the layer as a column of $H$ and an
+entry of $W$, so a topological hyperedge and a semantic one over the same methods are the same
+object to the model, and only the slice-aware family is distinguished at all, through a weight it
+happens to carry. The type is available, it is stored, and it is discarded.
+
+Two ways of spending it suggest themselves. The weight matrix could carry a learned scalar per
+family, so that the training decides how much a topological grouping is worth against a semantic
+one, which costs three parameters. Or the attention score of
+Equation~\ref{eq:hgann:attn} could take the type as an input. Entered additively, the type would
+only shift the keys $b_e$, and Equation~\ref{eq:hgann:ranking} shows that every method would still
+rank its hyperedges in one shared order; a weighting that depends on the family and the vertex
+together needs a score that is not additive, such as the revised form of Brody et
+al.\ \cite{brody2022gatv2}. Neither was tried here, and the second is the more
+interesting because it is the version of the mechanism that the confound in
+Section~\ref{sec:hgann:14} leaves unexamined.
+
+\section{Limitations and Threats to Validity}
+\label{sec:hgann:14}
+
+The results above are measurements on two historical corpora under one protocol. This section
+states the limits of what they show and closes with a brief account of threats to validity.
+
+\paragraph{The gain cannot be attributed to attention.} \hgann{} changes the hyperedge vocabulary
+and the aggregation together, and no experiment separates the two (Section~\ref{sec:hgann:13}).
+The evidence supports a claim about the complete system: it performs better than four baselines on
+three of the four task and corpus combinations. Whether learned weighting of hyperedges produces
+that gain is an open question.
+
+\paragraph{Every figure is a single run.} No configuration was repeated, and the tables therefore
+carry no standard deviation, confidence interval or significance test. Small margins are affected
+most. A tenth of a point separates \hgann{} from HGNN+ on CICMalDroid accuracy, and that difference
+cannot be interpreted. Even the 1.2 points on Drebin would need repeated runs before they could be
+called reliable.
+
+\paragraph{The evaluation covers favourable conditions only.} Both splits are random, so training
+and test samples come from the same collection period, and the figures do not describe performance
+on applications released later \cite{pendlebury2019tesseract}. Neither corpus was obfuscated, and
+no adversary was present. Under obfuscation, concept drift and adversarial examples, none of twelve
+representative Android detectors kept the performance it reached in the ideal setting, and one
+call-graph-based detector scored 0.912 of F1 on one year's test set and 0.463 on another's
+\cite{gao2024comprehensive}. Sections~\ref{sec:hgann:10} to~\ref{sec:hgann:12} thus report the
+conditions that a comparison between representations needs. A deployment would meet harder ones.
+
+\paragraph{Some behaviour lies outside the representation.} Code fetched at runtime and targets
+resolved by reflection are absent from the recovered call graph, and so are payloads held in packed
+archives or native libraries (Section~\ref{sec:hgann:3}). A representation built from relations
+among methods loses more from a missing method than one built from a bag of permissions.
+
+\paragraph{The baselines are general operators.} GCN, GraphSAGE, HGNN and HGNN+ were
+re-implemented on this pipeline's own representation. They test whether the higher-order encoding
+and attention help within one design, but they do not place \hgann{} against the Android detectors
+that the field uses as reference points. The hypergraph baseline has since been superseded by a
+stability-oriented successor from the same group \cite{gao2026hgnnv2}, so the comparison reflects
+that line of work as it stood in 2022.
+
+\paragraph{The threat model is non-adaptive.} No adversary in this evaluation knows that the
+detector exists, although published attacks act on the object this pipeline consumes. The first
+structural attack on graph-based Android detection reports over 90 per cent success in feature
+space and up to 100 per cent in problem space against function-call-graph detectors under
+white-box access \cite{zhao2021structural}. FCGHunter rewrites an application with
+semantics-preserving operators and reaches a white-box success rate of 87.9 per cent against forty
+detectors built from graph-summary features \cite{song2026fcghunter}. A4M reports an average of
+85.17 per cent against seven detectors built with MaMaDroid, APIGraph and a graph neural network,
+under a perturbation budget of five per cent \cite{li2025efficient}. None of these attacks was run
+against \hgann{}. Every hyperedge of Section~\ref{sec:hgann:7} is derived from the call graph or
+from quantities computed over it, so methods and edges injected into that graph also change the
+hyperedges. Attention operates downstream of an extraction that the adversary controls. \hgann{}
+therefore inherits the exposure of its representation, and in line with Chapter~\ref{chap:advml}
+this chapter makes no robustness claim.
+
+\paragraph{Threats to validity.} The result tables head their first column Macro-F1 without stating
+a convention. For the \hgann{} Drebin binary row a macro reading is impossible: over 1,112
+malicious and 1,894 benign test applications, macro precision 97.8 and macro recall 97.6 at an
+accuracy that rounds to 98.3 would require at least 1,897 true negatives. That row is read as
+positive-class values. Under positive-class, macro and support-weighted averaging alike,
+$F_1 \le (P + R)/2$, and four rows exceed that mean by more than the 0.1 point that rounding
+allows: GCN and HGNN in the Drebin binary panel, \hgann{} in the \familyclassification{} panel, and
+GCN in the \categoryclassification{} panel. No single convention fits these rows, so the
+multiclass columns are not read as macro averages; accuracy is unaffected. On the data side, the
+benign Drebin applications come from AndroZoo, which began crawling in late 2011, while Drebin
+covers August 2010 to October 2012, so a classifier may separate the two collections by build tools
+or API levels that have nothing to do with malice \cite{arp2022dos, allix2016androzoo}. The source
+publication records that about 49 per cent of Drebin samples are repackaged applications, and none
+was removed. Near-duplicates across the partitions may inflate the family scores of
+Section~\ref{sec:hgann:11} more than the binary ones \cite{zhao2021impact, irolla2018duplication}.
+CICMalDroid, for its part, keeps only applications that ran in its authors' sandbox
+\cite{mahdavifar2020dynamic}, which may remove evasive samples that a static detector most needs
+to catch.
+
+\section{Chapter Summary}
+\label{sec:hgann:15}
+
+This chapter answered RQ3 by lifting a method-level function-call graph to a hypergraph, joining
+its vertices by three rules of different kinds, and learning how strongly each method participates
+in each group rather than fixing that strength when the structure was built. The system was
+measured against two pairwise graph operators and two hypergraph operators without attention, on
+Drebin and on CICMalDroid, for binary detection and for classification into families and into
+categories.
+
+Two findings hold. The higher-order representation is better than the pairwise one on every task
+and corpus reported, by between three and eleven and a half points of accuracy depending on the
+task and on which pair is compared, with the input to both held identical. The attention-weighted system is ahead of the non-attentive hypergraph
+operators on three of four combinations and level on the fourth, and its widest margin appears on
+the multiclass task rather than on detection. The analysis of Section~\ref{sec:hgann:8} sharpens
+what the second finding can mean without adding evidence for it. Attention reweights the
+memberships that the construction fixed, and within one layer it ranks the hyperedges of every
+method in one shared order. A constructed example shows that it can still separate structures that
+the fixed operator identifies, although nothing shows that training exploits this.
+
+One thing does not hold, and the chapter states it rather than working around it. Because the
+hyperedge vocabulary and the weighting were changed together, the improvement over the hypergraph
+baselines cannot be attributed to attention, and the experiment that would separate them was not
+run. Chapter~\ref{chap:discussion} takes the representational question up against
+Chapter~\ref{chap:hybroid}, and Chapter~\ref{chap:conclusion} records the gap as the first item of
+future work.

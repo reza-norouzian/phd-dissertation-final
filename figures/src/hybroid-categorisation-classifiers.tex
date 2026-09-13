@@ -1,0 +1,33 @@
+% Thesis Figure 4.8 --- five-class malware-category classification by learner
+% and observation modality. Values are the five-fold means printed to two
+% decimal places in Figure 9 of Norouzian et al., Hybroid (2021), confirmed
+% against the bar geometry of the published vector figure.
+% The decision-tree recall row reports 0.86 for program code and for the fused
+% representation; those two markers are therefore concentric.
+\documentclass[border=1pt]{standalone}
+\input{tum-dotplot}
+% Categorisation scores run from 0.79 to 0.94, so the axis is set to 0.78-0.96.
+\def\VMIN{0.78}\def\VMAX{0.96}\def\TICKS{0.80,0.84,0.88,0.92}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \panel{0}{F\textsubscript{1}-score}
+  \panel{1}{Recall}
+  \panel{2}{Precision}
+  \rowlabels
+
+  % F1-score                  code  flow  fused
+  \dotrow{0}{\ROWA}{0.87}{0.80}{0.85}
+  \dotrow{0}{\ROWB}{0.91}{0.88}{0.92}
+  \dotrow{0}{\ROWC}{0.91}{0.90}{0.94}
+  % Recall
+  \dotrow{1}{\ROWA}{0.86}{0.82}{0.86}
+  \dotrow{1}{\ROWB}{0.92}{0.90}{0.93}
+  \dotrow{1}{\ROWC}{0.92}{0.91}{0.94}
+  % Precision
+  \dotrow{2}{\ROWA}{0.87}{0.79}{0.85}
+  \dotrow{2}{\ROWB}{0.91}{0.89}{0.93}
+  \dotrow{2}{\ROWC}{0.91}{0.90}{0.94}
+
+  \legendrow{-36}
+\end{tikzpicture}
+\end{document}

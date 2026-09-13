@@ -1,0 +1,100 @@
+% Macros specific to this dissertation. Loaded after cleancampthesis.sty, so the
+% template's own colours (ctcolormain, ctcoloraccessory) are available here.
+%
+% The research-question texts live in this file rather than in a chapter, because
+% Chapter 1 states them and Chapter 8 answers them, and the two copies must not
+% drift apart. Editing the wording here changes both at once.
+
+\usepackage{ifthen}
+\usepackage{tabularx}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% cleancampthesis.sty configures titlesec for \chapter through \subsection but
+% leaves \paragraph without a format, which turns any use of \paragraph into an
+% error. The missing run-in format is supplied here rather than by editing the
+% style file.
+\titleformat{\paragraph}[runin]{\normalfont\bfseries}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{0pt}{0.6em}
+
+% Visible marker for sections that are not yet drafted, so that an intermediate
+% build shows plainly what is missing.
+\newcommand{\todo}{\par\noindent
+  \textcolor{ctcoloraccessory}{\small[This section is not yet drafted.]}\par}
+
+% Hyphenation exceptions. Author surnames that TeX breaks badly in the reference
+% list; each was added after a specific overfull box in the bibliography.
+\hyphenation{Al-neg-hei-mish}
+
+% Long author lists occasionally leave a reference line a few points overfull.
+% Allow the extra stretch inside the bibliography only, so body text is untouched.
+\appto{\bibsetup}{\emergencystretch=2em}
+
+% A measured value the author has not yet supplied (D-018). The argument names the
+% quantity, so the marker doubles as the request. Every occurrence must be gone
+% before Chapter 3 leaves in-progress: grep for \pending before every build.
+\newcommand{\pending}[1]{\textcolor{ctcoloraccessory}{\textbf{[pending: #1]}}}
+
+% ---------------------------------------------------------------- questions --
+
+\newcommand{\rqOneText}{How can behaviour in networked and industrial systems be
+  represented to support anomaly detection?}
+\newcommand{\rqOneOneText}{How can service relationships be represented as
+  communication graphs to identify unexpected interactions?}
+\newcommand{\rqOneTwoText}{How can a modular learning framework analyse network and
+  process features for anomaly detection in industrial control systems?}
+\newcommand{\rqTwoText}{To what extent does fusing static code-graph representations
+  with dynamic network-flow features improve Android malware detection and category
+  classification compared with either modality alone?}
+\newcommand{\rqThreeText}{To what extent do attention-weighted hypergraph
+  representations of static Android program structure improve binary malware
+  detection and malware classification over pairwise graph models and non-attentive
+  hypergraph models?}
+\newcommand{\rqFourText}{How can an explicit adversary model be translated into a
+  reproducible benchmark for adversarial attacks and defences, and what does such a
+  benchmark reveal about the relation between clean predictive performance and
+  adversarial robustness?}
+
+% \researchquestion{tag}{short title}{text}
+% The optional first argument is a label suffix, so that \ref{rq:2} works.
+\newtcolorbox{ctrqbox}[1]{%
+  enhanced, breakable, sharp corners,
+  colback=black!3, colframe=ctcolormain,
+  boxrule=0pt, leftrule=2pt, top=6pt, bottom=6pt, left=8pt, right=8pt,
+  before skip=10pt, after skip=10pt,
+  fonttitle=\bfseries, title=#1, coltitle=ctcolormain,
+  attach title to upper=\par\medskip}
+
+\newcommand{\researchquestion}[4][]{%
+  \ifthenelse{\equal{#1}{}}{}{\phantomsection\label{rq:#1}}%
+  \begin{ctrqbox}{#2: #3}\itshape #4\end{ctrqbox}}
+
+% ------------------------------------------------------------------- gaps --
+
+% The four research gaps are stated once, in Section 2.7. Chapter 1 points at them
+% when the questions are introduced and Chapter 8 closes them by name. Under the
+% decision of 13 August 2026 the wording is NOT duplicated into a macro, because
+% neither chapter reprints it; both refer back. \gapref prints the label and links
+% to the statement, so a gap can never be cited by a number that does not exist.
+\newcommand{\gapref}[1]{\hyperref[gap:#1]{G#1}}
+
+% --------------------------------------------------------------- shorthands --
+
+% System names are written as their source publications write them. Small caps were
+% tried and rejected: \textsc{HGANN-Mal} renders as HGANN-Mal with the trailing
+% "al" in small caps, which misreads as part of the acronym.
+% The size of the retained network-flow feature set in Chapter 4. It is quoted in
+% five places there, so it is fixed once here rather than retyped.
+\newcommand{\netfeatures}{13}
+
+\newcommand{\hybroid}{Hybroid}
+\newcommand{\hgann}{HGANN-Mal}
+\newcommand{\nadics}{NADICS}
+
+% Project names. IUNO is an acronym and is always set in capitals, never as Iuno.
+\newcommand{\iuno}{IUNO}
+
+% Terminology fixed by the structure document. The two multiclass tasks are not the
+% same task and must never be described with one phrase.
+\newcommand{\familyclassification}{malware-family classification}
+\newcommand{\categoryclassification}{malware-category classification}

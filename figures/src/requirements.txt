@@ -1,0 +1,6 @@
+# Dependencies of the matplotlib figures in this directory, installed into
+# figures/src/.venv by build.sh. Minimums rather than exact pins, so the figures
+# still rebuild on a future interpreter. The published figures were produced with
+# matplotlib 3.11.1 and numpy 2.5.3 on CPython 3.12.13.
+matplotlib>=3.8
+numpy>=1.26

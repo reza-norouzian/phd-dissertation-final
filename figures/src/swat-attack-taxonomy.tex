@@ -1,0 +1,37 @@
+% Adapted from figures/swat/SWaT_Attack_Taxonomy.pdf.
+% Source: Goh et al., Section 3 and Table 1: 26/4/2/4 attacks.
+% Stage/point positions are schematic; no ordering of detection difficulty.
+\documentclass[border=1pt]{standalone}
+\input{swat-figure-style}
+\newcommand{\attackpanel}[7]{%
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[panel] (0,0) rectangle (68,37);
+    \node[anchor=west,text=swatblue,font=\bfseries\fontsize{10}{12}\selectfont]
+      at (3,31.5) {#3};
+    \node[anchor=east,smalllabel] at (65,31.5) {#4 attacks};
+    \node[anchor=west] at (3,25) {#5};
+    \foreach \i in {1,...,6} {
+      \pgfmathsetmacro{\xx}{3+(\i-1)*10.5}
+      \draw[draw=black!20,fill=black!3] (\xx,12) rectangle (\xx+9,18);
+      \node[smalllabel] at (\xx+4.5,15) {P\i};
+    }
+    \foreach \i in {#6} {
+      \pgfmathsetmacro{\xx}{3+(\i-1)*10.5}
+      \draw[draw=swatblue,fill=swatblue] (\xx,12) rectangle (\xx+9,18);
+      \node[text=white,font=\bfseries\fontsize{7}{9}\selectfont] at (\xx+4.5,15) {P\i};
+      \fill[swatblue] (\xx+2.5,7) rectangle (\xx+4.5,9);
+      \ifnum#7=2
+        \fill[swatblue] (\xx+5.5,7) rectangle (\xx+7.5,9);
+      \fi
+    }
+  \end{scope}}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \attackpanel{0}{42}{SSSP}{26}{Single stage, single point}{1}{1}
+  \attackpanel{72}{42}{SSMP}{4}{Single stage, multiple points}{1}{2}
+  \attackpanel{0}{0}{MSSP}{2}{Multiple stages, single point}{1,3}{1}
+  \attackpanel{72}{0}{MSMP}{4}{Multiple stages, multiple points}{1,3}{2}
+  \node[smalllabel,anchor=west] at (0,-5)
+    {Blue stage boxes indicate affected stages; small squares indicate attack points.};
+\end{tikzpicture}
+\end{document}

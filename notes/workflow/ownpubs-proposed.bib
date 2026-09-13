@@ -1,0 +1,112 @@
+% ownpubs-proposed.bib
+% Proposed entries for the candidate's own publications. Every field below was read
+% off the document itself or off a publisher/index record; nothing is inferred from
+% what a document of this kind usually contains. Read the flagged points before
+% merging into bib/references.bib.
+%
+% Verification sources used:
+%   [dblp]      https://dblp.org/rec/conf/isw/NorouzianE25.bib  (LNCS volume, editors,
+%               full proceedings title, city, dates, conference edition)
+%   [vor]       the printed copyright footer on page 388 of the Springer version of
+%               record, references/pdf/norouzian2025hgannmal.pdf
+%   [crossref]  https://api.crossref.org/works/10.1007/978-3-032-08124-7_23
+%   [springer]  https://citation-needed.springer.com/v2/references/10.1007/978-3-032-08124-7_23?format=bibtex
+%   [cover]     the cover page and document-information table of each SPARTA PDF
+%   [live]      www.sparta.eu, byte-for-byte identical to the local copies
+
+% ---------------------------------------------------------------- ISC 2025 ---
+% harvest: 12
+% verified: doi
+% [12] src: dblp + Springer version of record; cited-in-paper: n/a (own work).
+%   LNCS volume 16186 confirmed twice: the dblp proceedings record and the
+%   copyright footer printed on the first page of the paper itself, which reads
+%   "S. K. Cha and J. Park (Eds.): ISC 2025, LNCS 16186, pp. 388-408, 2026."
+%   YEAR: Springer prints 2026 (copyright line, Springer's own BibTeX export, and
+%   the dblp proceedings record all say 2026); the conference ran 20-22 October
+%   2025 and Crossref registers online publication on 2025-10-31. The year below
+%   follows the year printed on the paper, which is the same rule the
+%   norouzian2021hybroid entry follows (that paper prints "ISC 2021, LNCS 13118,
+%   pp. 259-278, 2021"). The citekey says 2025 and is left unchanged.
+@inproceedings{norouzian2025hgannmal,
+  author    = {Norouzian, Mohammad Reza and Eckert, Claudia},
+  title     = {{HGANN-Mal}: A Hypergraph Attention Neural Network Approach for {Android} Malware Detection},
+  booktitle = {Information Security: 28th International Conference, {ISC} 2025},
+  volume    = {16186},
+  series    = {Lecture Notes in Computer Science},
+  pages     = {388--408},
+  publisher = {Springer},
+  year      = {2026},
+  doi       = {10.1007/978-3-032-08124-7_23},
+  keywords  = {analysis-static, android, graph-learn, hypergraph, malware}
+}
+
+% ------------------------------------------------------- SPARTA deliverables ---
+% harvest: 12
+% verified: publisher
+% [12] src: the deliverable cover page and document-information table; PDF
+%   re-downloaded from www.sparta.eu and byte-identical to the local copy
+%   (4,449,260 bytes). Cover reference number "SU-ICT-03-830892 / D7.1 / V1.1",
+%   dissemination level PU, revision V1.1, responsible organisation TEC
+%   (Tecnalia), editor Erkuden Rios. YEAR: the due date is July 2020 (M18) but
+%   the cover records the actual submission as 2nd June 2021, so the year of
+%   publication is 2021 and not 2020. The citekey still says 2020; rename to
+%   sparta2021d71 before it is cited anywhere, or accept the mismatch knowingly.
+%   The candidate is listed among the contributors, not as editor.
+@techreport{sparta2020d71,
+  author      = {{SPARTA Consortium}},
+  title       = {{D7.1} {AI} Systems Threat Analysis Mechanisms and Tools},
+  number      = {D7.1},
+  institution = {SPARTA Project, {EU} Horizon 2020 Grant Agreement No. 830892},
+  year        = {2021},
+  month       = {6},
+  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.1-AI-systems-threat-analysis-mechanisms-and-tools-PU-M18_v1.1.pdf},
+  note        = {Editor: Erkuden R{\'i}os (TEC). Contributor: Mohammad Reza Norouzian (TUM). Revision V1.1, dissemination level PU, 95 pages},
+  keywords    = {advml-attack, ctx, ml-general, standard},
+  type        = {Project Deliverable}
+}
+% harvest: 12
+% verified: publisher
+% [12] src: the deliverable cover page and document-information table; PDF
+%   re-downloaded from www.sparta.eu and byte-identical to the local copy
+%   (7,887,891 bytes). Cover reference number "SU-ICT-03-830892 / D7.5 / V1.0",
+%   dissemination level PU, responsible organisation TCS (Thales), editor
+%   Boussad Addad. The local filename
+%   "SPARTA-D7.5-defensive_solutions_AI_contest_concept.pdf" does NOT match the
+%   official title on the cover, which is used below. The contributor list
+%   misspells the candidate's forename as "Mohammed Reza Norouzian"; the correct
+%   spelling is used here. Due July 2021 (M30), actually submitted 13 August 2021.
+@techreport{sparta2021d75,
+  author      = {{SPARTA Consortium}},
+  title       = {{D7.5} Final Version of {AI} Systems Security Mechanisms and Tools},
+  number      = {D7.5},
+  institution = {SPARTA Project, {EU} Horizon 2020 Grant Agreement No. 830892},
+  year        = {2021},
+  month       = {8},
+  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.5-Final-version-of-AI-systems-securtiy-mechanisms-and-tools-PU-M30.pdf},
+  note        = {Editor: Boussad Addad (TCS). Contributor: Mohammad Reza Norouzian (TUM). Revision V1.0, dissemination level PU, 129 pages},
+  keywords    = {advml-attack, advml-defense, advml-eval, ml-general},
+  type        = {Project Deliverable}
+}
+% harvest: 12
+% verified: publisher
+% [12] src: the deliverable cover page and document-information table; PDF
+%   re-downloaded from www.sparta.eu and byte-identical to the local copy
+%   (6,018,620 bytes). Cover reference number "SU-ICT-03-830892 / D7.6 / V1.0",
+%   dissemination level PU, responsible organisation TUM, editor Mohammad Reza
+%   Norouzian. This is the one deliverable of the three that the candidate edited
+%   and for which his institution was responsible. The published filename on
+%   sparta.eu calls it "Final version of evaluation and validation plan", which
+%   contradicts the cover title "Validation and evaluation report"; the cover
+%   title is used below. Due January 2022 (M36), actually submitted 1 February 2022.
+@techreport{sparta2022d76,
+  author      = {{SPARTA Consortium}},
+  title       = {{D7.6} Validation and Evaluation Report},
+  number      = {D7.6},
+  institution = {SPARTA Project, {EU} Horizon 2020 Grant Agreement No. 830892},
+  year        = {2022},
+  month       = {2},
+  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.6-Final-version-of-evaluation-and-validation-plan-PU-M36.pdf},
+  note        = {Editor: Mohammad Reza Norouzian (TUM). Revision V1.0, dissemination level PU, 73 pages},
+  keywords    = {advml-attack, advml-eval, eval-method, ml-general},
+  type        = {Project Deliverable}
+}

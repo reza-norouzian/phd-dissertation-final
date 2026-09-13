@@ -1,0 +1,15 @@
+% Shared typography and palette for the three corrected SWaT context figures.
+% Geometry is in millimetres; 140 mm fits the thesis text block at native scale.
+\usepackage[T1]{fontenc}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}
+\usetikzlibrary{calc,patterns}
+\definecolor{swatblue}{HTML}{0065BD}
+\definecolor{swatlight}{HTML}{98C6EA}
+\definecolor{swatgrey}{HTML}{666666}
+\tikzset{every node/.style={font=\fontsize{8}{10}\selectfont},
+  panel/.style={draw=black!30,fill=white,line width=0.4pt},
+  stage/.style={draw=swatblue,fill=swatblue,text=white,align=center,
+    minimum height=10mm,text width=19mm,inner sep=0.5mm},
+  smalllabel/.style={font=\fontsize{7}{8.5}\selectfont,text=swatgrey}}

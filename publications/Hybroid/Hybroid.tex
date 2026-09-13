@@ -1,0 +1,431 @@
+\documentclass[runningheads]{llncs}
+
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{filecontents}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+\usepackage[english]{babel}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{mathtools}
+\usepackage{multirow}
+\usepackage{subfigure}
+\usepackage[textsize=scriptsize]{todonotes}
+\usepackage{xcolor}
+\usepackage{comment}
+\usepackage{soul}
+\usepackage{wrapfig}
+\usepackage{cite}
+\usepackage{hyperref}
+
+
+\newcommand{\toolname}{\textit{Hybroid}\xspace}
+\newcommand{\netfeatures}{{13}\xspace}
+
+\makeatletter
+\newcommand{\printfnsymbol}[1]{%
+  \textsuperscript{\@fnsymbol{#1}}%
+}
+\makeatother
+
+\begin{document}
+
+\title{Hybroid: Toward Android Malware Detection and Categorization with Program Code and Network Traffic}
+
+\author{
+Mohammad Reza Norouzian\inst{1}\thanks{These authors have contributed equally to this work and share first authorship}\and
+Peng Xu\inst{1}\printfnsymbol{1}\and
+Claudia Eckert\inst{1}\and \\
+Apostolis Zarras\inst{2}
+}
+
+\institute{Technical University of Munich
+\and
+Delft University of Technology
+}
+
+\maketitle
+
+\begin{abstract}
+
+Android malicious applications have become so sophisticated that they can bypass endpoint protection measures. Therefore, it is safe to admit that traditional anti-malware techniques have become cumbersome, thereby raising the need to develop efficient ways to detect Android malware. In this paper, we present \toolname, a hybrid Android malware detection and categorization solution that utilizes program code structures as static behavioral features and network traffic as dynamic behavioral features for detection (binary classification) and categorization (multi-label classification). For static analysis, we introduce a natural-language-processing-inspired technique based on function call graph embeddings and design a graph-neural-network-based approach to convert the whole graph structure of an Android app to a vector. For dynamic analysis, we extract network flow features from the raw network traffic by capturing each application's network flow. Finally, \toolname utilizes the network flow features combined with the graphs' vectors to detect and categorize the malware. Our solution demonstrates 97.0\% accuracy on average for malware detection and 94.0\% accuracy for malware categorization. Also, we report remarkable results in different performance metrics such as F1-score, precision, recall, and AUC.
+	
+\end{abstract}
+
+\setcounter{footnote}{0}
+
+
+\section{Introduction}
+
+Android has become the most popular mobile operating system worldwide. Unfortunately, it has become a primary target platform for attackers using Android to launch millions of malicious applications due to its prominence. Attackers dupe victims to reveal their sensitive information or perform malicious operations, such as spying on users, propagating spam, or launching unwanted advertisements. Simultaneously, investigation of Android malware, which includes malware detection and categorization, has become crucial for security researchers and experts in both academia and industry. As a result, numerous research studies have attempted to detect and categorize Android malware~\cite{canfora2015effectiveness,gascon2013structural,zulkifli2018android,mclaughlin2017deep,onwuzurike2019mamadroid,xu2021hawkeye,xu2020manis,xu2021falcon}.
+
+Numerous approaches leverage the contextual information of Android applications, yet nearly none of them can monitor malware behaviors if we use contextual information statically. For example, Li et al.~\cite{li2019android} presented a classifier using the Factorization Machine architecture, which extracts various Android application features from manifest files (e.g., permissions and intents) and source code (API calls). Similarly, Chen et al.~\cite{chen2018android} proposed an approach that detects Android malware with Android application's static features, such as permissions, components, and sensitive API calls. Although these methods add an extra security level to the Android platform, they come with their limitations, particularly for those obfuscated applications when executed~\cite{comparetti2010identifying}. This problem can be mitigated by introducing dynamic analysis, which monitors malware actions and analyzes the captured behavior when running in a sandboxed environment.
+
+In essence, similar to static analysis, there are two types of dynamic analysis target Android applications. The first focuses on system-level behavior, extracting features from API usage or system calls, whereas the latter extracts features from network-level actions (i.e., data received or sent over the network). Analyzing system-level malware behavior is expensive and slows down the processing speed. In contrast, analyzing network-level activities is scalable and more cost-efficient, while it often exposes the core behavior of malware when trying to communicate with the attacker. Specifically, it can reveal the exfiltrated information and the commands sent or received by the malware. From a network perspective, monitoring and analyzing a system that extracts behavioral information from the user causes less overhead on the end hosts. To detect legitimate and malicious behavior, several approaches utilize the network traffic pattern of Android applications~\cite{malik2016credroid,arora2014malware,zulkifli2018android,marin2020deepmal,wang2017malware}. Most of them concentrate on the manual indicated features and build rule-based classifiers for detecting Android malware. Sadly, sophisticated attacks can easily evade network-rule-based methods since rule-based analysis relies on distinguishing expected versus anomalous behavior; these methods may suffer when malware is modified to hide its footprints or behavior. However, one of the main challenges of analyzing network-level activities is related to their offline inspection behavior.
+
+In this paper, we present \toolname, a hybrid framework for Android malware detection and categorization based on static and dynamic features to overcome the drawbacks mentioned above. From the users' point of view, \toolname does not change anything of the Android application itself. We take the program code inside apps as input for static analysis and present a \textit{Natural Language Processing (NLP)} inspired method based on the function call graph, which detects obfuscated applications. In brief, we first design the \texttt{opcode2vec}, \texttt{function2vec}, and \texttt{graph2vec} components to represent instructions, functions, and the entire program's information with vectors. Next, we take network traffic as input and extract \netfeatures features for dynamic analysis. Finally, we combine static and dynamic analysis features and feed them into the machine learning and deep learning networks for training and prediction. Our results show that \toolname outperforms most existing frameworks, as we get 97.0\% accuracy for malware detection and 94.0\% accuracy for malware categorization on average.
+
+\medskip \noindent In summary, we make the following primary contributions:
+
+\begin{itemize}
+\item We present and open source \toolname,\footnote{https://github.com/PegX/Hybroid} a hybrid framework for Android malware detection and categorization based on static and dynamic features.
+\item We design and implement automatic extraction of flow-based features from the Android raw network traffic as a dynamic feature.
+\item We leverage NLP and convert machine codes, functions, and programs to opcode2vec, function2vec, and graph2vec by embedding methods.
+\item We evaluate the accuracy of our approach using a real-world dataset and show that \toolname outperforms nearly all state-of-the-art solutions.
+\end{itemize}
+
+
+\section{System Design}
+
+In this section, we describe the architecture of \toolname (see Figure~\ref{fig:system_overview}), which comprises static and dynamic features. We extract static features by studying the \textit{Control Flow Graph (CFG)} of the Android bytecode and the dynamic features by investigating the network flow data. Next, we combine these two groups of features as input vectors to train a machine learning model. Essentially, our approach is divided into three main parts: static features preparation (features from program code), dynamic features preparation (features from network traffic), and machine learning classification.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.91\linewidth]{figures/system_overview.pdf}
+\caption{\toolname architecture}
+\label{fig:system_overview}
+\end{figure}
+
+
+\subsection{Static Features Preparation}
+
+Before getting into our methodology's details, we have to extract the opcode, basic block, and CFG from the Android APKs (Android application package). We extract the CFG by utilizing the Androguard framework (APK static analyzer) and iterate each function in the program to get the basic block for each function (method).\footnote{\url{https://github.com/androguard}} Furthermore, we analyze each instruction and take opcode as our basic term.  After obtaining the opcode, basic block, and CFG, our primary approach is presented as follows. For the packing and obfuscated apps, similar to Xu et al. work~\cite{xu2021detecting}, Androguard can also help our~\toolname to extract CFG and opcode from the apps, and we can also construct our graph structure.
+
+Figure~\ref{fig:graph2vec} depicts an overview of the steps involved in extracting features from the code graph structure. The entire process includes three main steps: $(i)$~opcode embedding that converts the machine instructions into vectors, $(ii)$~basic block embedding that transforms a basic block of the program into a vector (basic blocking embedding is done with Tagged CFG, which is used to combine multi-opcode to a vector), and $(iii)$~graph embedding that modifies the whole function call graph into a vector. Finally, during the conversion of the opcode, basic block, and function call graph into vectors, we utilize representation learning techniques to learn the essential model parameters for getting the final 64-bit vector.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/graph2vector_v3.pdf}
+\caption{Converting program code to vector}
+\label{fig:graph2vec}
+\end{figure}
+
+
+\medskip \noindent \textbf{Representation Learning.}
+To generate the node attribute in the CFG, we leverage representation learning. Representation learning~\cite{bengio2013representation}, which can learn features from raw data automatically, has increasingly attracted researchers' and engineers' focus. Compared to those manually indicated attributed control flow graph (ACFG) methods, like Xu et al.~\cite{xu2017neural}, Adagio~\cite{gascon2013structural}, and Yan et al.~\cite{yan2019classifying}, \toolname can extract ACFG automatically without preparing manual features and avoiding the challenge of manual indicated methods (how to pick up the useful features is a challenge) because of the representation learning. Additionally, \toolname borrows ideas from Natural Language Processing to assist the feature engineering. It uses the word2vec to convert instructions to vectors and automatically learns the vector from the basic block's raw instruction.
+
+In brief, \toolname static analysis part introduces representation learning as the fundamental technique to represent code and use the control flow graph as fundamental to organize the program. Additionally, it utilizes NLP to convert the byte sequences (instruction and basic block) to vectors, used to replace the manually indicated features~\cite{gascon2013structural, yan2019classifying}. \toolname then feeds those generated vectors into a learning-based classifier to extract static features. In other words, \toolname uses the transform learning technique to use the previously trained instruction2vec model to convert the byte sequences to vectors.
+
+
+\medskip \noindent \textbf{Opcode Embedding.}
+To simplify the procedure, we replace instruction (opcode and operands) embedding with opcode embedding. The reason for this replacement is the following. First, the opcode represents Dalvik's instruction behaviors, whereas the operands represent the parameters. Dalvik's operands are virtual registers in a virtual machine. Those values are significantly affected by the underlying usage of Dalvik VM or ART VM. Thus, it is not possible to enumerate them all. Additionally, if various malware samples in the same family use the same malicious pattern, the opcode itself can capture these behaviors.
+
+In theory, our opcode embedding method may suffer from the \textit{operand removal} problem~\cite{haq2019survey}. A significant issue with operand removal is that all the \textit{Invoke-Virtual} instructions have the same embedding vector, no matter what are the targets of the \textit{Invoke-Virtual} instructions.\footnote{All the calling instructions such as \textit{invoke-super}, \textit{invoke-direct},\textit{ invoke-static}, and \textit{invoke-interface} suffer from the same problem.} For the opcode embedding method, or \texttt{opcode2vec}, we map each opcode op$_i$ $\in$ OP (where OP stands for the whole Dalvik opcodes) to a vector of the real number, using the \texttt{word2vec} model with the skip-gram method~\cite{mikolov2013distributed}. \texttt{word2vec} is an excellent feature learning technique, which is based on continuous bag-of-word and skip-gram techniques. The skip-gram learning technique uses the current opcode to predict the surrounding opcodes. We train our \texttt{opcode2vec} model with a large corpus of opcodes extracted from real applications.
+
+
+\medskip \noindent \textbf{Basic Block Embedding.}
+In this work, we treat the basic block embedding in the control flow graph similarly to the sentence embedding in the natural language processing. Overall, we introduce our method for performing the basic block(nodes in control flow graph) embedding, which are described as follows. We utilize the weighted mean of a non-empty finite multi-set of instruction's opcode to calculate the basic block embedding. Assuming the function $f$ includes n-opcode and a $l$-dimensional vector represents each opcode, the weight of the corresponding non-negative weights ${w_1,w_2,\dots,w_n}$ are given as: $\tilde{\vec{f}} = \frac{\sum_{i=1}^{n}{w_i x_i}}{\sum_{i=1}^{n}w_i}$, where $x_i$ represents the $l$-dimensional opcode embedding and $w_i$ stands for the weighted of each opcode.
+
+
+\medskip \noindent \textbf{Graph Embedding.}
+After deriving the basic block embedding, we take the generated basic block embedding as the node embedding of the control flow graph. In other words, we perform graph embedding on a control flow graph level. The module's ultimate purpose is to convert the graph representation into a vector and then feed it as input for the neural network-based classifier.
+We take structure2vec~\cite{dai2016discriminative} graph embedding method to convert one graph to a vector.
+
+We utilize the Equations (\ref{equ_6}), (\ref{equ_7}), and (\ref{equ_8}) to convert a control flow graph to a graph-vector, which stands for the whole Android application. In our work, our graph-based control flow graph embedding includes two components. The first one is the control flow graph extraction, and the other is the graph embedding for each control flow graph, which is adapted from the structure2vec.
+
+The graph vectors (nodes) are basic blocks for graph embedding, and the edges are connections among those basic blocks in the CFG. Each vector (node) contains a set of opcodes inside it. The basic block embedding constructs each node's feature. Finally, a $p$-dimensional vector $\mu_i$ is associated with each vertex $v_i$. We use adapted \texttt{structure2vec} to dynamically update the $p$-dimensional vector $\mu_i^{t+1}$ during the training of the network. The updating process is executed as follows:
+%
+\begin{equation}
+\begin{aligned}
+\mu_v^{(t+1)} = F(x_v, \sum_{u \in N_{v} }\mu_u^{(t)}), \forall v \in V. 
+\end{aligned}
+\label{equ_6}
+\end{equation}
+
+We randomly initialize the $\mu_v^{(0)}$ at each vertex. In practice, we design the function $F$ as follows:
+%
+\begin{equation}
+F(x_v, \sum_{u \in N_{v} }\mu_u^{(t)})=tanh(W_1x_v+\sigma(\sum_{u \in N(v)} \mu_u))
+\label{equ_7}
+\end{equation}
+
+For an effective nonlinear transformation $\sigma(.)$, we define $\sigma(.)$ itself as an n layer fully-connected neural network and the $W_1$ is trainable parameter.
+%
+\begin{equation}
+\sigma(l) = P_1 * ReLU(P_2 * \dots ReLU(P_nl))
+\label{equ_8}
+\end{equation} 
+
+\begin{algorithm}[t]
+	\DontPrintSemicolon % Some LaTeX compilers require you to use 
+	\KwIn{Instruction embedding ${v_i : i\in I}$, control flow graph insider of a function $g_f$, parameter $\alpha$}
+	\KwOut{Graph embedding ${v_f : f \in F}$}
+	Initialize $\mu_v^{0} = \vec{Rand}, for all v \in V$
+	
+	\For{t=1 to T}{
+		\For{$v \in V$}{
+			$l_v = \sum_{u \in N(v)} \mu_u^{(t-1)}$
+			
+			$\mu_v^{(t)} = tanh(W_1x_v + \sigma(l_v))$
+		}
+	}
+	$v_f$ = $W_2(\sum_{v \in V} \mu_v^{T})/len(V))$
+	
+	\Return{$v_f$}
+	\caption{Graph embedding}
+	\label{algo:ge}
+\end{algorithm}
+
+The overall CFG-based embedding algorithm is illustrated in Algorithm~\ref{algo:ge}. The graph embedding generates the vector embedding after all iterations, and we use the average aggregation function as our last step to transform the vector embedding to the graph-based function embedding.
+	
+After deriving our graph embedding for the function call graph, we design a two-layer MLP (multilayer perceptron) network as our representation learning network to learn parameters used to convert the program code into vectors. In our network, malware detection is a binary classification issue. We label malware samples as \texttt{1} and benign samples as \texttt{-1} at training. During testing, we treat all predictions less than zero as benign and the rest as malicious.
+
+\begin{equation}
+\label{eq:detection}
+v_{f(G_h)} = \alpha*((<g_i,w_{i1}> + b_{i1}),w_{i2} + b_{i2})
+\end{equation}
+%
+where the $w_{i1}, w_{i2}\in R^p$ is the weight of the two-layer MLP network and the $b_{i1}, b_{i2}\in R^p$ is the offset from the origin of the vector space. In this setting, a function call graph $G_h$ is classified as malicious if $f(G_h) > 0$ and benign if $f(G_h) < 0$. The vector $v_{f(G_h)}$ that corresponds to $f(G_h)$ is collected as the final representation of the program code. By using the above-stated methods, we finally get a 64-bit vector representing the whole program code and present the static features of program code.
+
+Last but not least, we should mention the transductive and inductive embedding. Our work relies on word2vec to convert instructions to vectors. This requires relying on a large and representative dataset
+to train the embedding: word2vec is a transductive approach and requires access to the entire alphabet. As our method focuses on instruction mnemonics, our transductive approach of word2vec did not influence the final results since graph embedding (convert the control flow graph to vectors) is an inductive approach in which graphs of the testing dataset are unknown at training time. 
+
+
+\subsection{Dynamic Features Preparation}
+
+Figure~\ref{fig:dynamic_analysis} illustrates an overview of dynamic analysis (i.e., extracting features from network traffic). The whole process involves three main steps. The first step is the network flow generation that involves converting raw network traffic into network flow events. Alternatively, we could use deep packet inspection to extract network traffic features to understand the malware behavior better. However, this tactic cannot be applied to most real-world scenarios due to privacy concerns. In contrast, high-level flow features do not necessarily render a correct picture of malware behavior. To address this gap, we leverage static analysis, combining it with dynamic network analysis. In the second step, we normalize the flow features extracted from Argus,\footnote{\url{https://openargus.org/}} and in the last step, we use feature selection mechanisms to reduce and finalize our dynamic feature set.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.92\linewidth]{figures/hybroid_dynamic_analysis.pdf}
+\caption{Dynamic analysis overview}
+\label{fig:dynamic_analysis}
+\end{figure}
+
+\medskip \noindent \textbf{Network Flow Generation.}
+The raw data (PCAP files) captured from each application network traffic is fed into a packet parser to analyze network behaviors. Our proposed solution uses the Argus network traffic analyzer to handle the first phase of our dynamic analysis. Argus is an open-source tool that generates bidirectional network flow data with detailed statistics for each flow. Argus defines a flow by a sequence of packets with same values for five tuples that are $Source$ $IP$, $Source$ $Port$, $Destination$ $IP$, $Destination$ $Port$, and $Protocol$.
+
+However, the output values of Argus features' are almost numeric, except for two categorical values: direction and flag states. To map them into discrete values, we use the one-hot encoding that encodes categorical features as a one-hot numeric array for our feature generation. The output of Argus involves numerous flow events with around 40 feature sets related to each flow.
+
+Since there are at least more than one flow events for each PCAP file, the next step is to map each bunch of flow events into one data sample. To handle this step, we aggregate the values of network flow features by calculating the mean values, appending them to a single record. These steps mentioned above perform as a preprocessing phase, which converts the raw network data into numeric values that create a dataset ready to train any machine learning model.
+
+
+\medskip \noindent \textbf{Normalization.}
+The extracted features must be normalized before being given to the classification algorithms since their values vary significantly. For example, if we chose Euclidean distance as a distance measure for classification, normalization guarantees that every feature contributes proportionally to the final distance. To achieve normalization, we use min-max scaling as shown below:
+%
+\begin{equation}
+\label{eq:normalization}
+x^1 = (x - min(x))/(max(x) - min(x))
+\end{equation}
+%
+where $min(x)$ and $max(x)$ represent range values. This method returns feature values within the range [0,1]. An alternative method would be using standard scaling by subtracting the mean values of the features and then scaling them to unit variance. However, this method would mitigate the differences in the values, making the detection harder (we examined this experimentally).
+
+
+\medskip \noindent \textbf{Feature Selection.}
+Selecting features is critical, as it affects the performance of the model. There exist two main reasons to reduce the number of features:
+
+\begin{enumerate}
+\item \textit{Complexity Reduction:} When the number of features increases, most machine learning algorithms require more computing resources and time for execution. Thus, reducing the number of features is essential for saving time and resources.
+
+\item \textit{Noise Reduction:} Extra features do not always help to improve the algorithm performance. In contrast, they may produce severe problems related to model overfitting. Therefore, selecting a set of useful features reduces the possibility of model overfitting.
+\end{enumerate}
+
+\begin{table}[t]
+\caption{List of network flow features}
+\label{tab:net_features}
+\centering
+\begin{tabular}{ll}
+\toprule
+\bfseries Notation &  \bfseries Traffic Features\\
+\midrule
+Mean &  \textit{Average duration of aggregated records}\\
+sTos &  \textit{Source TOS byte value}\\
+dTos &  \textit{Destination TOS byte value}\\
+sTtl &  \textit{Source to destination TTL value}\\
+dTtl &  \textit{Destination to source TTL value}\\
+TotBytes &  \textit{Total transaction bytes}\\
+SrcBytes &  \textit{Source to destination transaction bytes}\\
+DstWin &  \textit{Destination TCP window advertisement}\\
+SrcTCPBase &  \textit{Source TCP base sequence number}\\
+DstTCPBase &  \textit{Destination TCP base sequence number}\\
+Flgs\_er &  \textit{State flag for Src loss/retransmissions}\\
+Flgs\_es &  \textit{State flag for Dst packets out of order}\\
+Dir &  \textit{Direction of transaction}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Before the training and testing phase, we implemented various feature selection algorithms to find the best set of final features for our analysis. We used three feature selection algorithms: Pearson Correlation, Extra Trees Classifier (extremely randomized trees), and a Univariate feature selection (select features according to the highest k scores). At the end of the process, we selected \netfeatures network flow features for our final dynamic analysis feature engineering. These selected features describe the general behavior of the network activity for each data sample and can be found in Table~\ref{tab:net_features}.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/correlation_matrix.pdf}
+\caption{Dynamic network flow feature correlation scores}
+\label{fig:corr_net_features}
+\end{figure}
+
+However, we perform an extra analysis to explore the quality of selected features that are highly related to the target labels. We assume that any two features are independent without being redundant. To investigate the redundancy score, we use Kendall’s correlation method (Figure~\ref{fig:corr_net_features}). Notice that any two independent features are interpreted as redundant if the correlation score is extremely high, whereas a high correlation between dependent features is desired.
+
+\medskip \noindent \textbf{Observation of Malware Network Communications.}
+We check the type of communication to spot if the applications use secure communication channels or transmit the data on unencrypted flows. We can make observations about the entire encrypted data flows instead of just the handshake or individual packets. This is done by extracting the features of each data record by flow-level instead of packet-level approach. As we can see in Table~\ref{tab:mal_comm}, a relatively small number of applications are using encryption for communication. When we compared malicious to benign applications traffic, we found out that the communications that initially start with more upload than download traffic are more likely to be malicious. The reason is that when malware connects to a control server, it often identifies itself with a client certificate, which is rarely seen during normal TLS usage. Another aspect we notice is that after the initial connection to the control server has been established, the channel is often kept open but idle, with only regular keep-alive packets being sent.
+
+\begin{table}[t]
+\caption{Type of malware category communication networks }
+\label{tab:mal_comm}
+\centering
+\begin{tabular}{lcc}
+\toprule
+\bfseries Category &  \bfseries HTTP Flow &  \bfseries TLS Flow\\
+\midrule
+Adware & 52.00\% & 8.00\%\\
+Ransomware & 29.22\% & 0.00\%\\
+Scareware & 61.38\% & 10.89\%\\
+SMSmalware & 52.20\% & 10.28\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+When comparing these two aspects with what ordinary TLS traffic created in an HTTPS session in a browser looks like, one can easily see a very different behavior: when requesting a website, the initial upload usually consists only of a GET request (little upload), with a large response in the form of web page content being sent from the server (large download). However, \toolname results (see Section~\ref{sec:perform_class}) of malware detection and categorization show that analyzing flow metadata would be effective on encrypted flows too.
+
+
+\subsection{Machine Learning Classification}
+
+The classification aims to detect and categorize the APK samples, whether the source APK is a benign application or a specific type of malware. In the beginning, we tested various supervised learning algorithms (support vector machines, naive Bayes, decision tree, random forests, and gradient boosting) to assess classifier performance. The differences of using various learning algorithms confirm our methodology that the selected static and dynamic features help to identify the distinction between benign and malicious APKs. Test results revealed that SVM and naive Bayes demonstrated the worst performance and were thus excluded from the tests.
+
+For model validation, we used the cross-validation technique to test whether the model can predict new samples that were not used in previous estimations. The intention for cross-validation is to reduce the chance of overfitting or selection bias and improve the model's generalization to an independent dataset.
+
+
+\section{Evaluation}
+
+We use different types of machine learning metrics to test and evaluate \toolname. To do so, we leverage a dataset that contains the original APK files and the mobile network traffic data generated by the applications. Next, we seek to identify the best detection classifier, and based on classifier performance, we try to use different parameter engineering. We compare our solution with other machine learning state-of-the-art related works, such as static and dynamic analyses based detection. The extracted results prove the advantages of our proposed solution, which combines the static and dynamic analysis of Android malware into a unified classification procedure.
+
+
+\subsection{Experimental Setup}
+
+We implemented the proposed methods using Python, Scikit-Learn, Tensorflow, and Keras. We set up our experiments on our Euklid server with 32 Core Processor, 128 GB RAM, and 16 GB GPU. Besides, we used 5-fold cross-validation. To obtain a reliable performance, we averaged the results of the cross-validation tests, executed each time with a new random dataset shuffle.
+
+
+\subsection{Evaluation Metrics}
+\label{sec:eval_metrics}
+
+Due to the imbalanced nature of the dataset (see Section~\ref{sec:Dataset}), accuracy may not be the only reliable indicator of classifier performance. Thus, the performance of detection and categorization will be evaluated with metrics such as precision, recall, and F-measure (F1-score). In general, the accuracy metric is used when true negatives and true positives are crucial; the F1-score is used when false positives and false negatives are more important. When the class distribution is nearly equal, accuracy can be used, whereas the F1-score is a better metric when we have imbalanced classes. However, in most real-life classification problems, the datasets are imbalanced, and therefore, the F1-score is a better metric to evaluate the model. However, since other related studies report accuracy as their primary evaluation metric, we also compare and consider accuracy as a comparison metric. Another metric to evaluate our work is to consider the receiver operating characteristic (ROC) curve, which presents the true positive rate (TPR) against the false positive rate (FPR).
+
+
+\subsection{Dataset}
+\label{sec:Dataset}
+
+For the dataset, we use the public CICAndMal2017~\cite{lashkari2018toward}. The benign applications were collected from the Google play market published in 2015, 2016, and 2017. On the other hand, the malicious ones were collected from various sources such as VirusTotal\footnote{\url{https://virustotal.com}} and Contagio security blog\footnote{\url{http://contagiominidump.blogspot.com}}. The dataset includes 426 malware and 1,700 benign samples with their corresponding network traffic raw data, which are delicately captured from physical smartphone devices while running the applications.
+
+In the networking part, the phones' behavior was generated by scripts, which imitated normal phone usage like phone calls and utilized SMS along with GPS spoofing and web browsing. Every phone was also connected to a Gmail, Facebook, Skype, and WhatsApp account. The normal behavior of phones was captured in PCAP files that served as the entry point in our work. After infecting every phone with malware from the malware pool provided with the dataset in the form of APK files, the resulting network communication was collected. Table~\ref{tab:dataset_number} provides a short description of the CICAndMal2017 dataset.
+
+\begin{table}[t]
+\caption{Dataset descriptions}
+\label{tab:dataset_number}
+\centering
+\begin{tabular}{lcllc}
+\toprule
+\textbf{Name} & \textbf{Number} && \textbf{Description} & \textbf{Distribution(\%)} \\
+\midrule
+APK files & 2,126 && All program code files & 100\%\\
+PCAP files & 2,126 && All the raw network traffic files & 100\%\\
+\midrule
+Benign APKs & 1,700 && No. of benign APK & 80\%\\
+Adware APKs & 124 &&  No. of  Adware category APK & 5.9\%\\
+Ransomware APKs & 112 && No. of Ransomware category APK & 5.2\%\\
+Scareware APKs & 109 && No. of Scareware category APK & 5.2\%\\ 
+SMSmalware APKs & 101 && No. of SMSmalware category APK & 4.7\%\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Power Law and Opcode Embedding}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=.8\linewidth]{figures/opcodefrequency_dalvik.pdf}
+\caption{Power-law distribution for Dalivk opcodes}
+\label{fig:powerlaw}
+\end{figure}
+
+Before moving to our evaluation tasks, we use the distribution of our opcode to prove the reasonability of using natural processing language techniques in our works. In order to get the reasonable opcode2vec module, we pre-train the opcode2vec by the AndroZoo dataset. We extract all opcodes by the Androguard tool and obtain 18,240,542 opcodes in total. Then, we take those opcodes as our word corpus to train the opcode2vec model. Figure~\ref{fig:powerlaw} presents the opcode distribution for the above datasets. More specifically, it shows Dalvik's opcode distribution, which has 216 opcodes, and the top-20 opcodes are presented. They all follow the power-law distribution, which makes borrowing word embedding techniques from natural language processing to do opcode embedding reasonable.
+
+
+\subsection{Performance of Classifiers}
+\label{sec:perform_class}
+
+In this section, the evaluation of the Android malware detection and categorization algorithms is presented in detail. For the malware detection experiments, we compare \toolname with other related solutions. Figure~\ref{fig:compare_diff_methods} shows the difference between our solution and the other malware detection schemes. \toolname demonstrates an accuracy of 97.0\% (Figure~\ref{fig:compare_diff_methods}-a), while CIC2017~\cite{lashkari2018toward}, DREBIN~\cite{arp2014drebin}, SVM~\cite{dai2015svm}, and Adagio~\cite{gascon2013structural} demonstrate accuracy of 87.6\%, 95.4\%, 93.9\%, and 89.3\%, respectively. Other metrics, such as F1-score, precision, and recall, are also presented in Figures~\ref{fig:compare_diff_methods}-b,~\ref{fig:compare_diff_methods}-c,~and~\ref{fig:compare_diff_methods}-d.
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/performance/compare.pdf}
+\caption{Malware detection overall performance of different related works}
+\label{fig:compare_diff_methods}
+\end{figure}
+
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.65\linewidth]{figures/roc/roc_compare.pdf}
+\caption{Malware detection ROC curve of different related works}
+\label{fig:roc_mal_detection}
+\end{figure}
+
+In addition, Figure~\ref{fig:roc_mal_detection} shows the ROC curve of our solution and the other compared algorithms, while TPR is plotted against the FPR for the various thresholds of the detection methods. As the ROC curve shows, \toolname demonstrates the best performance (represented by the purple line), which means that the combination of static and dynamic features boosts the classifier performance. Besides, we can observe, \toolname presents the best area under the ROC curve (AUC), which is 99.6\%, while the Adagio method shows the worst AUC of 86.7\%. The Figure~\ref{fig:roc_mal_detection} also presents AUCs of the other compared solution classifiers.
+
+To evaluate our work independently, we tested three various classifiers (decision tree, random forest, and gradient boosting) with static, dynamic, and combined features. We tested these three classifiers to identify differences in the performance of final classifiers. The obtained results confirmed that the combination of static and dynamic features yields the best performance. Moreover, we saw that the decision tree classifier demonstrates the lowest accuracy, precision, and recall compared to the other algorithms. Decision tree is also prone to overfitting. Random forest presented higher accuracy, precision, and recall as a more robust model than decision tree, limiting overfitting without substantially increasing error. On the other hand, compared with random forest, gradient boosting demonstrates the best metric results in our framework, implying that it is the most effective supervised learning algorithm for our experiment.
+
+Gradient boosting is similar to random forest with a set of decision trees but with a main difference. It combines the results of week learners along the way, unlike random forest combines the results by majority rules or averaging at the end of the process. This accounts for the difference in the results.
+
+Figure~\ref{fig:performace_det_alg} shows the performance for the malware detection task. In the F1-score of various classifiers, we witness that combined features with gradient boosting achieve the best F1-score, which is 97\%. Meanwhile, we only get 93\% with static features from the program code and 95\% with dynamic features from network flow. On the other hand, among the three classifiers with combined features, the gradient boosting classifier yields the best precision result, which is 97\%. Meanwhile, random forest and decision tree demonstrate a precision of 96\% and 91\%, respectively.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/performance/detection.pdf}
+\caption{Malware detection performance of the different classification algorithms}
+\label{fig:performace_det_alg}
+\end{figure}
+
+Subsequent to the malware detection, we also evaluated \toolname with the malware categorization, which is a multi-label classification task. We see from Figure~\ref{fig:performace_cat_alg} that the gradient boosting classifier receives the best results with combined features, namely 94\% precision, 94\% recall, and 94\% F1-score. With the random forests classifier, our \toolname also demonstrates significant results with a 92\% F1-score. Figure~\ref{fig:performace_cat_alg} (a, b, c) depicts the evaluation results with F1-score, recall, and precision in detail.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/performance/categorization.pdf}
+\caption{Malware categorization performance of the different classification algorithms}
+\label{fig:performace_cat_alg}
+\end{figure}
+
+Also, Figure~\ref{fig:roc_categorization} illustrates the ROC curves for the malware categorization task. Different curves show the different values of AUC. As it is shown, \toolname demonstrates 97.6\% macro accuracy on average for malware categorization, and categorization of the benign class receives the best performance AUC for 99.5\%. For SMSware, we obtained the worst AUC, i.e., 94.6\%. One potential reason for this issue could be the small number of SMSware in the dataset (only 4.7\% samples are SMSware).
+
+\begin{figure}
+\centering
+\includegraphics[width=0.65\linewidth]{figures/roc/roc_categorization.pdf}
+\caption{Malware categorization ROC curve of gradient boosting}
+\label{fig:roc_categorization}
+\end{figure}
+
+\section{Limitation and Future Work}
+
+Although we combined static and dynamic analysis to improve the performance of \toolname, some issues need to be addressed in the future. The biggest challenge is the lack of labeled data for CICAndMal2017 by Lashkari et al.~\cite{lashkari2018toward}. They include only 426 malware and 1,700 benign APKs and their corresponding network traffic raw files. The main challenge is not having an alternative good-quality public dataset that covers the network traffic captured on real Android devices. For the malware detection, especially for the static feature-based work, the dataset with 2,126 samples is too small. However, for the networking dynamic feature-based work, 2,126 is a classic number. Actually, most networking dynamic analysis studies evaluate their frameworks with similar numbers, such as Jeon et al.~\cite{jeon2020dynamic} evaluate on 1,401 samples (1,000 malware and 401 benign) or Onwuzurike et al.\cite{onwuzurike2018family} take 2,336 benign and 1,892 malware samples. Despite the static analysis work that needs more data samples, the number for networking dynamic analysis is normal. To address the lack of enough labeled data in the static analysis, we also separately trained and tested our static graph-based model with 45,592 malware and 90,313 benign samples following  TESSERACT~\cite{pendlebury2019tesseract} policies (we split 80\% of the whole dataset for training and the other 20\% for testing). These data samples are captured from the AndroZoo\footnote{\url{https://androzoo.uni.lu}}, VirusShare\footnote{\url{https://virusshare.com}}, VirusTotal and we achieved the accuracy and F1-score of 95.0\% and 96.0\% respectively which shows that our methodology demonstrate competitive results on much larger dataset too.
+
+Also, for the static analysis, \toolname is affected by the obfuscated APKs, and we cannot successfully extract graph features from 47 obfuscated APKs. To further improve the robustness of \toolname, we plan to extend CICAndMal2017 dataset in the near future to have more labeled network traffic data which are captured from Android real devices.
+
+
+
+\section{Related Work}
+
+Detecting Android malware and categorizing its families have attracted much attention from researchers as Android smartphones are gaining increasing popularity. Methods for Android malware detection are generally classified into traditional feature codes and machine learning. 
+
+For the traditional feature-based approaches, the detectors inspect the classical malicious behaviors. For example, program code-based malware detection methods extract features from the code itself. Technically, those features include permission~\cite{arora2014malware,zulkifli2018android}, API call~\cite{afer2013droidapiminer,peiravian2013machine,zulkifli2018android,arp2014drebin}, N-gram~\cite{arp2014drebin}, and CFG~\cite{gascon2013structural} based methods. Malware detection methods that use permissions and intents extract them from manifest files to detect Android malware~\cite{arp2014drebin}. In general, DREBIN performs a comprehensive static analysis, gathering as many application features as possible. These features are embedded in a joint vector space, such that typical malware patterns can be automatically identified and used to explain our method's decisions. In contrast with our work, DREBIN takes permissions and intents from manifest files, which cannot work for the obfuscated APKs. Meanwhile, \toolname takes the graph structure from the program code, which obfuscation cannot affect. Additionally, we consider dynamic features from network flow, whereas DREBIN only considers the static features. 
+
+Graph-based malware detection systems use the graph structure for detection purposes, such as the Apk2vec~\cite{narayanan2018apk2vec} and the Adagio~\cite{gascon2013structural}. Adagio~\cite{gascon2013structural} shows a kernel-hashing-based malware detection system on the function call graph, which is based on the efficient embeddings of function call graphs with an explicit feature map inspired by a linear-time graph kernel. In an evaluation with real malware samples purely based on structural features, Adagio outperforms several related approaches and detects 89\% of the malware with few false alarms, while it also allows for pinpointing malicious code structures within Android applications. Both the Adagio and our solution are based on the function call graph of Android applications. However, we design the graph embedding based on the function call graph, whereas Adagio uses the kernel-hashing method. In addition, we also take the network flow into our \toolname to obtain the dynamic features. 
+
+Machine learning and deep learning techniques are also heavily introduced into the network traffic analysis. Researchers use manual indicated features to recognize a network traffic application pattern with traditional machine learning algorithms, such as traffic classification, network security, and anomaly detection~\cite{malik2016credroid,zulkifli2018android,wang2017malware}. Finally, for network traffic analysis, there are three different granularities: raw packet, flow, and session levels~\cite{wang2017malware,marin2020deepmal,lashkari2018toward,taheri2019extensible}. CICAndMal2017~\cite{lashkari2018toward} takes network traffic as the dynamic features to detect and categorize the Android malware. Compared to our work, it only considers the network flow rather than other static features, such as program code, permissions, and intents.
+
+
+\section{Conclusion}
+
+In this paper, we presented \toolname, a layered Android malware classification framework, which utilizes network traffic as a dynamic and code graph structure as static behavioral features for malware detection. As a hybrid approach, it extracts not only \netfeatures network flow features from the original dumped network dataset but also introduces NLP inspired technique based on function call graph embedding that converts the whole graph structure of an Android application into a vector. \toolname utilizes the network flow features in combination with the graphs vectors to detect and categorize the malware. Overall, it demonstrates an average accuracy of 97.0\% and 94.0\% in detecting and categorizing the Android malware, respectively. The empirical results imply that our stated solution is effective in the detection of malware applications.
+
+
+\section*{Acknowledgments}
+
+This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreements No. 830892 (SPARTA), No. 883275 (HEIR), and No. 833115 (PREVISION).
+
+
+\bibliographystyle{splncs04}
+\bibliography{paper}
+
+\end{document}

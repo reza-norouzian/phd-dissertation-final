@@ -1,0 +1,111 @@
+% ---------------------------------------------------------------------------
+% Shared style for the Hybroid classifier dot plots (thesis Figures 4.7, 4.8).
+%
+% Colours are taken verbatim from the TUM Corporate Design print palette:
+%   #0065BD  TUM Blau, Pantone 300 C, used at 100 per cent (no tints of the
+%            brand colour are permitted), reserved here for the fused modality
+%   #64A0C8  Akzentfarbe, Pantone 542
+%   #98C6EA  Akzentfarbe, Pantone 283
+%   #CCCCCC  20 per cent black
+%   #808080  50 per cent black
+%   #333333  80 per cent black
+% The three series form a lightness ramp rather than a hue contrast, so the
+% figure survives greyscale printing and red-green colour deficiency. Orange
+% and green are absent, as the CD requires when marks distinguish categories.
+%
+% Type is TeX Gyre Heros, the Helvetica clone already loaded by the thesis
+% style, so figure labels match the document's sans-serif face.
+% ---------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+
+\definecolor{tumblue}{HTML}{0065BD}
+\definecolor{tumacc542}{HTML}{64A0C8}
+\definecolor{tumacc283}{HTML}{98C6EA}
+\definecolor{tumgreyxx}{HTML}{CCCCCC}
+\definecolor{tumgreyl}{HTML}{808080}
+\definecolor{tumgreyd}{HTML}{333333}
+
+% Geometry, in millimetres. The total width matches \textwidth of the thesis
+% (402.565 pt = 141.6 mm), so the figure is included at scale 1:1 and its type
+% sizes are the sizes that reach the page.
+\def\LX{20}        % width of the shared learner-label column
+\def\PW{37.2}      % plot width of one metric panel
+\def\GAP{5}        % gap between panels
+% The score axis is set per figure, because the two tasks occupy different
+% ranges and a shared axis would leave half of the detection panels empty.
+% Each caption states the range it uses. \TICKS lists the gridded, labelled
+% positions; both figures step by 0.04 so the two look alike.
+\def\VMIN{0.78}
+\def\VMAX{0.98}
+\def\TICKS{0.80,0.85,0.90,0.95}
+\def\ROWA{-7}
+\def\ROWB{-15}
+\def\ROWC{-23}
+\def\AXY{-27.5}    % baseline of the score axis
+\def\GTOP{-3.6}    % top of the grid lines
+\def\GBOT{-26.4}   % bottom of the grid lines
+
+% Map a score onto an x coordinate inside panel #1 (0, 1 or 2).
+\newcommand{\px}[2]{\LX+#1*(\PW+\GAP)+(#2-\VMIN)/(\VMAX-\VMIN)*\PW}
+
+\newcommand{\ticklabelfont}{\fontsize{6.2}{7.4}\selectfont}
+\newcommand{\rowlabelfont}{\fontsize{7}{8.4}\selectfont}
+\newcommand{\paneltitlefont}{\fontsize{7.6}{9}\selectfont\bfseries}
+
+% One metric panel: grid, axis, tick labels, title.
+\newcommand{\panel}[2]{%
+  \foreach \v in \TICKS{%
+    \draw[tumgreyxx,line width=0.3pt] ({\px{#1}{\v}},\GTOP) -- ({\px{#1}{\v}},\GBOT);
+    \node[below,text=tumgreyl,inner sep=1.1pt] at ({\px{#1}{\v}},\AXY)
+      {\ticklabelfont\v};
+  }%
+  \draw[tumgreyd,line width=0.4pt] ({\px{#1}{\VMIN}},\AXY) -- ({\px{#1}{\VMAX}},\AXY);
+  \node[above right,text=black,inner sep=0pt] at ({\px{#1}{\VMIN}},1.2)
+    {\paneltitlefont #2};
+}
+
+% Markers. Program code and network flow are peer modalities, so they carry
+% the same radius and are separated by lightness alone; the fused marker is
+% larger and takes the brand colour, because it is the result the chapter
+% argues about. Drawing runs largest first, so where a single modality and the
+% fused representation report the same score the two show as concentric discs
+% rather than one hiding the other. Neither figure contains a program
+% code / network flow tie, which is the one case this ordering cannot resolve.
+\newcommand{\mcode}[2]{\draw[fill=tumacc283,draw=tumacc542,line width=0.35pt]
+  ({#1},#2) circle (0.58mm);}
+\newcommand{\mflow}[2]{\draw[fill=tumacc542,draw=tumacc542,line width=0.3pt]
+  ({#1},#2) circle (0.58mm);}
+\newcommand{\mfused}[2]{\draw[fill=tumblue,draw=tumblue,line width=0.3pt]
+  ({#1},#2) circle (0.88mm);}
+
+% One row of a panel: connector spanning the observed range, then the three
+% markers from largest to smallest. #1 panel, #2 row y, #3 program code,
+% #4 network flow, #5 fused.
+\newcommand{\dotrow}[5]{%
+  \pgfmathsetmacro{\vlo}{min(#3,min(#4,#5))}%
+  \pgfmathsetmacro{\vhi}{max(#3,max(#4,#5))}%
+  \draw[tumgreyxx,line width=0.7pt] ({\px{#1}{\vlo}},#2) -- ({\px{#1}{\vhi}},#2);
+  \mfused{\px{#1}{#5}}{#2}\mflow{\px{#1}{#4}}{#2}\mcode{\px{#1}{#3}}{#2}%
+}
+
+% Learner labels, written once for all three panels.
+\newcommand{\rowlabels}{%
+  \node[left,inner sep=0pt] at (\LX-2.4,\ROWA) {\rowlabelfont Decision tree};
+  \node[left,inner sep=0pt] at (\LX-2.4,\ROWB) {\rowlabelfont Random forest};
+  \node[left,inner sep=0pt] at (\LX-2.4,\ROWC) {\rowlabelfont Gradient boosting};
+}
+
+% Legend, one row under the panels.
+\newcommand{\legendrow}[1]{%
+  \def\ly{#1}%
+  \mcode{\LX}{\ly}
+  \node[right,inner sep=0pt] at (\LX+1.4,\ly) {\rowlabelfont Program code};
+  \mflow{\LX+26}{\ly}
+  \node[right,inner sep=0pt] at (\LX+27.4,\ly) {\rowlabelfont Network flow};
+  \mfused{\LX+52}{\ly}
+  \node[right,inner sep=0pt] at (\LX+53.4,\ly) {\rowlabelfont Fused representation};
+}

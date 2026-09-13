@@ -1,0 +1,125 @@
+% Main file for the dissertation template.
+% Compile with: latexmk thesis.tex
+
+\documentclass[
+  paper=A4,
+  twoside=true,
+  open=right,
+  parskip=full,
+  chapterprefix=true,
+  10pt,
+  headings=normal,
+  bibliography=totoc,
+  listof=totoc,
+  titlepage=true,
+  captions=tableheading,
+  draft=false
+]{scrreprt}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman,english]{babel}
+\usepackage{xcolor}
+
+\input{thesissetup}
+
+\usepackage[
+  figuresep=colon,
+  sansserif=false,
+  hangfigurecaption=true,
+  hangsection=true,
+  hangsubsection=true,
+  colorize=full,
+  colortheme=bluemagenta,
+  draft=false
+]{cleancampthesis}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{subcaption}
+\usepackage{rotating}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, backgrounds, shapes.geometric, calc}
+% Algorithm floats (Chapter 5), numbered per chapter. Loaded after hyperref, which
+% cleancampthesis loads.
+\usepackage[chapter]{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\usepackage[
+  backend=biber,
+  style=numeric,
+  sorting=none,
+  giveninits=true,
+  maxbibnames=99,
+  doi=true,
+  isbn=false,
+  url=true
+]{biblatex}
+\addbibresource{bib/references.bib}
+
+\input{dissertationmacros}
+
+\graphicspath{{figures/}{assets/}}
+
+\hypersetup{
+  pdftitle={\thesisTitle},
+  pdfsubject={\thesisSubject},
+  pdfauthor={\thesisName},
+  colorlinks=false,
+  pdfborder={0 0 0},
+  breaklinks=true,
+  bookmarksnumbered=true,
+  bookmarksopen=true
+}
+
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+
+% Front matter
+\pagenumbering{roman}
+\pagestyle{empty}
+\input{content/titlepages}
+\cleardoublepage
+
+\pagestyle{plain}
+\input{content/abstract}
+\cleardoublepage
+\input{content/acknowledgements}
+\cleardoublepage
+
+\tableofcontents
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+% Main matter
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{maincontentstyle}
+
+% Chapter order follows notes/dissertation-structure-v0.3.md. A chapter file is
+% invisible to the build until its \input line appears here.
+\input{content/introduction}            % 1
+\input{content/background}              % 2
+\input{content/anomaly-detection}       % 3
+\input{content/hybroid}                 % 4
+\input{content/hgann-mal}               % 5
+\input{content/adversarial-evaluation}  % 6
+\input{content/discussion}              % 7
+\input{content/conclusion}              % 8
+
+% References
+\cleardoublepage
+\printbibliography[heading=bibintoc,title={References}]
+
+% Appendices
+\appendix
+\input{content/appendix}
+
+\end{document}

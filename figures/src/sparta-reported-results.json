@@ -1,0 +1,163 @@
+{
+  "source": {
+    "report": "SPARTA D7.6, Validation and evaluation report",
+    "file": "publications/SPARTA/SPARTA-D7.6-evaluation-and-validation.pdf",
+    "sha256": "b1cbb7d5e1ee55d804ca6836fcbc2a462da723c539cbf6860c0fd54e59e98da7"
+  },
+  "representation": "Numerical source tokens are strings so their published precision is retained. Decimal subtraction precedes conversion for plotting.",
+  "sd_development": {
+    "section": "2.8.1.2 and 2.8.1.3",
+    "printed_pages": [
+      18,
+      19
+    ],
+    "pdf_pages_1_based": [
+      25,
+      26
+    ],
+    "measurement": "Reported approximate accuracy on clean images and transferred adversarial attacks.",
+    "limitations": [
+      "Configuration, ensemble size and training differ.",
+      "The 84-85 interval is a reported performance range, not a confidence interval.",
+      "The development description discusses 40 binary attributes; the official contest table labels the SD task as re-identification. These development values are not pooled with official contest scores."
+    ],
+    "units": "percent",
+    "configurations": [
+      {
+        "id": "second",
+        "label": "Second configuration",
+        "description": "Nine-model ensemble",
+        "clean": "92",
+        "transfer_lower": "79",
+        "transfer_upper": "79",
+        "approximate": true
+      },
+      {
+        "id": "third",
+        "label": "Third configuration",
+        "description": "Single model with adversarial training",
+        "clean": "87",
+        "transfer_lower": "84",
+        "transfer_upper": "85",
+        "approximate": true
+      }
+    ]
+  },
+  "benchmark": {
+    "source_table": "2",
+    "printed_pages": [
+      28,
+      29
+    ],
+    "pdf_pages_1_based": [
+      35,
+      36
+    ],
+    "task": "Breast-cancer image classification benchmark reported by Vicomtech.",
+    "units": "accuracy proportion",
+    "limitations": [
+      "The table does not establish matched or fully specified attack configurations.",
+      "Values are aggregate accuracies; no individual prediction records or confidence intervals are provided.",
+      "Repeated activation-detector accuracies do not identify a prediction mechanism."
+    ],
+    "defences": [
+      {
+        "id": "adversarial_training",
+        "label": "Adversarial training",
+        "clean_accuracy": "0.844"
+      },
+      {
+        "id": "top_autoencoder",
+        "label": "Top autoencoder",
+        "clean_accuracy": "0.726"
+      },
+      {
+        "id": "middle_autoencoder",
+        "label": "Middle autoencoder",
+        "clean_accuracy": "0.817"
+      },
+      {
+        "id": "prediction_similarity",
+        "label": "Prediction similarity",
+        "clean_accuracy": "0.844"
+      },
+      {
+        "id": "activation_detector",
+        "label": "Activation detector",
+        "clean_accuracy": "0.708"
+      }
+    ],
+    "attacks": [
+      {
+        "label": "FGSM",
+        "accuracies": {
+          "adversarial_training": "0.837",
+          "top_autoencoder": "0.716",
+          "middle_autoencoder": "0.812",
+          "prediction_similarity": "0.837",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "L2 Basic Iter",
+        "accuracies": {
+          "adversarial_training": "0.844",
+          "top_autoencoder": "0.725",
+          "middle_autoencoder": "0.817",
+          "prediction_similarity": "0.842",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "BIM",
+        "accuracies": {
+          "adversarial_training": "0.837",
+          "top_autoencoder": "0.716",
+          "middle_autoencoder": "0.812",
+          "prediction_similarity": "0.837",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "Deep Fool",
+        "accuracies": {
+          "adversarial_training": "0.003",
+          "top_autoencoder": "0",
+          "middle_autoencoder": "0.001",
+          "prediction_similarity": "0.015",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "Additive noise",
+        "accuracies": {
+          "adversarial_training": "0.844",
+          "top_autoencoder": "0.725",
+          "middle_autoencoder": "0.817",
+          "prediction_similarity": "0.844",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "Newton Fool",
+        "accuracies": {
+          "adversarial_training": "0.464",
+          "top_autoencoder": "0",
+          "middle_autoencoder": "0",
+          "prediction_similarity": "0.46",
+          "activation_detector": "0.708"
+        }
+      },
+      {
+        "label": "PGD",
+        "accuracies": {
+          "adversarial_training": "0.837",
+          "top_autoencoder": "0.717",
+          "middle_autoencoder": "0.813",
+          "prediction_similarity": "0.837",
+          "activation_detector": "0.708"
+        }
+      }
+    ]
+  }
+}

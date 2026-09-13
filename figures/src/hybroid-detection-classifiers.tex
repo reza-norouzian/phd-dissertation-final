@@ -1,0 +1,32 @@
+% Thesis Figure 4.7 --- binary detection by learner and observation modality.
+% Values are the five-fold means printed to two decimal places in Figure 8 of
+% Norouzian et al., Hybroid (2021). They were confirmed a second time against
+% the bar geometry of the published vector figure; all nine configurations
+% agree with the printed labels.
+\documentclass[border=1pt]{standalone}
+\input{tum-dotplot}
+% Detection scores run from 0.89 to 0.97, so the axis is set to 0.86-0.98.
+\def\VMIN{0.86}\def\VMAX{0.98}\def\TICKS{0.88,0.92,0.96}
+\begin{document}
+\begin{tikzpicture}[x=1mm,y=1mm]
+  \panel{0}{F\textsubscript{1}-score}
+  \panel{1}{Recall}
+  \panel{2}{Precision}
+  \rowlabels
+
+  % F1-score                  code  flow  fused
+  \dotrow{0}{\ROWA}{0.89}{0.90}{0.91}
+  \dotrow{0}{\ROWB}{0.93}{0.94}{0.96}
+  \dotrow{0}{\ROWC}{0.93}{0.95}{0.97}
+  % Recall
+  \dotrow{1}{\ROWA}{0.89}{0.90}{0.91}
+  \dotrow{1}{\ROWB}{0.93}{0.94}{0.96}
+  \dotrow{1}{\ROWC}{0.93}{0.96}{0.97}
+  % Precision
+  \dotrow{2}{\ROWA}{0.89}{0.90}{0.91}
+  \dotrow{2}{\ROWB}{0.93}{0.94}{0.96}
+  \dotrow{2}{\ROWC}{0.93}{0.95}{0.97}
+
+  \legendrow{-36}
+\end{tikzpicture}
+\end{document}

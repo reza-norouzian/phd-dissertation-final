@@ -1,0 +1,498 @@
+\documentclass[runningheads]{llncs}
+%
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{amsmath}   % recommended whenever you do any math
+\usepackage{amssymb}   % provides \varnothing, \mathbb, etc.
+\usepackage[utf8]{inputenc}   % allow raw UTF-8 characters
+\usepackage{amsmath,amssymb}   % if you also need \varnothing, \mathbb, etc.
+\usepackage{xcolor}
+\usepackage{booktabs}
+% \DeclareMathOperator{\dist}{dist}
+% \DeclareMathOperator{\sp}{sp}
+
+%
+\begin{document}
+%
+\title{HGANN-Mal: A Hypergraph Attention Neural Network Approach for Android Malware Detection}
+
+%
+\titlerunning{HGANN-Mal}
+\author{}  
+\institute{}
+
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Mohammad Reza Norouzian\inst{1} \and Claudia Eckert\inst{1}}
+%
+\authorrunning{M.~R. Norouzian and C. Eckert}
+%
+\institute{Technical University of Munich, Munich, Germany\\
+\email{mohammad.norouzian@tum.de, claudia.eckert@in.tum.de}}
+
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+Research on Android malware has progressed rapidly, yet the task of distinguishing malicious from benign applications continues to test the limits of automated analysis. Earlier work, dominated by static signature matching, frequently struggles when novel or obfuscated samples appear. Contemporary graph–based pipelines alleviate some of these shortcomings by modelling control and data dependencies, but their reliance on pairwise relations often blurs higher–order interactions that experienced adversaries nurture when crafting evasive variants. These observations motivate a return to first principles: we require representations that faithfully encode behaviours without incurring prohibitive overhead.
+In this study we revisit the problem through the lens of hypergraph representation learning. Treating an application as a hypergraph allows one to encode joint behaviours—such as the co‑invocation of critical API calls inside a single execution context—that cannot be decomposed into simple edges without information loss. Building on this representation, we introduce HGANN‑Mal, a Hypergraph Attention Neural Network that adaptively emphasises semantically salient hyperedges while softening the influence of spurious ones. The model derives its signals from static analysis to extract structural and semantic features.
+Importantly, on the Drebin dataset, HGANN-Mal achieves a Macro-F1 score of 97.8\% and an accuracy of 98.3\% in binary malware detection, significantly outperforming graph-based and static hypergraph methods. Our findings validate that the proposed attention-based hypergraph model provides a more exhaustive and precise solution for detecting sophisticated Android malware.
+\end{abstract}
+
+
+% ## Intro
+\section{Introduction}
+Android's open distribution model and broad hardware ecosystem have propelled the platform to a market share that regularly exceeds with over 2.5 billion active devices~\cite{google2025androidshow}.
+That ubiquity, however, does not come without cost: security analysts continue to report hundreds of thousands of suspicious packages each year. While the absolute numbers fluctuate with collection methodology, the consensus view is that the threat landscape is both quantitatively significant and qualitatively diverse \cite{arora2020}.
+
+Traditional defences have long relied on signature‐based \cite{moser2007}, where an application's code sections are compared against a repository of known malicious fragments. Such detectors remain valuable thanks to their interpretability and low computational overhead. At the same time, they provide little protection against so‐called zero‑day malware or against families that rotate byte sequences through polymorphic engines \cite{you2010}. In response, researchers have shifted their attention towards machine learning‑based systems capable of extracting higher‑level abstractions directly from raw artifacts.
+
+Among the techniques now popular, graph neural networks (GNNs) occupy a key role. Function call graphs (FCGs), permission–API dependency graphs, and inter‐component communication graphs have all served as substrates for deep learning architectures~\cite{bilot2024}. Although the empirical results are impressive, a recurring critique concerns their pairwise bias: edges express binary relations, yet many security‐relevant behaviours emerge only when three or more components interact~\cite{gascon2013structural,arp2014}. Hypergraphs, with their capacity to join arbitrarily large node sets, offer a principled remedy.
+
+Hypergraphs extend standard graphs by allowing a hyperedge to connect an arbitrary number of nodes~\cite{feng2019}. The structure is therefore capable of recording composite behaviours without having to enumerate every pairwise interaction. Recent studies in computer vision and recommendation systems suggest that hypergraph neural networks (HGNNs) \cite{feng2019,gao2023} can leverage this richer topology to learn more expressive embeddings. In the Android domain, preliminary evidence is beginning to surface \cite{zhang2023}, yet the question of how to weigh the relative contribution of distinct hyperedges remains unsettled.
+
+
+The construction of hypergraphs for Android applications can follow various strategies. Feng et al.~\cite{zhang2023} capture structural semantics by creating hyperedges from groups of functions that share the same sensitive permission requests or are located within k-order call graph neighborhoods. Wu et al.~\cite{wu2021} explored a dual-view approach that constructs hypergraphs from both structural and semantic perspectives, capturing both the call relationships and the functional similarities between components.
+
+Experimental evaluations on benchmark datasets such as Drebin \cite{arp2014} and CICMalDroid \cite{mahdavifar2020dynamic,mahdavifar2022effective} have demonstrated that hypergraph-based approaches consistently outperform traditional graph-based methods in Android malware detection tasks. For instance, HGNN+ \cite{gao2023} achieved classification accuracy improvements of 3-5\% over state-of-the-art GNN models by better capturing the complex relationships between application components. These results underscore the importance of modeling higher-order relationships in Android applications for effective malware detection.
+
+Despite these advances, existing hypergraph-based methods employ static, pre-defined hyperedge constructions that assign equal importance to all relationships. This uniform weighting fails to recognize that certain functional relationships are more indicative of malicious behavior than others. For example, interactions involving sensitive API calls or dangerous permission requests should likely receive greater emphasis than routine utility function calls~\cite{narayanan2018}. The inability to adaptively weight these relationships limits the discriminative power of current hypergraph representations.
+
+To address these limitations, we propose a novel approach that integrates attention mechanisms \cite{bai2021}  into hypergraph neural networks for Android malware detection. HGANN-Mal, extends beyond static hypergraph structures by dynamically learning the importance of different hyperedges through an attention mechanism. This approach enables the model to focus on the most discriminative functional relationships while downweighting less relevant connections.
+
+\medskip \noindent In summary, we make the following primary contributions:
+
+\begin{itemize}
+\item We formulate Android malware detection as a hypergraph classification problem, leveraging the expressive power of hypergraphs to model complex, higher-order relationships between functions in Android applications.
+
+\item We introduce a novel hypergraph attention mechanism that dynamically learns to weight hyperedges based on their relevance to malware detection.
+
+\item We demonstrate that adaptive weighting of hyperedges through attention improves discrimination between benign and malicious.
+
+\end{itemize}
+
+Our approach builds upon recent advances in hypergraph neural networks~\cite{bai2021,gao2023} and attention mechanisms in graph learning~\cite{velickovic2018,sun2023}. Attention mechanisms have proven effective in graph neural networks by allowing models to focus on important neighbors~\cite{velickovic2018}, but their application to hypergraph structures remains largely unexplored, particularly in the context of malware detection.
+
+
+% ------------------------------------------------------------------
+% 2 Related work
+% ------------------------------------------------------------------
+\section{Related Work}
+Android malware detection has evolved significantly from traditional signature-based approaches to sophisticated machine learning and graph-based methods.
+Traditional malware detection techniques for Android platforms have primarily relied on static, dynamic, and hybrid analysis methods. Static analysis techniques examine application code without execution, focusing on features such as permissions, API calls, and code structure \cite{payet2012static,wu2012droidmat}. Feng et al. \cite{feng2014apposcopy} demonstrated the effectiveness of combining static taint analysis with program representation techniques, achieving notable accuracy in detecting malicious applications. Dynamic analysis methods monitor application behavior during runtime, e.g., capturing system calls with frequency vectors and co-occurrence matrices \cite{xiao2016identifying}. Hybrid analysis techniques combine static and dynamic approaches to leverage the strengths of both methodologies \cite{hybroid}. However, traditional approaches face significant limitations when confronting sophisticated evasion techniques such as code obfuscation, polymorphism, and metamorphism.
+
+The limitations of traditional methods have driven researchers toward graph-based representations that capture structural relationships within Android applications. Function Call Graphs (FCGs) have emerged as a fundamental representation for modeling the invocation relationships between functions in Android applications \cite{gascon2013structural}. Recent advances in Graph Neural Networks (GNNs) have revolutionized the application of FCGs to malware detection. Lu X. \cite{lu2024sndgcn} proposed SNDGCN, a robust Android malware detection model based on denoising Graph Convolutional Networks that processes FCGs while addressing noise in graph representations. Zheng J. \cite{zheng2024maskdroid} introduced MASKDROID, which employs masked graph representations to enhance the discriminative ability of malware detectors while maintaining robustness against adversarial attacks. Guo W. \cite{guo2025malhapgnn} developed MalHAPGNN, a Layered attention pooling graph neural network that enhances call graph representations through sophisticated attention mechanisms. Despite these advances, conventional graph representations remain fundamentally limited by their ability to model only pairwise relationships between entities, which cannot adequately capture complex interactions among multiple functions. \cite{shokouhinejad2025recent}.
+
+Hypergraph structures offer a more expressive alternative to traditional graphs by allowing edges (hyperedges) to connect arbitrary numbers of vertices simultaneously. This capability naturally accommodates the complex, multi-entity relationships present in Android applications, where malicious behaviors frequently involve coordinated actions across multiple functions. Zhang et al. \cite{zhang2023} pioneered the application of hypergraph neural networks to Android malware detection, proposing the first hypergraph-based approach for modeling higher-order relationships among functions. Their method constructs hypergraphs where functions sharing permissions or forming K-order neighborhoods constitute hyperedges, enabling the capture of complex semantic relationships that traditional graphs cannot represent. However, the static weights of hypergraph neural networks cannot capture the behavior of modern and complex new evolving of Android malware. In our HGANN-Mal approach addresses several critical gaps by employing hypergraph attention neural networks that extend beyond the limitations of traditional graph-based and hypergraph-based methods. Unlike prior Android HGNNs that use static, equally weighted k-hop/permission hyperedges \cite{zhang2023}, HGANN-Mal fuses topological, semantic, and slice-aware suspicious-API hyperedges and learns their importance via hypergraph attention and, to our knowledge, is the first to apply a learnable hypergraph-attention operator to Android malware detection, thereby amplifying malicious relations while suppressing noise.
+
+
+
+% ------------------------------------------------------------------
+% 3 Hypergraph Neural Networks 
+% ------------------------------------------------------------------
+\section{Hypergraph Neural Networks}
+
+
+\subsection{Preliminaries}
+A hypergraph is a more general topology than a graph that is capable of modeling multiple relationships between discrete data. Unlike traditional graphs where each edge connects exactly two vertices, a hyperedge in a hypergraph can connect multiple vertices simultaneously, thus enabling the modeling of higher-order relationships among vertices \cite{agarwal2006higher}.
+
+Formally, let $\mathcal{H} = \langle \mathcal{V}, \mathcal{E} \rangle$ be a hypergraph, where $\mathcal{V} = \{v_1, v_2, \ldots, v_n\}$ denotes the vertex  set containing $|\mathcal{V}| = n$ vertices and $\mathcal{E} = \{e_1, e_2, \ldots, e_m\}$ denotes the set of hyperedges, where each hyperedge $e \in \mathcal{E}$ is a subset of $\mathcal{V}$. In the context of Android malware detection, vertices can represent functions in an Android application, while hyperedges can represent higher-order relationships between these functions, such as common call patterns or common suspicious API call combinations.
+
+In a hypergraph, the vertex-hyperedge adjacency matrix is represented by $H \in \mathbb{R}^{|\mathcal{V}| \times |\mathcal{E}|}$. When a vertex $v$ belongs to a hyperedge $e$, $H(v, e) = 1$, otherwise $H(v, e) = 0$. The weights of the hyperedges can be represented by a diagonal matrix $W \in \mathbb{R}^{|\mathcal{E}| \times |\mathcal{E}|}$ where $W(i, i) = w(e_i)$. The degree of vertices is computed by $d_{\mathcal{V}}(v) = \sum_{e \in \mathcal{E}} H(v, e) \cdot w(e)$, and the degree of hyperedges is computed as $d_{\mathcal{E}}(e) = \sum_{v \in \mathcal{V}} H(v, e)$. The matrix representation of the degree of vertices and hyperedges is denoted by $D_{\mathcal{V}}$ and $D_{\mathcal{E}}$, respectively. They are both diagonal matrices.
+
+The Laplacian matrix of $\mathcal{H}$ is denoted by:
+\begin{equation}
+L = I - D_{\mathcal{V}}^{-1/2}HWD_{\mathcal{E}}^{-1}H^TD_{\mathcal{V}}^{-1/2}
+\end{equation}
+where $I$ is the identity matrix. This Laplacian matrix plays a crucial role in defining the spectral convolution operation on hypergraphs, which we will discuss in the following sections.
+
+
+
+The ability of hypergraphs to model higher-order relationships makes them particularly suitable for Android malware detection, where complex interactions between functions, and API calls need to be captured for effective detection.
+
+\subsection{Hypergraph Neural Networks}
+HGNNs extend the concept of GNNs to hypergraphs, enabling the learning of node representations that capture higher-order relationships \cite{feng2019}. While traditional GNNs have shown great success in various domains, they are limited to modeling pairwise relationships. HGNNs overcome this limitation, where hyperedges can connect multiple vertices simultaneously \cite{zhou2006learning}. 
+
+The key challenge in designing HGNNs is to define appropriate operations for information propagation and aggregation over hypergraphs. In this section, we introduce several representative approaches for hypergraph neural networks, focusing on hypergraph convolution and hypergraph attention mechanisms, which form the foundation of our approach to Android malware detection.
+
+
+\subsubsection{Hypergraph Convolution}
+Hypergraph convolution defines a basic convolutional operator on a hypergraph, enabling efficient information propagation between vertices by fully exploiting the higher-order relationships encoded in hyperedges \cite{bai2021}. The primary challenge in defining a convolution operator on a hypergraph is to measure the transition probability between two vertices, which allows the features of each vertex to be propagated through the network.
+
+To address this challenge, we make two key assumptions: (1) more propagation should occur between vertices connected by a common hyperedge, and (2) hyperedges with larger weights deserve more confidence in such propagation. Based on these assumptions, we define one step of hypergraph convolution as:
+
+\begin{equation}
+x_i^{(l+1)} = \sigma\left(\sum_{j=1}^{N} \sum_{e=1}^{M} H_{ie} H_{je} W_e x_j^{(l)} \Theta^{(l)}\right)
+\end{equation}
+
+where $x_i^{(l)}$ is the embedding of the $i$-th vertex in the $l$-th layer, $\sigma(\cdot)$ is a non-linear activation function such as LeakyReLU \cite{maas2013rectifier} or ELU \cite{clevert2015fast}, and $\Theta^{(l)} \in \mathbb{R}^{F^{(l)} \times F^{(l+1)}}$ is the weight matrix between the $l$-th and $(l+1)$-th layers.
+
+
+It is worth noting that when hypergraph convolution is applied to a special case where each hyperedge connects exactly two vertices (i.e., a traditional graph), it reduces to the standard graph convolution operation. This property ensures that hypergraph convolution is a natural generalization of graph convolution to higher-order relationships.
+
+
+
+\subsubsection{Hypergraph Attention}
+While hypergraph convolution provides a powerful mechanism for information propagation on hypergraphs, it relies on a fixed, pre-defined structure for message passing. Hypergraph attention enhances this capability by introducing an attention mechanism that learns dynamic connections between vertices and hyperedges, allowing the model to focus on the most relevant parts of the hypergraph for a specific task \cite{velickovic2018,lee2019attention}.
+
+Hypergraph convolution already has a sort of innate attentional mechanism, however, this attentional mechanism is not learnable or trainable once the hypergraph structure (the incidence matrix $H$) is given.
+
+The goal of hypergraph attention is to learn a dynamic incidence matrix, thereby creating a dynamic transition matrix that can better reveal the intrinsic relationships between vertices. Instead of treating each vertex as being either connected by a certain hyperedge or not, the attention module presents a probabilistic model, which assigns non-binary, real values to measure the degree of connectivity \cite{bai2021}.
+
+For a given vertex $x_i$ and its associated hyperedge $x_j$, the attentional score is computed as:
+
+\begin{equation}
+\alpha_{ij} = \frac{\exp(\sigma(\text{sim}(x_i\Theta, x_j\Theta)))}{\sum_{k \in \mathcal{N}_i} \exp(\sigma(\text{sim}(x_i\Theta, x_k\Theta)))}
+\end{equation}
+
+where $\sigma(\cdot)$ is a non-linear activation function, $\mathcal{N}_i$ is the neighborhood set of $x_i$, and $\text{sim}(\cdot)$ is a similarity function that computes the pairwise similarity between two vertices.
+
+
+
+With the incidence matrix $H$ enriched by an attention module, we can follow the same formulation as in hypergraph convolution to learn the intermediate embedding of vertices layer-by-layer:
+
+\begin{equation}
+X^{(l+1)} = \sigma(D_{\mathcal{V}}^{-1/2} H_{\text{att}} W D_{\mathcal{E}}^{-1} H_{\text{att}}^T D_{\mathcal{V}}^{-1/2} X^{(l)} \Theta^{(l)})
+\end{equation}
+
+where $H_{\text{att}}$ is the attention-enriched incidence matrix. Note that hypergraph attention propagates gradients to $H_{\text{att}}$ in addition to $X^{(l)}$ and $\Theta^{(l)}$, allowing the model to learn the optimal hypergraph structure for the task at hand.
+
+
+
+In the context of Android malware detection, hypergraph attention allows our model to dynamically learn the importance of different relationships. For example, it can learn to assign higher attention weights to suspicious patterns of API calls requests that are indicative of malicious behavior. 
+
+
+
+% ----------------------------------------------------------------------
+%  Methodology 
+% ----------------------------------------------------------------------
+
+
+\section{Methodology}
+Our proposed Android malware detection framework leverages hypergraph attention neural networks. This section details the methodology, encompassing the initial data processing and static analysis, feature preparation, hypergraph construction, and the hypergraph-level classification process.
+
+
+
+\subsection{Data Acquisition and Static Analysis}
+Before delving into feature extraction and hypergraph construction, a robust initial phase of data acquisition and static analysis is critical.
+
+\subsubsection{Dataset Loader}
+The process (Stage 0) is responsible for systematically ingesting raw APK files from a designated root directory. The system walks through the directory structure, computing the SHA-256 hash of every APK file encountered. Subsequently, it queries and parses an external label list from the original dataset to tag each hash as either \textit{benign} or the appropriate malware family. The output of this stage is a comprehensive catalogue, serves as the definitive manifest for the entire dataset.
+
+\subsubsection{APK Unpacker}
+Following the dataset loading, the APK Unpacker (Stage 1) takes the raw APK files as input. Tools such as `apktool` and Python's `zipfile` module are employed to decompress and extract the `Android Manifest.xml` file, which contains vital application metadata, and all `classes*.dex` files, which encapsulate the application's compiled Dalvik bytecode. The output of this stage comprises the raw manifest files and the raw DEX byte-streams, ready for deeper static analysis.
+
+\subsubsection{Static Analysis and API Tagging}
+The extracted manifests and DEX files are then processed through the MobiSF Static Analysis \footnote{\url{https://github.com/MobSF/Mobile-Security-Framework-MobSF}} \& API Tagging component (Stage~2a), which leverages the MobiSF for comprehensive automated security analysis. The process involves several coordinated actions that work in tandem to identify and classify potentially suspicious API usage patterns \cite{amer2020dynamic,qiu2022cyber}.
+The analysis begins with an automated scan phase that MobiSF performs a comprehensive static analysis that includes manifest parsing, DEX disassembly, and security-focused feature extraction. 
+
+The next phase focuses on \textbf{permission risk assessment}, where each required permission identified in the previous step is cross-referenced. Only permissions whose \texttt{status} field is marked as \texttt{"dangerous"} are retained for further analysis. By focusing exclusively on dangerous permissions, the analysis concentrates on APIs that pose the highest potential security risk.
+
+The framework then employs a \textbf{heuristic API classification} system to categorize the identified APIs into two primary categories based on their functional characteristics. APIs are classified as \textit{access} APIs, such as those related to \texttt{Contacts}, \texttt{Location}, \texttt{Sms}, \texttt{Storage}, and similar sensitive data sources. Conversely, APIs are classified as \textit{transmission} APIs, including those related to \texttt{Http}, \texttt{Socket}, \texttt{sendTextMessage}, and other network or communication functions. This heuristic approach, while not exhaustive, provides a practical and scalable method for identifying APIs that are commonly associated with data exfiltration patterns in malware.
+
+To complement the MobiSF analysis and provide detailed call-site information, the system runs Androguard \footnote{\url{https://github.com/androguard/androguard}} in parallel for each APK. This parallel execution serves two primary purposes: first, it disassembles the DEX files to produce a comprehensive method-level Function-Call-Graph (FCG), denoted as $G=(V,E)$, where vertices $V$ represent individual methods and directed edges $E$ represent method invocations. Second, it generates a flat list of \texttt{(method\_id, invoked\_api)} pairs that capture the exact locations where specific APIs are called within the application's code structure.
+
+The final step in this stage involves mapping MobiSF-flagged APIs back to their exact call sites using the Androguard-generated call-site information. This mapping process creates a comprehensive view of where potentially suspicious APIs are invoked within the application's execution flow, enabling precise localization of security-relevant code regions. Also, the stage produces a global FCG for the entire APK, derived from the Androguard analysis, which captures the structural relationships between methods and serves as the foundation for subsequent hypergraph construction phases. This dual-output approach ensures that both the security-relevant API usage patterns and the overall application structure are captured and available for downstream processing stages \cite{soi2024enhancing,li2022dmalnet}.
+
+\subsubsection{Backward-Slice Builder}
+Building upon the outputs of Stage 2a, the Backward-Slice Builder (Stage 2b) focuses on isolating security-critical code regions \cite{qian2025lamd}. For every identified suspicious call site, this component performs two key actions:
+\begin{itemize}
+    \item \textbf{Variable Retrieval:} It identifies variables that reach the suspicious call site. This involves analyzing data flow to determine which variables directly influence the behavior of the suspicious API call.
+    \item \textbf{Slice Extraction:} It then walks the CFG backwards from the suspicious call site, retaining only basic blocks and statements that directly influence the identified variables. Each extracted slice is stored as a compact CFG file.
+\end{itemize}
+		
+\subsection{Feature Preparation}
+Effective representation of Android application characteristics is crucial for accurate malware detection. Building upon the outputs of the static analysis phase, we extract and process various features to comprehensively characterize the behavior of Android applications. These features serve as the input for the subsequent hypergraph construction and are designed to capture diverse aspects of an application\`s functionality and potential malicious intent. For each function $v \in V$ (where $V$ is the set of vertices in the FCG), the following features are computed (Stage 3):
+
+\subsubsection{Opcode Histograms}
+To capture the low-level operational characteristics of each function, an opcode histogram is computed. This involves analyzing the Dalvik bytecode instructions within a function and generating a frequency distribution of opcodes. This histogram can be represented as a one-hot encoded vector or, for more comprehensive representations, using TF-IDF to reflect the importance of specific opcodes within a function relative to the entire corpus. Opcode patterns can reveal characteristic behaviors, including those associated with obfuscation or malicious payloads \cite{kang2016n,niu2020opcode}.
+
+\subsubsection{Structural Metrics}
+Beyond the raw opcode sequences, the structural position and influence of a function within the application\`s call graph provide valuable insights \cite{cui2022positional,freeman1977set}. We calculate several structural metrics for each function, including:
+\begin{itemize}
+    \item \textbf{In-degree:} The number of incoming edges to a function in the FCG.
+    \item \textbf{Out-degree:} The number of outgoing edges from a function in the FCG, indicating how many other functions it calls.
+    \item \textbf{PageRank:} A measure of a function\`s relative importance within the FCG, based on the number and quality of incoming links.
+    \item \textbf{Betweenness Centrality:} A measure of a function\`s centrality in the FCG, quantifying the number of times it acts as a bridge along the shortest path between two other functions. Functions with high betweenness centrality often play critical roles in control flow.
+\end{itemize}
+These metrics are standardized to ensure consistent scaling across different applications and to prevent features with larger numerical ranges from dominating the learning process.
+
+\subsubsection{API-Related Flags and Counts}
+To directly incorporate insights from the suspicious API analysis (Stage 2a) and backward slicing (Stage 2b), we add specific API-related features for each method node:
+\begin{itemize}
+    \item \texttt{has\_access} and \texttt{has\_transmit} flags: Binary flags indicating whether the method contains calls to sensitive data access APIs or sensitive data transmission APIs, respectively.
+    \item Access/Transmit Call Counts in Slices: The number of access and transmit API calls that appear within the program slices associated with the method.
+\end{itemize}
+These flags and counts provide direct indicators of potentially malicious behavior at the method level.
+
+\subsubsection{Semantic Embedding (Code2vec)}
+To capture the semantic meaning and contextual understanding of functions, we generate a 320-dimensional `code2vec` embedding for each function \cite{alon2019code2vec}. This high-dimensional, dense embedding is chosen to capture rich contextual similarities between functions. While this approach carries a greater computational and memory footprint compared to handcrafted feature vectors, the trade-off provides a significantly more detailed understanding of the application's true behavior. All computed features are then concatenated and z-score normalized to form the Node Feature Matrix $X$, where each row corresponds to a function (vertex) and each column represents a feature, resulting in a matrix of size $|V| \times F$, where $F$ is the total number of features.
+
+
+\subsection{Construction of Hypergraph}
+To effectively model the intricate, higher-order relationships inherent in Android applications, we construct a hypergraph where functions serve as vertices and hyperedges represent complex interactions among multiple functions. Our hypergraph construction process involves defining three distinct types of hyperedges, followed by their integration into a unified hypergraph structure.
+
+\subsubsection{K-Hop Neighbour Hyperedge}
+Drawing inspiration from the work by Zhang et al. \cite{zhang2023}, we define k-order call neighbors as a fundamental feature for capturing the structural context of functions within an Android application (Stage 4A). For each node (function) in the FCG, its $K$-order callers and callees are collected to form a hyperedge. A typical value for $K$ 3, which is sufficient to capture relevant local context. The output of this stage is the hyperedge list $H_{\mathrm{K}}$.
+
+\subsubsection{Semantic-Embedding Hyperedge}
+Leveraging the semantic embeddings generated during feature preparation, we construct Semantic-Embedding Hyperedges (Stage 4B). This involves performing a $k$-nearest neighbor search on the function embeddings. Functions whose semantic embeddings are sufficiently similar are grouped into a hyperedge. A typical value for $\tau$ is approximately 0.80, and $k=5$. 
+This action captures functional similarities that might not be evident from call graphs alone, which can be particularly useful in detecting polymorphic malware or code reuse. The output of this stage is the hyperedge list $H_{\mathrm{SEM}}$.
+
+\subsubsection{Suspicious-API Hyperedge}
+To highlight potentially malicious interactions, we introduce Slice-Aware Suspicious-API Hyperedges (Stage 4C). These hyperedges are formed by leveraging the sliced CFGs from Stage 2b and the suspicious-API tags. For each program slice, a hyperedge is created over all functions that the slice contains. Each such hyperedge is assigned an initial weight $w$ calculated as:
+$$
+w = 1 + 0.2 \times (\#\,\text{transmit}) + 0.1 \times (\#\,\text{access})
+$$
+where $\#\,\text{transmit}$ is the count of transmission APIs and $\#\,\text{access}$ is the count of access APIs within the slice. This weighting scheme prioritizes hyperedges associated with data exfiltration. The output of this stage is the list $H_{\mathrm{API}}$ of slice-aware hyperedges with their calculated weights.
+
+
+\subsubsection{Hypergraph Formation and Representation}
+Once the three types of hyperedges ($H_{\mathrm{K}}$, $H_{\mathrm{SEM}}$, $H_{\mathrm{API}}$) are generated, they undergo an Edge Post-processing step (Stage 5). This involves merging all three lists into a single, unified hyperedge set. Duplicate hyperedges are removed, and each hyperedge is capped at a maximum cardinality (e.g., $\le 64$ nodes). This capping is crucial for stabilizing message passing within the hypergraph neural network. Each processed hyperedge is also tagged with a 1-byte type identifier (e.g., `topo`, `semantic`, `suspicious`) and, for $H_{\mathrm{API}}$, its calculated weight $w$ is retained. The output of this stage is a single merged hyperedge set for the APK.
+Subsequently, the Hypergraph Constructor (Stage 6) takes the vertex set $V$ (methods), the node-feature matrix $X$ (from Stage~3), and the unified hyperedge set (from Stage~5) as input \cite{gao2023}. It then builds the sparse incidence matrix $H \in \{0,1\}^{|V| \times |E|}$ and creates the diagonal edge-weight matrix $W$. Weights are typically 1, except for suspicious-API edges where the calculated weight $w$ is used. Symmetric degree normalization is applied to these matrices. Finally, the constructed hypergraph components, $\{H, W, X\}$, are serialized for efficient loading and processing by graph neural network libraries. The output of this stage is one serialized hypergraph object per APK.
+
+Algorithm \ref{alg:hypergraph-mini} illustrates the details on Hyperedge generation:
+% ================================================================
+%  Stages 4 – 6 :  HyperEdge Construction  →  Hypergraph Assembly
+% ================================================================
+% ------------------------------------------------------------
+%  Compact Hyperedge Construction + Hypergraph Assembly
+% ------------------------------------------------------------
+\begin{algorithm}[h]   
+\caption{Pipeline Stages Group 4}
+\label{alg:hypergraph-mini}
+\small          % shrink to fit one page
+\textbf{Input:} FCG $G=(V,E)$, embeddings $\mathbf{E}$, slice set $\mathcal{S}$,  
+                params $K,k_{\!nn},\tau,L_p,c_{\max}$ \par
+\textbf{Output:} incidence $\mathbf{H}$ (rows,cols), weights $\mathbf{w}$, types $\mathbf{t}$
+\begin{algorithmic}[1]
+% ---------- visible stage markers ---------------------------------
+\Statex\textbf{/*Stage 4A: K-hop topological hyperedges}
+% ------------------------------------------------------------------
+\State $\mathcal{H}\gets\varnothing$
+\For{$v\in V$}
+      \State $e\gets\{u\;|\;\text{dist}_G(v,u)\le K\}$\If{$2\le|e|\le c_{\max}$}\State$\mathcal{H}\cup=\{(e,1,\texttt{topo})\}$\EndIf
+\EndFor
+% ---------- visible stage markers ---------------------------------
+\Statex\textbf{/*Stage 4B: Semantic (k-NN) hyperedges}
+% ------------------------------------------------------------------
+\State $(I,D)\gets\textsc{Faiss}(\mathbf{E},k_{\!nn})$
+\For{$i=0$ to $|V|-1$}
+      \State $e\gets\{I_{i,j}\;|\;D_{i,j}\ge\tau\}$\If{$2\le|e|\le c_{\max}$}\State$\mathcal{H}\cup=\{(e,1,\texttt{sem})\}$\EndIf
+\EndFor
+% ---------- visible stage markers ---------------------------------
+\Statex\textbf{/*Stage 4C: Slice-aware suspicious-API hyperedges}
+% ------------------------------------------------------------------
+\For{$s\in\mathcal{S}$}
+      \State $e\gets F_s$;\;$w\gets1+0.2\#\!{\sf transmit}_s+0.1\#\!{\sf access}_s$
+      \For{$(u,v)\in e\times e$}\If{$|P|\le L_p$ where $P=\text{sp}(G,u,v)$}\State$e\gets e\cup P$\EndIf\EndFor
+      \If{$2\le|e|\le c_{\max}$}\State$\mathcal{H}\cup=\{(e,w,\texttt{sus})\}$\EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+
+
+\subsection{Mini-Batch Builder}
+For efficient training and inference with hypergraph neural networks, especially when dealing with a large number of individual hypergraphs, a Mini-Batch Builder (Stage 7) is employed. At training or inference time, multiple serialized hypergraphs are processed to create a single batched input. This involves block-diagonalizing \cite{gao2020hypergraph} their respective incidence matrices ($H$) and weight matrices ($W$), and concatenating their feature matrices ($X$). Additionally, a \texttt{batch\_vec} is constructed, which maps each node in the concatenated feature matrix back to its original source graph. The output of this stage consists of batched tensors fed into the Hypergraph Attention Neural Network backbone.
+
+
+
+\subsubsection{Hypergraph Attention Neural Network Backbone}
+The core of our classification Hypergraph Attention Neural Network backbone (HANN) (Stage 8). Unlike traditional Hypergraph Neural Networks (HGNNs) that use static incidence matrices, our method incorporates an attention mechanism to dynamically weigh the importance of hyperedges during information propagation \cite{bai2021,khan2025heterogeneous}. This adaptive weighting allows the model to focus on the most critical relationships between functions, leading to enhanced discrimination and noise reduction.
+
+Each layer of the HANN computes node embeddings by aggregating information from connected hyperedges:
+$$
+X' = \sigma\bigl(D^{-\tfrac12}HWB^{-1}H^{\top}D^{-\tfrac12}X\,P\bigr)
+$$
+where $X$ is the input feature matrix, $H$ is the incidence matrix, $W$ is the diagonal weight matrix, $D$ and $B$ are diagonal matrices representing node and hyperedge degrees respectively, $\sigma$ is an activation function, and $P$ is a learnable projection matrix. For attention layers, the incidence matrix $H$ can be replaced with learned attention weights $\alpha$. The output of this stage is a set of final node embeddings, $h_i$, for each function in the hypergraph.
+
+
+\subsubsection{Read-out and Pooling}
+Following the HANN backbone, a Read-out / Pooling mechanism (Stage 9) is employed to aggregate the node embeddings ($h_i$) into a single, fixed-size graph-level embedding, $g$, for each Android application. This step is crucial for transforming the variable-sized hypergraph representation into a format suitable for downstream classification. We utilize methods such as mean pooling (scatter\_mean) or attention pooling (scatter\_softmax) to collapse each graph's nodes to a single vector $g$. This graph-level embedding encapsulates the overall behavioral characteristics of the application, learned through the nuanced relationships captured by the hypergraph and refined by the attention mechanism. The output of this stage is the per-APK embedding vectors $g$.
+
+
+\subsubsection{Dual-Head Classification Architecture}
+The final graph-level embeddings, $g$, are processed through a sophisticated Dual-Head Classification Architecture (Stage 10) that simultaneously addresses both binary malware detection and fine-grained family classification tasks. 
+The architecture begins with a shared hidden MLP that processes each graph-level embedding $g$ to cxtract high-level discriminative features. The shared MLP typically consists of two hidden layers with ReLU activation functions and dropout regularization to prevent overfitting \cite{banerjee2019empirical}.
+
+The first component of the dual-head architecture is Head A (Binary Detector), that produces a single logit $z_{\text{bin}}$ that is passed through a sigmoid activation function to obtain the malware probability: $p(\text{malware}) = \sigma(z_{\text{bin}})$.
+
+The second component is Head B (Family Classifier), which specializes in identifying specific malware families. This head generates $C$ logits $z_{\text{fam}}$, where $C$ represents the number of distinct malware families in the dataset. These logits are processed through a softmax activation function to produce a probability distribution over the malware families: $p(\text{family}) = \text{softmax}(z_{\text{fam}})$.
+
+The training process employs a \textbf{joint loss function} that combines the objectives of both classification heads:
+\begin{equation}
+\mathcal{L} = \lambda_{\text{bin}} \cdot \text{BCEWithLogits}(z_{\text{bin}}, y_{\text{bin}}) + \lambda_{\text{fam}} \cdot \text{CrossEntropy}(z_{\text{fam}}, y_{\text{fam}})
+\end{equation}
+
+where $\lambda_{\text{bin}}$ and $\lambda_{\text{fam}}$ are weighting parameters that balance the contribution of each loss component. 
+
+The output of this stage provides comprehensive classification results for every APK in the dataset.
+The integration of hypergraph attention into the Android malware detection framework allows our solution to learn a more detailed representation of the higher-order relationships between functions. By dynamically weighing hyperedges, we achieve enhanced discrimination by emphasizing critical relationships, noise reduction by down-weighting less relevant hyperedges, and adaptive weighting, which provides potential insights into which functional relationships are most critical for malware detection. 
+
+
+
+
+\section{Evaluation}
+This section presents a comprehensive evaluation of our proposed system, datasets utilized, evaluation metrics, and a thorough analysis of the results. The objective is to demonstrate the effectiveness and robustness of our approach in detecting and classifying malware, drawing comparisons with established baseline methods in the field.
+
+
+\subsection{The Dataset and Evaluation Metrics}
+To rigorously evaluate the performance of our proposed malware detection system, we utilized two widely recognized and publicly available datasets: Drebin \cite{arp2014} and CICMalDroid2020 \cite{mahdavifar2020dynamic,mahdavifar2022effective}. These datasets are commonly employed in the Android malware detection research community, allowing for a direct comparison with existing state-of-the-art methods.
+
+\subsubsection{Drebin}
+The Drebin is a prominent dataset in the Android malware research domain, exclusively containing malicious Android applications. Drebin dataset consists exclusively of malicious Android applications, comprising a total of 5,560 samples categorized into 179 distinct malware families.
+Given the inherent class imbalance within the Drebin dataset, where many malicious families have a small sample size, we focused our evaluation on the top 20 malicious families based on their sample count as detailed in Table \ref{table:derbin_dataset}. This selection, totaling 4,664 malicious samples, ensures that our analysis is conducted on sufficiently represented classes, providing meaningful insights into the model's ability to distinguish between different malware families. The dataset is split into training, testing, and validation sets with 70\% for training, 20\% for testing, and 10\% for validation.
+
+\begin{table}[h]
+\centering
+\caption{Top 20 malware families in the Drebin dataset}
+\begin{tabular}{l r @{\hskip 1.0em}|@{\hskip 1.0em} l r}
+\toprule
+\textbf{Family} & \textbf{\# Sample} & \textbf{Family} & \textbf{\# Sample} \\
+\midrule
+FakeInstaller & 925 & Adrd & 91 \\
+DroidKungFu   & 667 & DroidDream    & 81 \\
+Plankton      & 625 & LinuxLotoor   & 70 \\
+Opfake        & 613 & GoldDream     & 69 \\
+GingerMaster  & 339 & MobileTx      & 69 \\
+BaseBridge    & 330 & FakeRun       & 61 \\
+Iconosys      & 152 & SendPay       & 59 \\
+Kmin          & 147 & Gappusin      & 58 \\
+FakeDoc       & 132 & Imlog         & 43 \\
+Geinimi       & 92  & SMSReg        & 41 \\
+\midrule
+% We use \multicolumn to span columns and align the total correctly, omitting the vertical line.
+\multicolumn{2}{l}{\textbf{Total}} & \multicolumn{2}{r}{\textbf{4,664}} \\
+\bottomrule
+\end{tabular}
+\label{table:derbin_dataset}
+\end{table}
+
+
+\subsubsection{CICMalDroid}
+The CICMalDroid2020 dataset is a comprehensive Android malware collection comprising 17,341 samples gathered from 2017 to 2018 through multiple authoritative sources including VirusTotal, Contagio security blog, AMD, and MalDozer. The dataset encompasses five distinct categories. Adware (1,253 samples), Banking malware (2,100 samples), SMS malware (3,904 samples), Riskware (2,546 samples), and Benign applications (1,795 samples), totaling 11,598 successfully analyzed samples which is detailed in Table \ref{table:CICMalDroid_dataset}. By keeping in mind that the CICMalDroid2020 is one of the most feature-rich Android malware datasets available for research community. Similar to Drebin, the CICMalDroid2020 dataset was partitioned into an 70\% training, 20\% testing, and 10\% validation set for experimental purposes.
+
+% CICMalDroid Dataset Distribution
+\begin{table}[h]
+\centering
+\caption{CICMalDroid2020 dataset statistics}
+\label{tab:my-dataset-distribution}
+\begin{tabular}{l c @{\hskip 1.0em} c}
+\hline
+\textbf{Family}    & \textbf{\# Sample}   & \textbf{Distribution (\%)} \\ \hline
+Adware               & 1,253             & 10.8                       \\
+Banking              & 2,100             & 18.1                       \\
+SMS malware          & 3,904             & 33.6                       \\
+Riskware             & 2,546             & 22.0                       \\
+Benign               & 1,795             & 15.5                       \\ \hline
+\textbf{Total}       & \textbf{11,598}   & \textbf{100}             \\ \hline
+\end{tabular}
+\label{table:CICMalDroid_dataset}
+\end{table}
+
+\subsubsection{Evaluation Metrics}
+Due to the imbalanced nature of the datasets, accuracy alone may not reliably reflect classifier performance. Therefore, in this study, both detection and family classification performance are evaluated using additional metrics such as precision, recall, and the Macro-F1. Generally, accuracy is appropriate when true positives and true negatives are equally important and the class distribution is balanced. In contrast, the Macro-F1 is more suitable when false positives and false negatives carry greater significance, especially in scenarios with class imbalance. Since real-world classification tasks involve imbalanced datasets, Macro-F1 provides a more robust measure for model evaluation.
+
+
+\subsection{Evaluation Results}
+This section presents the experimental results obtained from evaluating our proposed hypergraph-based malware detection system on the Drebin and CICMalDroid2020 datasets. We compare the performance of our method against various baseline approaches, including traditional graph neural networks (GNNs) and other feature-based methods, using the metrics defined in the previous section.
+
+\subsubsection{Drebin Performance}
+For the Drebin dataset, which is characterized by an unbalanced distribution of malicious families, we employed Accuracy, Precision, Recall, and F1-Score to provide a comprehensive evaluation. Table \ref{table:performance_Drebin} presents the performance of our hypergraph attention-based method (HGANN-Mal) against various graph-based neural network baselines including GCN \cite{kipf2016semi}, and GraphSAGE \cite{yumlembam2022iot} and state-of-the-art hypergraph-based methodologies including, Hypergraph Neural Networks (HGNN) and  HGNNP  \cite{zhang2023}. HGNNP introduces a convolution operator that differs slightly from that of HGNN by utilizing a random-walk-based probability transition matrix for feature propagation \cite{gao2023}.
+
+\begin{table}[h]
+\centering
+\caption{Performance of Malware Detection on Derbin}
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{4}{c}{\textbf{Binary Detection}} & \multicolumn{4}{c}{\textbf{Multi-Class Classification}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+\textbf{Method} & Macro-F1 & Precision & Recall & Accuracy & Macro-F1 & Precision & Recall & Accuracy \\
+\midrule
+GCN       & 92.2 & 92.2 & 91.5 & 92.8 & 86.1 & 85.9 & 86.2 & 87.8 \\
+GraphSAGE & 92.1 & 92.1 & 92.5 & 93.3 & 86.3 & 86.7 & 86.2 & 88.0 \\
+\midrule
+HGNN      & 96.2 & 95.8 & 96.3 & 96.8 & 92.0 & 92.1 & 92.4 & 92.0 \\
+HGNNP     & 96.1 & 95.9 & 96.1 & 97.1 & 92.3 & 92.5 & 92.5 & 93.3 \\
+HGANN-Mal  & \textbf{97.8} & \textbf{97.8} & \textbf{97.6} & \textbf{98.3} & \textbf{94.2} & \textbf{94.1} & \textbf{93.8} & \textbf{95.0} \\
+\bottomrule
+\end{tabular}
+\label{table:performance_Drebin}
+\end{table}
+
+Table \ref{table:performance_Drebin} indicates that HGANN-Mal, our attention hypergraph-based method consistently achieved high performance across all metrics on the Drebin dataset. HGNNP attained the optimal accuracy of 97.1\%, while HGANN-Mal demonstrated the best Precision (97.8\%), and Macro-F1 (97.8\%) for binary malware detection. Compared to GCN and GraphSAGE (the graph-based baselines), HGNN, HGNNP, and HGANN-Mal showed significant improvements in accuracy (min 3.5\% and max 5.5\%) and  Macro-F1 (min 3.9\% and max 5.7\%), respectively for binary detection. Even when compared to GraphSAGE, which is known for its generalization capabilities due to neighbor sampling, the hypergraph-based still yielded superior results in terms of accuracy and Macro-F1, with improvements. This highlights the substantial benefits of integrating hypergraphs into Android malware detection, enabling more accurate and robust classification of complex and evolving threats.
+
+However, regarding the Multi-class classification task which tries to categorize the malware families, again, HGANN-Mal outperformed other baseline and state-of-the-art models by achieving the Macro-F1 score of 94.2\%. It is worth mentioning that such high scores are achieved only through a static analysis approach, which is less expensive than dynamic feature extraction. This further supports the notion that hypergraph modeling effectively extracts richer higher-order information, which is crucial for classifying malicious applications, for instance, in datasets with diverse and unbalanced malware families. Unlike static hypergraph models, which treat all neighbor nodes or hyperedges as equally important, hypergraph attention networks introduce a trainable attention mechanism to dynamically learn and assign weights during message passing resulting in a higher performance numbers.
+
+\subsubsection{CICMalDroid Performance}
+For the CICMalDroid2020 dataset, HGANN-Mal demonstrates exceptional performance across both binary detection and multi-class classification tasks. In binary detection, the model achieves outstanding results with a Macro-F1 score of 96.2\%, precision of 96.2\%, recall of 97.6\%, and accuracy of 97.6\%. These metrics significantly outperform baseline methods, with HGNNP achieving 95.9\% Macro-F1 and traditional approaches like GCN and GraphSAGE scoring 90.6\% and 91.0\% respectively. 
+
+Notably, while HGANN-Mal excels in most metrics, HGNNP achieves a slightly higher accuracy of 97.7\% compared to HGANN-Mal's 97.6\%. This marginal accuracy difference suggests that the attention mechanism in HGANN-Mal may introduce a subtle trade-off between precision-recall balance and raw accuracy optimization.
+
+\begin{table}[!h]
+\centering
+\caption{Performance of Malware Detection on CICMalDroid2020}
+\begin{tabular}{lcccccccc}
+\toprule
+& \multicolumn{4}{c}{\textbf{Binary Detection}} & \multicolumn{4}{c}{\textbf{Multi-Class Classification}} \\
+\cmidrule(lr){2-5} \cmidrule(lr){6-9}
+\textbf{Method} & Macro-F1 & Precision & Recall & Accuracy & Macro-F1 & Precision & Recall & Accuracy \\
+\midrule
+GCN \cite{kipf2016semi}              & 90.6 & 90.6 & 90.6 & 90.9 & 82.4 & 82.0 & 82.4 & 82.7 \\
+GraphSAGE \cite{yumlembam2022iot}    & 91.0 & 91.1 & 91.1 & 91.5 & 82.3 & 82.2 & 82.6 & 83.4 \\
+\midrule
+HGNN \cite{zhang2023}    & 94.2 & 94.8 & 94.3 & 94.6 & 88.7 & 88.8 & 88.8 & 89.0 \\
+HGNNP \cite{zhang2023}   & 95.9 & 96.1 & 96.5 & \textbf{97.7} & 89.3 & 89.5 & 89.8 & 90.1 \\
+HGANN-Mal  & \textbf{96.2} & \textbf{96.2} & \textbf{97.6} & 97.6 & \textbf{94.0} & \textbf{94.1} & \textbf{94.0} & \textbf{94.2} \\
+\bottomrule
+\end{tabular}
+\label{table:performance_CICMalDroid}
+\end{table}
+
+The multi-class classification results further validate the model's effectiveness, with HGANN-Mal achieving a Macro-F1 score of 94.0\%, precision of 94.1\%, recall of 94.0\%, and accuracy of 94.2\%. Compared to HGNNP's 89.3\% Macro-F1 and other baseline methods scoring below 90\%, HGANN-Mal demonstrates superior capability in distinguishing between different malware families within the CICMalDroid dataset. These results highlight the model's robust performance on the CICMalDroid2020 dataset, confirming its effectiveness in handling diverse and complex malware detection scenarios with high accuracy and reliability.
+
+ 
+
+\section{Limitations and Future Work}
+Our methodology, integrating hypergraph attention into the Android malware detection framework, is designed to overcome the limitations of traditional graph-based and static hypergraph-based approaches by learning more comprehensive representations of higher-order relationships between functions. Traditional FCGs often simplify these interactions into binary edges, losing crucial contextual information.
+
+The consistent outperformance of HGANN-Mal across both the Drebin and the CICMalDroid2020 datasets underscores the robustness and generalizability of our proposed approach, which are critical for real-world malware detection systems. Since Drebin is a widely recognized benchmark in Android malware detection, enabling direct comparison with existing state-of-the-art methods; however, roughly 49.35\% of its samples are repackaged duplicates sharing identical opcode sequences, risking train–test leakage and inflated performance estimates. To mitigate single dataset bias and better reflect recent Android malware trends, we also evaluate on CICMalDroid2020 dataset.
+
+
+
+While the results are promising, it is important to acknowledge certain considerations. 
+Our evaluation focuses on HGNN/GCN baselines aligned with our static pipeline and does not include the Android detectors such as MaMaDroid \cite{mamadroid} (and Drebin), which limits direct comparability to the broader literature. We will incorporate these non-hypergraph baselines in future work.
+
+Also, the construction and processing of hypergraphs can be computationally more intensive than traditional graphs, especially for very large and dense hypergraphs. Hypergraphs are designed to capture higher-order relationships, sparse data (e.g., applications with very few functions or limited API calls) might lead to less informative hyperedges or difficulties in learning robust attention weights.
+Future work could explore more efficient algorithms for hypergraph construction and optimization techniques for training HNNs on massive datasets.
+
+
+\section{Conclusion}
+In this paper, we introduced HGANN-Mal, a novel framework for Android malware detection that leverages an attention-based hypergraph neural network to overcome the limitations of conventional graph-based methods. Our approach constructs a hypergraph from static analysis features to model complex, higher-order relationships within applications. The core innovation is an attention mechanism that dynamically weighs these relationships based on their learned relevance to malicious behavior, enabling our model to adaptively focus on the most suspicious patterns and enhance classification accuracy. Experimental results on the Drebin and CICMalDroid datasets confirm that HGANN-Mal significantly outperforms state-of-the-art methods in both binary and multi-class classification tasks. This work demonstrates that an attention-based hypergraph approach provides a more nuanced, robust, and powerful tool for the complex task of malware detection. Future work will explore the integration of dynamic analysis features and investigate the interpretability of the learned attention weights to provide actionable security insights.
+
+
+
+
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+% \bibliographystyle{splncs04}
+% \bibliography{mybibliography}
+%
+% \begin{thebibliography}{8}
+
+% \end{thebibliography}
+\bibliographystyle{splncs04}
+\bibliography{paper}
+
+\end{document}

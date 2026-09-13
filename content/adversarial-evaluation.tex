@@ -1,0 +1,906 @@
+\chapter{Threat-Guided Evaluation of Adversarial Defences}
+\label{chap:advml}
+
+% Revised under T-003 and D-041 from notes/chapter6-source-records/.
+% D-030 fixes RQ4; D-031 fixes attribution; D-009 fixes the grey-box convention.
+
+\section{Research Problem and Contribution}
+\label{sec:advml:1}
+
+This chapter addresses RQ4: \rqFourText{} The question concerns gap~\gapref{4},
+which links adversary assumptions to the validity of the resulting measurements.
+
+An empirical robustness estimate depends on the permitted perturbations and the attacks used
+to search for them \cite{biggio2014security, carlini2019evaluating}. An unsuccessful search
+may reflect resistance to the tested attack, or a failure of the attack to exploit the model.
+For example, Athalye et al. identified obstructed gradients in seven of nine non-certified
+defences accepted at ICLR~2018 and circumvented six completely and one partially
+\cite{athalye2018obfuscated}. Evaluators therefore need to examine the measurement procedure
+alongside the defended classifier.
+
+The contribution examined here is the SPARTA SAFAIR evaluation framework: a contest with a
+hidden evaluation set and a modular benchmark for combinations of attacks and defences
+\cite{sparta2021d73, sparta2022d76}. The chapter reconstructs the implemented evaluation from
+the project records and compares its measurements with the stated threat model. It then derives
+properties of the accuracy-loss score and the binary detector response policy. These deductions
+explain what the published aggregate results can establish and which additional observations
+would be needed to distinguish competing explanations. They are analytical results of this
+chapter, rather than additional experiments from the project.
+
+The empirical evidence comprises the contest submissions and a benchmark evaluation of partner
+defences on histopathology images. A short comparison with the project's PDF-malware study
+examines how feature constraints alter the evaluation problem. The SD submission descriptions
+provide evidence of constant attribute predictions and gradient masking; the benchmark's
+unchanging activation-detector accuracy leaves its mechanism unresolved. The contribution is an
+assessment of evaluation validity, with no claim to a new attack algorithm or certified defence.
+
+SPARTA was funded under Horizon~2020 grant agreement No.~830892. Its seventh work package,
+SAFAIR, concerned the security of artificial-intelligence systems. The candidate wrote the
+whole of D7.6, which reports the contest and benchmark, and Chapter~5 of D7.5
+\cite{sparta2022d76, sparta2021d75}. Section~\ref{sec:advml:10} distinguishes this contribution
+from the partner methods and experiments discussed below.
+
+\section{AI-System Threat Analysis}
+\label{sec:advml:2}
+
+D7.1 surveys AI-system assets and threat taxonomies, and D7.2 describes the defensive mechanisms
+studied by the partners \cite{sparta2021d71, sparta2020d72}. The project's relational threat
+model combines threat groups from ENISA, asset categories from the Software Engineering
+Institute, and attack techniques and knowledge levels from NIST
+\cite{damiani2016bigdatathreat, galyardt2020nistir8269comments, tabassi2019nistir8269}.
+This combination supplies a common vocabulary for the knowledge base. Its categories must still
+be translated into operational assumptions before an experiment can be specified.
+
+In particular, D7.1 Section~3.3.6 distinguishes grey-box cases by knowledge of model architecture,
+parameter values, training method or training data. Its agent classification has no separate
+axis for an attacker's objective or permitted modifications. This chapter specifies those
+conditions for each evaluation, following the security-evaluation framework introduced in
+Section~\ref{sec:background:adversarial} \cite{biggio2014security}.
+
+One source definition requires correction. D7.1 Section~2.3.5 describes obtaining model
+parameters as an availability attack. This concerns confidentiality of the model. The cited
+source defines availability in terms of timely service to authorised users
+\cite{auernhammer2019attacks}. The distinction limits the scope of the present evaluation:
+the reported outcome is predictive performance under evasion, with no separate measurement of
+service availability. The current NIST taxonomy provides the broader terminology
+\cite{vassilev2025adversarial}; the earlier draft is cited above as the historical source of
+the project's classification.
+
+\section{Evaluation Requirements and Threat Models}
+\label{sec:advml:3}
+
+The threat model specifies the attack objective, the information available to the attacker and
+the operations permitted on the input. Section~\ref{sec:background:adversarial} fixes the
+knowledge terminology used throughout the dissertation. Under its grey-box convention, some
+model information is known and the training process cannot be influenced. Knowledge of
+training data and the ability to alter those data are separate assumptions.
+
+The contest granted knowledge of the training corpus, withheld the defence technique and model
+architecture, and allowed gradient-based updates against the deployed model
+\cite{sparta2021d73, norouzian2021safaircontest}. Access to gradients is an oracle capability.
+The term grey box alone therefore leaves the experimental interface underspecified. The
+conditions stated in Section~\ref{sec:advml:4}, including the query interface and input budget,
+define the contest adversary used here. This is an academic evaluation setting; a survey of
+271 practitioners found that academic knowledge assumptions often grant more information than
+attackers have in deployment \cite{grosse2024towards}.
+
+D7.3 adopted the evaluation checklist of Carlini et al. It called for attacks adapted to the
+complete defence, explicit attack hyperparameters and comparisons with transfer or
+gradient-free attacks. It also requested perturbation-budget curves and ablations
+\cite{sparta2021d73, carlini2019evaluating}. These requirements provide a basis for assessing
+the delivered results. Participation by independent attack teams can broaden the search, but
+the scoring rule and the validity of each generated input require separate checks.
+
+\section{Tasks and Evaluation Protocol}
+\label{sec:advml:4}
+
+\subsection{Prediction Tasks and Permitted Perturbations}
+
+The contest specified an attack and a defence track for each of two tasks
+\cite{sparta2021d73}. In targeted face re-identification, the attacker receives an image and
+a target identity and attempts to induce that identity as the prediction. In attribute
+alteration, the attacker receives a nominated subset of the forty binary facial attributes
+and attempts to cause errors on that subset. A participant could attack one task and defend
+the other, but could not enter both sides of the same task.
+
+Let $f_\theta$ denote the model scores and $h$ the resulting class decision. For an image $x$
+in a specified input coordinate system, define the feasible perturbations by
+\begin{equation}
+  \mathcal S_\varepsilon(x)
+  =\{x'\in\mathcal X_{\mathrm{valid}}:\|x'-x\|_\infty\leq\varepsilon\}.
+  \label{eq:advml:feasible}
+\end{equation}
+Here $\mathcal X_{\mathrm{valid}}$ includes the permitted pixel range and quantisation.
+For pixel values scaled to $[0,1]$, the contest budget was $\varepsilon=8/255$, corresponding
+to a maximum change of eight intensity levels per channel in the discrete $0$--$255$ encoding.
+The rules required discrete output images, deterministic and stateless submitted models, and
+an upper limit of four hours for generation of 1,000 perturbed examples
+\cite{sparta2022d76}. The report identifies two 12~GB NVIDIA GPUs, a Titan~X Pascal and a
+GeForce~GTX, with a 32-core AMD CPU and 128~GB RAM. Container execution used Ubuntu~18.04
+and CUDA~10.1. These are reported resource limits, not measured per-example runtimes.
+
+The budget must be interpreted before any model-specific normalisation. For example, a linear
+rescaling from $[0,1]$ to $[-1,1]$ doubles the numerical distance. A reproducible evaluation
+therefore records both the input coordinate system and preprocessing. The contest's
+$8/255$ setting is not assumed for the histopathology results, whose attack configurations
+are absent from the reported result table.
+
+\subsection{Scoring and the Delivered Protocol}
+
+SAFAIR ranked submissions by the change between clean and perturbed accuracy,
+\begin{equation}
+  \Delta=A_{\mathrm{initial}}-A_{\mathrm{final}}.
+  \label{eq:advml:delta}
+\end{equation}
+Attacks sought the largest $\Delta$ and defences the smallest. Unless stated otherwise,
+accuracies and $\Delta$ are proportions in this chapter; $100\Delta$ is a difference in
+percentage points. D7.5 specifies clean accuracy and runtime as tie-breakers
+\cite{sparta2021d75}. These do not prevent a low-utility model with a smaller $\Delta$ from
+outranking a more accurate model.
+
+The planned opening round evaluated defences against FGSM, BIM and PGD, with respective
+weights $0.2$, $0.4$ and $0.4$ \cite{goodfellow2015explaining, kurakin2017bim, madry2018pgd}.
+The five selected attacks would then face the five selected defences, with the final score
+averaged over opponents \cite{sparta2021d73}. No attack submissions arrived. The organisers
+used fixed baseline attacks instead; D7.5 lists Carlini--Wagner in addition to FGSM, BIM and PGD
+\cite{sparta2021d75, carlini2017robustness}. Table~\ref{tab:advml:designdelivery} records the
+change in protocol.
+
+\begin{table}[tbp]
+  \caption{Planned and reported SAFAIR evaluation procedures.}
+  \label{tab:advml:designdelivery}
+  \centering\small
+  \begin{tabular}{@{}p{0.20\linewidth}p{0.36\linewidth}p{0.36\linewidth}@{}}
+    \toprule
+    & \textbf{Plan} \cite{sparta2021d73} & \textbf{Reported delivery} \cite{sparta2021d75,sparta2022d76} \\
+    \midrule
+    Participants & attack and defence tracks for both tasks & defence submissions only \\
+    Attack selection & organiser baselines, then five selected participant attacks & four named organiser baselines \\
+    Defence score & weighted opening $\Delta$; mean final $\Delta$ over opponents & aggregate best and worst perturbed accuracies; $\Delta$ from the best value \\
+    Final comparison & five attacks against five defences & no participant-attack round \\
+    Reproduction & hidden evaluation set and submitted containers & sampling code and tool descriptions; incomplete run-level records \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The lack of independent attacks reduced the diversity of the evaluation. It does not explain
+all weaknesses of the resulting measurement. As derived in Section~\ref{sec:advml:8:metrics},
+a constant classifier has $\Delta=0$ against any set of label-preserving attacks, including
+the opponents in the planned final round. The scoring defect and the attack-coverage defect
+are therefore distinct.
+
+The contest drew inspiration from the NIPS~2017 competition, whose defence score was the
+proportion of correctly classified attacked images averaged across attacks
+\cite{kurakin2018competition}. That score differs from Equation~\ref{eq:advml:delta}.
+The competitions also differed in task and participation, so their results do not isolate
+the effect of independent contestants. Details of the schedule are retained in the cited
+project records; the scientific comparison here concerns the scoring and attack interfaces.
+
+\section{Data and Evaluation Measures}
+\label{sec:advml:5}
+
+\subsection{Corpora and Hidden Evaluation Samples}
+
+The contest used CelebA for model training, a corpus described by Liu et al. as approximately
+200,000 images of 10,000 identities, with forty binary attributes per image
+\cite{liu2015celeba}. For hidden attribute evaluation the organisers used LFWA, the
+forty-attribute annotation of Labeled Faces in the Wild, which contains 13,233 images of
+5,749 identities \cite{huang2007lfw, liu2015celeba}. A separate corpus reduces direct image
+reuse, but does not establish equality of image distributions or attribute prevalences.
+
+Re-identification required identity labels compatible with the trained classifier. The
+organisers therefore used CelebA images under a random choice of colour jitter, greyscale
+conversion, horizontal reflection or rotation of at most five degrees
+\cite{sparta2022d76}. The printed procedure applies a face-detection check and retries failed
+transformations before excluding an image. The resulting selection may differ from an
+unfiltered sample. The report recognises that participants could have used similar
+augmentations during training. Augmentation alone does not demonstrate independence from
+training images.
+
+The sampling code in D7.6 calls for 1,000 LFWA examples and, separately, 1,000 examples from
+a re-identification test CSV. These are two task-specific samples. The code assigns
+\texttt{random.seed = 42} instead of calling a seeding function, while the two pandas samples
+receive no explicit random state. The augmentation draws are also stochastic. Consequently,
+the printed procedure does not regenerate the exact hidden images. Saved manifests and
+transformed files could establish their identity, but their recovery is not documented in
+the deliverable \cite{sparta2022d76}.
+
+\begin{table}[tbp]
+  \caption{Evaluation units and data provenance. Stated sample sizes describe the printed
+    procedures, not recovered per-example result files.}
+  \label{tab:advml:data}
+  \centering\small
+  \begin{tabular}{@{}p{0.23\linewidth}p{0.33\linewidth}p{0.36\linewidth}@{}}
+    \toprule
+    \textbf{Evaluation} & \textbf{Input and prediction} & \textbf{Source and sampling} \\
+    \midrule
+    Contest identity & one image; one identity label & augmented CelebA; 1,000 selected test records \cite{sparta2022d76} \\
+    Contest attributes & one image; forty binary labels & LFWA; 1,000 selected images \cite{sparta2022d76} \\
+    Partner benchmark & one $50\times50$ histopathology patch; IDC/non-IDC & training, validation and test subsets described; evaluated subset size and patient separation unreported \cite{sparta2020d72} \\
+    PDF comparison & 21 tag counts; benign/malicious & 20,000 files; 45/45/10 per cent defender/proxy/crafting split \cite{sparta2021d75} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The histopathology corpus is identified in D7.2 as the IDC patch collection, whereas D7.6
+calls it a breast-cancer image dataset without naming it \cite{sparta2020d72,sparta2022d76}.
+The full collection contains 198,738 negative and 78,786 positive patches, so its majority
+share is approximately $0.7161$ \cite{mooney2017idc}. The test subset's class share is not
+reported. Neither this collection-wide ratio nor the contest's sample sizes can be used to
+reconstruct the benchmark's confusion matrices.
+
+\subsection{Accuracy and Task-Specific Attack Success}
+
+For $N$ examples with identity labels $y_i$, the decision is
+$h(x_i)=\arg\max_k f_{\theta,k}(x_i)$. Attribute decisions are
+$h_j(x_i)=\mathbf1[f_{\theta,j}(x_i)\geq0]$ when the outputs are logits, with equivalent
+threshold $0.5$ for sigmoid probabilities. The corresponding accuracies are
+\begin{equation}
+  A_{\mathrm{id}}=\frac1N\sum_{i=1}^N\mathbf1[h(x_i)=y_i],
+  \qquad
+  A_{\mathrm{attr}}=\frac1{40N}\sum_{i=1}^N\sum_{j=1}^{40}
+                   \mathbf1[h_j(x_i)=y_{ij}].
+  \label{eq:advml:accuracies}
+\end{equation}
+These conventions follow the task-specific scoring code printed in D7.6. Attribute accuracy
+counts individual attribute decisions; it does not require all forty predictions for an
+image to be correct \cite{sparta2022d76}.
+
+Accuracy loss does not identify success against a specified target. For identity targets
+$t_i\neq y_i$, let $I_t=\{i:h(x_i)=y_i,\ t_i\neq y_i\}$ contain eligible, initially correct
+examples. Given valid attacked inputs $x_i'$, conditional targeted success is
+\begin{equation}
+  \mathrm{ASR}_{\mathrm{target}}
+  =\frac{1}{|I_t|}\sum_{i\in I_t}\mathbf1[h(x_i')=t_i].
+  \label{eq:advml:targeted}
+\end{equation}
+A prediction of a third identity reduces accuracy without satisfying the targeted objective.
+An empty eligible set makes this rate undefined and its size must be reported.
+
+For a nonempty nominated attribute subset $J_i$, define
+$I_J=\{i:h_j(x_i)=y_{ij}\text{ for all }j\in J_i\}$. One explicit success criterion is
+\begin{equation}
+  \mathrm{ASR}_{\mathrm{subset}}
+  =\frac1{|I_J|}\sum_{i\in I_J}\prod_{j\in J_i}
+    \mathbf1[h_j(x_i')\neq y_{ij}].
+  \label{eq:advml:subset}
+\end{equation}
+This requires errors on every nominated attribute of an initially correct subset. Reporting
+$|I_J|$ separates induced errors from those already present; the rate is undefined if
+$|I_J|=0$. Equations~\ref{eq:advml:targeted}
+and~\ref{eq:advml:subset} specify measurements needed to evaluate the stated objectives;
+they are not additional scores recovered from the contest. If an attack flips all $k$ initially
+correct bits in the nominated subset and leaves all other decisions unchanged, the per-image contribution
+to attribute accuracy falls by only $k/40$. For $k=1$ this is 2.5 percentage points, although
+the specified attack succeeds.
+
+\subsection{Aggregation over Attacks}
+
+An attack suite can fail on different examples under each method. Selecting the lowest
+aggregate accuracy does not account for that complementarity. Following per-example
+evaluation guidance \cite{carlini2019evaluating}, let $\mathcal A_\varepsilon$ be a finite
+set of attacks whose outputs satisfy Equation~\ref{eq:advml:feasible}. For a single-label task,
+define
+\begin{equation}
+  \widehat A_{\mathcal A}(\varepsilon)
+  =\frac1N\sum_{i=1}^N
+   \min_{a\in\mathcal A_\varepsilon\cup\{\mathrm{id}\}}
+   \mathbf1[h(a(x_i))=y_i].
+  \label{eq:advml:suite}
+\end{equation}
+The identity transformation includes clean errors in the score. The suite must respect the
+same threat model for each defence. Because it searches only a subset of valid perturbations,
+its surviving accuracy is an upper bound on worst-case accuracy on these examples, not a
+certificate of robustness. Moreover,
+\begin{equation}
+  \widehat A_{\mathcal A}(\varepsilon)
+  \leq\min_{a\in\mathcal A_\varepsilon\cup\{\mathrm{id}\}}
+           \frac1N\sum_i\mathbf1[h(a(x_i))=y_i],
+  \label{eq:advml:aggregation-bound}
+\end{equation}
+since each per-example minimum is no greater than its value for any fixed attack.
+The aggregate tables do not identify which examples fail under which attack, so this suite
+score cannot be calculated retrospectively from them.
+
+\subsection{Biometric Data and Data Protection}
+\label{sec:advml:5:ethics}
+
+The contest processed photographs of identifiable people and predicted identities or facial
+attributes. D7.1 discusses purpose limitation, data minimisation and privacy by design, but
+the contest documentation supplies no corpus-specific account of the lawful basis or the
+participants' data-governance responsibilities \cite{sparta2021d71,sparta2022d76}. The
+absence of that documentation establishes a reporting gap; it does not establish the consent
+status of each person depicted or a legal finding about every possible use.
+
+Attribute imbalance also affects the scientific interpretation. The SD account describes a
+constant attribute predictor whose accuracy remains high because some attributes are rare
+\cite{sparta2022d76}. A complete evaluation would therefore report attribute prevalences and
+per-attribute outcomes alongside the aggregate score. Demographic performance differences
+cannot be inferred from the reported aggregates. This chapter confines its empirical claims
+to the documented classification tasks and does not infer suitability for biometric deployment.
+
+\section{Benchmark Architecture and Reproducibility}
+\label{sec:advml:6}
+
+The benchmark separates attack execution from the task-specific model and data interface.
+D7.3 proposed five modules, which D7.6 reports as implemented: attacks, datasets and models,
+together with use cases and a wrapper \cite{sparta2021d73,sparta2022d76}.
+Figure~\ref{fig:advml:architecture} redraws the published architecture. A run loads a
+checkpoint and the evaluation data, converts the model to the attack-library interface, and
+reports task-dependent outputs for the selected attacks.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{sparta/thesis/sparta-benchmark-architecture.pdf}
+  \caption{Benchmark architecture, redrawn after D7.6 Figure~2, p.~22 \cite{sparta2022d76}.
+    Box labels follow the original. The second line in each box paraphrases the module and
+    run descriptions in D7.6 Section~3.1.1. The five modules separate task definitions and
+    data loading from attack execution. The diagram records the software design; it does not
+    establish that a particular experiment preserved its model weights, data manifest and
+    attack settings.}
+  \label{fig:advml:architecture}
+\end{figure}
+
+The wrapper exposes a model through Foolbox, whose reference implementations supply the
+attacks \cite{rauber2017foolbox}. PyTorch is the native model interface; the report also
+describes conversion of TensorFlow or Keras models. Use-case classes select the prediction
+criterion and loss for the task. A new attack extends a base class and is discovered by the
+loader; a configuration list excludes named attacks. These interfaces permit reuse across
+models. Compatibility still depends on the output semantics: the report's multi-label
+wrapper handles fixed-budget attacks, while some minimum-distance interfaces are omitted
+\cite{sparta2022d76}.
+
+D7.6 also contains a description of splitting data and training classifiers, alongside repeated
+statements that weights must already exist. The documented invocations require checkpoints,
+and the inspected public implementation loads trained models
+\cite{norouzian2021adversarialbenchmark}. Accordingly, the benchmark is described here as an
+evaluation tool. Its public source is separate from the contest development toolkit
+\cite{norouzian2021safairtoolkit}.
+
+\paragraph{Perturbation validation.} The public revision identified by commit
+\texttt{2fac62b947ed} pins Foolbox~3.3.1. Its attack call returns a raw candidate and a
+budget-clipped candidate, with a success indicator. However, lines~134--135 of
+\texttt{main.py} pass the raw candidate to the accuracy function
+\cite{norouzian2021adversarialbenchmark}. In Foolbox's minimisation interface the clipped
+candidate is obtained by restricting the raw perturbation to the requested distance budget;
+the raw output need not satisfy that budget \cite{foolbox2021api}. Scoring the raw output
+can therefore count changes outside the permitted set. This is a finding about the inspected
+implementation. No recovered run record connects that revision to the histopathology table,
+so it does not establish the cause of any historical result.
+
+A further distinction concerns targeted runs. The same implementation replaces the reference
+labels with the nominated target before computing its fields labelled accuracy. Those fields
+then measure target-label agreement, with a different interpretation from true-label accuracy
+\cite{norouzian2021adversarialbenchmark}. The examples in D7.6 Figure~6 likewise show a
+targeted result whose value rises under attack \cite{sparta2022d76}. Each output therefore
+needs an explicit task, reference label and denominator.
+
+The inspected source fixes several dependency versions and allows the implementation to be
+identified by a commit. Reproduction of a measured result additionally requires the exact
+checkpoint and evaluation manifest, the preprocessing and attack parameters, and the individual
+outputs. A valid evaluation would check quantisation and distances after all conversions,
+record failed or skipped attacks, and score the candidate that satisfies the declared budget.
+These are requirements derived from the interfaces, not claims that the historical runs
+performed those checks.
+
+\section{Defence Mechanisms and Integration}
+\label{sec:advml:7}
+
+D7.6 evaluates five partner configurations described in D7.2. The underlying histopathology
+classifier combines a pretrained VGG16 feature extractor with a dense prediction network
+\cite{sparta2020d72,sparta2022d76}. Write its scores as
+$f_\theta(x)=c_\psi(\phi_\omega(x))$, where $\phi_\omega$ is the convolutional feature
+extractor and $c_\psi$ the prediction head. The following notation makes the intervention
+of each defence explicit without supplying missing layer configurations.
+
+\subsection{Training and Representation Transformations}
+
+The adversarial-training configuration retrains the classifier with clean and perturbed
+examples. D7.6 identifies FGSM, BIM and PGD as the attacks used to generate its adversarial
+training examples \cite{sparta2022d76}. The surviving description does not specify the
+mixture ratio or a complete optimisation schedule. This method exposes the model to those
+attacks during training; resistance to other attacks remains an empirical question.
+
+For the dimensionality-reduction variants, let $r_\eta$ denote an autoencoder. The two
+configurations have score functions
+\begin{equation}
+  f_{\mathrm{top}}(x)=c_\psi\bigl(\phi_\omega(r_{\eta_x}(x))\bigr),
+  \qquad
+  f_{\mathrm{mid}}(x)=c_\psi\bigl(r_{\eta_z}(\phi_\omega(x))\bigr).
+  \label{eq:advml:compositions}
+\end{equation}
+The first transforms pixels and the second transforms extracted features.
+D7.2 states that the original convolutional network and prediction head retain their weights
+in these autoencoder variants. Its separate encoder-only variant trains a new prediction
+head, but that variant is not a column of the D7.6 benchmark table
+\cite{sparta2020d72}. Figure~\ref{fig:advml:autoencoders} redraws the two published
+placement diagrams in this notation.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{sparta/thesis/sparta-autoencoder-placement.pdf}
+  \caption{Autoencoder placement in the partner classifier, redrawn after D7.2 Figures~13
+    and~11, p.~14 \cite{sparta2020d72}. In the top variant (a), the autoencoder
+    $r_{\eta_x}$ transforms the input before feature extraction. In the middle variant (b),
+    $r_{\eta_z}$ acts between the feature extractor $\phi_\omega$ and the prediction head
+    $c_\psi$, as in Equation~\ref{eq:advml:compositions}. The legend follows D7.2, which
+    keeps the original weights of VGG16 and the dense network in both variants. The
+    diagrams specify placement, not a matched ablation of all training choices.}
+  \label{fig:advml:autoencoders}
+\end{figure}
+
+A smaller reconstruction error alone does not establish robustness of either composition.
+The relevant attack must optimise against the complete transformed classifier, including its
+preprocessing. Reusing examples generated against the original classifier tests a different
+condition from attacking the defended composition \cite{carlini2019evaluating}.
+
+\subsection{History and Activation Detectors}
+
+Figure~\ref{fig:advml:detectors} shows the two partner detectors and their response paths.
+
+Prediction similarity adds a history of queries and their predictions. The partner study
+records user information with image similarity and alarm statistics, and reports SSIM as the
+similarity measure \cite{sparta2020d72}. Its alarm can be written
+$d_t=d(x_t,H_{t-1})$, where $H_{t-1}$ contains the preceding queries associated with the
+monitored interaction. A sequence of related optimisation queries may then trigger an alarm.
+A transferred adversarial example submitted once presents a different observation to this
+stateful detector.
+
+For reproducibility, a history-based evaluation must specify the sequence order, user
+association and reset policy. The contest's stateless-submission rule does not describe this
+benchmark configuration. The reports do not establish a common history protocol across the
+attacks in the result table, so their differences cannot be attributed solely to whether an
+attack uses gradients.
+
+The activation detector instead characterises the response of the underlying classifier to
+an input. For each of nineteen hidden layers it calculates nine statistics: mean and median;
+skewness and kurtosis; standard deviation and interquartile range; minimum and maximum;
+and the number of nonzero activations \cite{sparta2020d72}. With layer activations
+$a_\ell(x)$ and the statistic vector $s$, the representation is
+\begin{equation}
+  z(x)=\operatorname{concat}_{\ell=1}^{19}s(a_\ell(x))\in\mathbb R^{171}.
+  \label{eq:advml:activation-features}
+\end{equation}
+After standardisation and feature selection, two support-vector classifiers are trained, one
+for each class predicted by the original model. The selected detector therefore depends on
+that prediction. The 94\% detector accuracy reported in D7.2 concerns detection of adversarial
+inputs; it is not the defended task accuracy of the D7.6 table.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics{sparta/thesis/sparta-detector-mechanisms.pdf}
+  \caption{Partner detection mechanisms, redrawn after D7.2 Figures~15 and~16, p.~16
+    \cite{sparta2020d72}. Panel (a) uses preceding queries, whereas panel (b) uses internal
+    activations of the classifier. The recorded parameters, the activation features of
+    Equation~\ref{eq:advml:activation-features} and the per-class detector follow D7.2.
+    The response is the label reversal of Equation~\ref{eq:advml:reversal}, which D7.6
+    applies in the benchmark \cite{sparta2022d76}. The final action is part of the defended
+    system and must be included when task accuracy is measured.}
+  \label{fig:advml:detectors}
+\end{figure}
+
+\subsection{From an Alarm to a Classification}
+
+To place the detectors in an accuracy table, D7.6 uses the binary response policy of returning
+the opposite class whenever the detector raises an alarm \cite{sparta2022d76}. Let
+$h(x)\in\{0,1\}$ denote the base prediction, $d(x)\in\{0,1\}$ the alarm and $g(x)$ the
+returned class. For a fixed history, where applicable,
+\begin{equation}
+  g(x)=h(x)\oplus d(x),
+  \label{eq:advml:reversal}
+\end{equation}
+where $\oplus$ denotes exclusive OR. This rule corrects an erroneous binary prediction when
+the detector raises an alarm, but turns a correct prediction into an error under the same
+alarm. Consequently, on a common labelled evaluation set,
+\begin{equation}
+  A(g)-A(h)
+  =\Pr(d=1,h\neq y)-\Pr(d=1,h=y).
+  \label{eq:advml:reversal-gain}
+\end{equation}
+The probabilities denote empirical fractions on that set. To obtain the identity, partition
+the observations by the alarm and the correctness of $h$: unflagged predictions are unchanged,
+flagged errors are corrected, and flagged correct predictions are reversed. If $d(x)=1$ for
+every observation, then $A(g)=1-A(h)$, while $g$ can still depend on the input.
+
+Detection accuracy alone does not determine either term in
+Equation~\ref{eq:advml:reversal-gain}. A useful evaluation records alarms jointly with base
+and returned predictions, and measures false alarms on clean inputs. Abstention would be a
+different response policy, for which coverage and error among accepted predictions must be
+reported \cite{carlini2019evaluating}. The historical benchmark reports the reversal policy;
+its aggregate accuracies do not identify the two joint fractions.
+
+\section{Results and Metric Analysis}
+\label{sec:advml:8}
+
+\subsection{Contest Evidence}
+\label{sec:advml:8:contest}
+
+Table~\ref{tab:advml:contest} preserves the numerical columns of D7.6 Table~1. The source
+reports one row per ranked team and task, rather than one row per submitted checkpoint.
+Its surrounding text describes best and worst scores across submissions, but does not link
+each value to an attack and checkpoint \cite{sparta2022d76}.
+
+\begin{table}[tbp]
+  \caption{Reported contest scores, including the worst-perturbed column, from D7.6 Table~1,
+    p.~16 \cite{sparta2022d76}. Task names follow that table. The SD task label conflicts
+    with its detailed attribute-model description; best and worst values are not identified
+    as paired outcomes for one checkpoint under a common attack suite.}
+  \label{tab:advml:contest}
+  \centering\small
+  \begin{tabular}{@{}llp{0.24\linewidth}cccc@{}}
+    \toprule
+    Rank & Team & Task & Clean & Best & Worst & $\Delta$ \\
+    \midrule
+    1 & SD & re-identification & 0.87 & 0.85 & 0.67 & 0.02 \\
+    2 & Vicomtech & re-identification & 0.85 & 0.72 & 0.72 & 0.13 \\
+      & Vicomtech & attribute alteration & 0.80 & 0.65 & 0.65 & 0.15 \\
+    3 & BPI & re-identification & 0.84 & 0.68 & 0.68 & 0.16 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The SD row reports 0.85 as best perturbed accuracy and 0.67 as worst, a spread of eighteen
+percentage points. The printed $\Delta=0.02$ uses the best value. Subtracting 0.67 from 0.87
+would give 0.20, but it would not establish a worst-case loss for the same model without the
+missing checkpoint association. The report's prose also substitutes 87\% for attacked
+accuracy and gives 61\% and 88\% values that do not match its table. The numerical record
+used here is the table, with those inconsistencies retained as limits on interpretation.
+
+The counts of submissions also disagree. D7.5 states seven defence submissions, six for
+re-identification and one for attributes, whereas D7.6 states six submissions in total
+\cite{sparta2021d75,sparta2022d76}. An unscored ITTI account appears in D7.6, but the
+reports do not state that this explains the difference. Similarly, D7.5 gives SD a zero
+$\Delta$ while D7.6 Table~1 gives 0.02. The development accounts describe models compatible
+with different scores, but do not supply the identifiers needed to reconcile the two reports.
+
+The four rows do not establish a general relation between clean performance and robustness.
+They combine different prediction tasks and selected submissions from three teams. No
+regression or significance test is appropriate for this table. D7.6 mentions ten-fold
+cross-validation in the Vicomtech and BPI accounts, but does not provide fold assignments or
+fold-level outcomes. Those statements cannot supply uncertainty estimates for the printed
+scores.
+
+\subsection{SD Development Configurations}
+\label{sec:advml:8:sd}
+
+D7.6 describes three SD models. Its introductory text assigns them to re-identification,
+while the model details specify forty attribute outputs. The high accuracy of a constant
+attribute vector cannot be interpreted as a demonstrated identity-classification result.
+The following analysis therefore follows the attribute-model description and leaves its
+mapping to Table~\ref{tab:advml:contest} unresolved \cite{sparta2022d76}.
+
+The first configuration was a convolutional network trained on PGD examples with
+$\varepsilon=0.3$, approximately 9.6 times the contest's $8/255$ budget if both use
+$[0,1]$ pixels. The team reports that training produced the same output for every input,
+with approximately 80\% clean attribute accuracy and zero accuracy loss. It attributes that
+accuracy to the prevalence of absent attributes and recognises a weakness in the dataset
+and contest rules. This is the source's direct account of prediction collapse, although
+neither the checkpoint nor individual predictions accompany the reported result.
+
+The second configuration combines six EfficientNet and three pruned ECA-ResNet models.
+Their averaged outputs are thresholded to obscure gradients. For a nonzero scalar attribute
+logit $u$, write the transformation as
+\begin{equation}
+  q(u)=\begin{cases}10,&u>0,\\-10,&u<0.\end{cases}
+  \qquad
+  \mathbf1[q(u)\geq0]=\mathbf1[u\geq0],
+  \qquad q'(u)=0\ \ (u\neq0).
+  \label{eq:advml:threshold}
+\end{equation}
+The source does not specify the exact-zero tie. Away from that tie, the operation preserves
+the binary decision and suppresses its direct derivative. It can obstruct a gradient-based
+attack without changing the classifier's decision regions. Attacks adapted to the
+non-differentiable operation or transferred from another model remain relevant
+\cite{athalye2018obfuscated, tramer2020adaptive}.
+
+The second configuration achieved approximately 92\% clean accuracy and 79\% under
+transferred attacks in the team's development account. The third used one pruned ECA-ResNet,
+added adversarial training, and retained the threshold operation. Its reported clean
+accuracy was approximately 87\%, with 84--85\% under transferred attacks
+\cite{sparta2022d76}. Figure~\ref{fig:advml:sd} shows these values separately from the
+contest table.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{sparta/thesis/sparta-sd-comparison.pdf}
+  \caption{SD development configurations from D7.6 Sections~2.8.1.2--2.8.1.3, pp.~18--19
+    \cite{sparta2022d76}. The interval 84--85\% is a reported approximate range, not a
+    confidence interval. The source describes attribute outputs despite its re-identification
+    heading. These values are not additional official contest rows.}
+  \label{fig:advml:sd}
+\end{figure}
+
+The third configuration trades five percentage points of reported clean accuracy for five to
+six points of transferred-attack accuracy relative to the second. This is a descriptive
+comparison between systems: ensemble size and training changed together, and the attacks'
+individual settings are not given. It does not isolate the effect of adversarial training.
+The transfer results nevertheless show why resistance to a direct gradient attack is an
+incomplete measure of these constructions.
+
+\subsection{Histopathology Benchmark}
+\label{sec:advml:8:benchmark}
+
+Table~\ref{tab:advml:benchmark} reproduces the partner benchmark results. It measures binary
+IDC classification after the defence and, for the two detectors, after the response policy
+in Equation~\ref{eq:advml:reversal} \cite{sparta2022d76}. The clean row records the
+prediction cost associated with each configuration.
+
+\begin{table}[tbp]
+  \caption{Published accuracies for the five partner defence configurations, from D7.6
+    Table~2, pp.~28--29 \cite{sparta2022d76}. Attack hyperparameters and the evaluated
+    subset are unspecified. Each entry is a reported aggregate, with no dispersion estimate.}
+  \label{tab:advml:benchmark}
+  \centering\small
+  \begin{tabular}{@{}lccccc@{}}
+    \toprule
+    Attack & Adv.\ training & Top AE & Middle AE & Pred.\ similarity & Activations \\
+    \midrule
+    none (clean) & 0.844 & 0.726 & 0.817 & 0.844 & 0.708 \\
+    FGSM & 0.837 & 0.716 & 0.812 & 0.837 & 0.708 \\
+    $L_2$ basic iterative & 0.844 & 0.725 & 0.817 & 0.842 & 0.708 \\
+    BIM & 0.837 & 0.716 & 0.812 & 0.837 & 0.708 \\
+    DeepFool & 0.003 & 0 & 0.001 & 0.015 & 0.708 \\
+    additive noise & 0.844 & 0.725 & 0.817 & 0.844 & 0.708 \\
+    NewtonFool & 0.464 & 0 & 0 & 0.460 & 0.708 \\
+    PGD & 0.837 & 0.717 & 0.813 & 0.837 & 0.708 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The middle autoencoder exceeds the top autoencoder by 9.1 percentage points on clean data
+and 9.6 points under the reported PGD condition. Its PGD loss is 0.4 points, compared with
+0.9 for the top variant. These values favour the middle configuration within the reported
+evaluation. They do not establish that placement alone caused the difference, because the
+complete training configurations and repeated-run outcomes are unavailable.
+
+Adversarial training and prediction similarity have equal reported clean accuracy and equal
+FGSM, BIM and PGD values. Prediction similarity is higher under DeepFool by 1.2 percentage
+points, but lower under NewtonFool by 0.4 points. It therefore does not dominate adversarial
+training across the table. The source's explanation that similarity detects gradient-based
+construction is insufficient to explain the results, since DeepFool and NewtonFool also use
+gradient information. Query sequences and detector alarms would be needed to test that
+mechanism.
+
+The activation column remains at 0.708, including on clean inputs. This establishes equality
+of the printed aggregates to their reported precision. It does not establish identical
+predictions, an always-active detector or insensitivity to inputs. The full corpus's majority
+share is approximately 0.7161, but the unknown evaluation split prevents a matched baseline
+comparison. Equation~\ref{eq:advml:reversal-gain} also shows that always reversing predictions
+would not, by itself, yield the class prior. The mechanism behind the column remains
+unidentified.
+
+The near-zero DeepFool results for four configurations require a different qualification.
+Minimum-distortion attacks search for an adversarial input and should be compared by the
+distortion required, or by success after imposing a common valid budget
+\cite{moosavi2016deepfool,carlini2019evaluating}. Neither the norm and stopping settings nor
+achieved distortions are reported for these benchmark runs. The table therefore cannot
+establish that its attack rows represent equally constrained adversaries. The code finding
+in Section~\ref{sec:advml:6} reinforces the need to validate distances, but does not resolve
+the historical configuration. The additive-noise row is a useful control condition; without
+its distribution, budget and number of trials, its small changes do not establish a
+comprehensive random-search check.
+
+\subsection{Sensitivity to the Scoring Rule}
+\label{sec:advml:8:metrics}
+
+Figure~\ref{fig:advml:deltas} subtracts each attacked accuracy from that configuration's
+clean accuracy. It makes the score dependence visible without changing the original results.
+Under PGD, the activation detector has the smallest $\Delta$, zero, but its attacked
+accuracy is 12.9 percentage points below adversarial training. Similarly, the middle
+autoencoder has a smaller loss than adversarial training while its attacked accuracy is
+2.4 points lower. A smaller loss alone therefore does not identify the more useful defended
+classifier.
+
+\begin{figure}[tbp]
+  \centering
+  \includegraphics[width=\linewidth]{sparta/thesis/sparta-benchmark-deltas.pdf}
+  \caption{Accuracy losses computed from D7.6 Table~2 \cite{sparta2022d76}. Each cell is
+    $100(A_{\mathrm{clean}}-A_{\mathrm{attack}})$ in percentage points; the original
+    accuracies remain in Table~\ref{tab:advml:benchmark}. The separation of attack rows
+    does not imply matched budgets. In particular, zero loss for the activation detector
+    describes its aggregate score, not a demonstrated mechanism or robustness certificate.}
+  \label{fig:advml:deltas}
+\end{figure}
+
+For paired clean and attacked examples, let $C$ denote an initially correct prediction and
+$C'$ a correct prediction after attack. Expanding the two accuracy terms yields
+\begin{equation}
+  \Delta=\Pr(C\cap\neg C')-\Pr(\neg C\cap C').
+  \label{eq:advml:cancellation}
+\end{equation}
+Both accuracies contain the correctly classified observations in $C\cap C'$, which cancel.
+Thus, $\Delta$ measures the net change in correctness. It is not the conditional fraction
+of initially correct examples made incorrect. Equal numbers of harmful and corrective
+changes can leave $\Delta=0$ despite changes in individual outcomes. The aggregate table
+cannot determine those two counts.
+
+\paragraph{Constant-prediction result.} For any constant classifier $h_c(x)=c$ and
+label-preserving attack $a$, $h_c(a(x_i))=h_c(x_i)$ for each observation. Therefore,
+\begin{equation}
+  A_{\mathrm{clean}}(h_c)=A_{\mathrm{attack}}(h_c)
+  =\widehat p_c,\qquad \Delta(h_c)=0,
+  \label{eq:advml:constant}
+\end{equation}
+where $\widehat p_c$ is the evaluated class fraction. The statement holds for each attack
+and any weighted average over attacks. Independent opponents cannot eliminate this property
+of the score. The result establishes an indifference to prediction utility when ranking
+only by loss; it does not imply that the constant classifier correctly classifies the other
+classes.
+
+For attributes, choose a fixed vector $m$ using training-set majority labels. Its held-out
+accuracy is
+\begin{equation}
+  A_{\mathrm{attr}}(m)
+  =\frac1{40}\sum_{j=1}^{40}
+    \bigl[m_j\widehat p_j+(1-m_j)(1-\widehat p_j)\bigr],
+  \qquad \Delta(m)=0,
+  \label{eq:advml:constant-attributes}
+\end{equation}
+where $\widehat p_j$ is the prevalence of attribute $j$ in the evaluation set. When the
+training and evaluation majorities agree, each summand is
+$\max(\widehat p_j,1-\widehat p_j)$. This explains how a fixed attribute vector can have
+high average accuracy on an imbalanced corpus. The baseline labels must be fixed before
+evaluation; selecting them from hidden test labels would use unavailable information.
+
+These identities support reporting clean utility together with attacked performance and a
+matched constant baseline. Prediction distributions and paired error transitions provide
+additional checks. None of these quantities can be reconstructed uniquely from an unchanged
+accuracy column, so the activation result remains an observation rather than a second
+demonstration of the SD collapse mechanism.
+
+\subsection{Comparison with Constrained PDF-Malware Features}
+\label{sec:advml:8:pdf}
+
+The public D7.5 report contains a partner study of evasion against PDF-malware classifiers
+\cite{sparta2021d75}. It provides a comparison with the continuous image setting, rather
+than an additional experiment on the Android systems in this dissertation. The study uses
+10,000 benign and 10,000 malicious Contagio files. PDFiD extracts 21 tag counts; the data
+are partitioned into 45\% for defender training, 45\% for proxy training and 10\% for
+adversarial crafting. A neural proxy generates examples transferred to neural, SVM and
+random-forest classifiers, without queries to the target during generation.
+
+The allowed changes increase tag counts and preserve integer values after inverse
+standardisation and rounding. If $v\in\mathbb N_0^{21}$ is the original count vector,
+the reported feature constraints require
+\begin{equation}
+  v'\in\mathbb N_0^{21},\qquad v'_j\geq v_j\quad(j=1,\ldots,21).
+  \label{eq:advml:pdf-constraints}
+\end{equation}
+A perturbation bound also applies in the attack representation. Its interpretation depends
+on standardisation and the subsequent rounding. These constraints restrict the feature
+search, but do not establish that a corresponding modified PDF was constructed or that its
+malicious functionality was preserved. The distinction is the feature-space versus
+problem-space distinction of Section~\ref{sec:background:adversarial}.
+
+\begin{figure}[tbp]
+  \centering
+  \begin{subfigure}[t]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{sparta/report-originals/d75-fig15-iter-fgsm-left.jpg}
+    \caption{Adversarial training.}
+  \end{subfigure}\hfill
+  \begin{subfigure}[t]{0.49\linewidth}
+    \centering
+    \includegraphics[width=\linewidth]{sparta/report-originals/d75-fig15-iter-fgsm-right.png}
+    \caption{Feature scattering with adversarial training.}
+  \end{subfigure}
+  \caption{Original iterative-FGSM transfer curves from the partner PDF-malware study,
+    D7.5 Figure~15, p.~23 \cite{sparta2021d75}. Both panels retain the published legends
+    and values. The horizontal axis is the source's $\log_{10}(\delta)$ perturbation
+    budget, distinct from the accuracy loss $\Delta$ used in this chapter. These are
+    feature-space results, with no uncertainty bands or demonstrated construction of
+    modified PDFs with preserved malicious functionality.}
+  \label{fig:advml:pdf-transfer}
+\end{figure}
+
+The retained legend names the SVM, random forest (FST), neural network (ANN) and their
+ensemble (Ensbl); the prefix r-fgsm denotes adversarial retraining with FGSM examples.
+Proxy measures success against the attack's source model, rather than cross-model transfer.
+In the feature-scattering condition the SVM and random forest receive adversarial
+augmentation, so that panel represents a hybrid defence comparison \cite{sparta2021d75}.
+
+In Figure~\ref{fig:advml:pdf-transfer}, transfer success for many reported models rises
+sharply as the budget increases, and several approach 100\% at larger budgets. Other curves
+are non-monotone. Such curves record the success of the specified search at each setting;
+they do not establish the monotone worst-case envelope over nested feasible sets. The two
+panels also show dependence on the target model and defence configuration. They support
+reporting a budget-dependent curve with explicit constraints, while the limited settings
+and absent repeated-run information prevent a general ranking of defence families. The
+same methodological requirement applies to Android: an evaluation must state how permitted
+artefact transformations map to the representation used by the detector.
+
+\section{Threats to Validity}
+\label{sec:advml:9}
+
+\paragraph{Measurement validity.} The contest combines task-dependent accuracies with a
+net-change score. The identity and attribute objectives require different success criteria,
+and the targeted software output uses target-label agreement. Aggregate accuracy loss
+cannot identify induced errors, useful classification or detector alarms. The analytical
+results in Sections~\ref{sec:advml:7} and~\ref{sec:advml:8:metrics} identify these limits;
+they do not recover unreported individual outcomes.
+
+\paragraph{Attack coverage and budgets.} No independent attack submissions entered the
+contest. Its fixed gradient-based baselines did not constitute a documented adaptive
+assessment of every defence. The SD development account includes transfer attacks, but
+the official table provides no per-attack breakdown. The benchmark additionally mixes
+attack families without the full configurations needed for comparison. A later evaluation
+would require valid perturbations in common coordinates and attacks adapted to the complete
+defended system, with convergence checks \cite{carlini2019evaluating,tramer2020adaptive}.
+
+\paragraph{Sampling and uncertainty.} The printed hidden-set procedure has unseeded draws
+and stochastic transformations. Augmentations do not establish absence of overlap with
+training images. The histopathology subset size, class proportions and patient-level
+partitioning are unreported. Patch counts cannot be treated as independent patient counts,
+and forty attributes on the same image are dependent observations. The available rounded
+aggregates and statements about cross-validation do not support confidence intervals,
+paired significance tests or a fitted clean--robustness relation.
+
+\paragraph{Conflicting records and implementation provenance.} The SD task names and the
+submission totals disagree across the reports. No checkpoint mapping resolves the zero
+and 0.02 deltas or the best and worst score associations. The inspected code exposes a
+raw-versus-clipped scoring issue, but its connection to the published experiment is unknown.
+The source repository and dependency versions therefore support implementation inspection,
+while experiment reproduction still requires the corresponding data and model artefacts.
+These distinctions remain explicit rather than being resolved by a presumed run history.
+
+\paragraph{Generalisation and attribution.} The four participating teams belonged to SPARTA,
+so the contest did not test participation beyond the consortium. The evaluated image tasks
+also differ from Android malware analysis in their inputs and validity constraints. The
+public PDF-malware study narrows this conceptual difference through constrained count
+features, but supplies no Android result. Its experiments and the partner defence algorithms
+retain their attribution. D7.4 is a confidential deliverable; the figures and empirical
+comparisons in this chapter use public reports.
+
+A focused subsequent study could compare an ordinary classifier with a training-selected
+constant baseline and the same classifier under output thresholding. For detectors, paired
+base predictions and alarms would test Equation~\ref{eq:advml:reversal-gain}. Budget curves
+and per-example attack aggregation would then measure how the conclusions change under
+validated perturbations. Those experiments remain separate from the historical evidence
+presented here.
+
+\section{Individual Contribution and Project Attribution}
+\label{sec:advml:10}
+
+The candidate's contribution is stated at section level, following his account of the
+collaborative project. He wrote D7.1 Sections~2.2.2 and~2.3, and D7.2 Sections~2.1 and~2.2.
+For D7.2 Sections~2.4 and~2.5 he contributed the concept and definitions. He edited and
+refined partner text in D7.3, with no authored content claimed for that plan. He wrote
+Sections~3.1 and~3.2 of D7.4, Chapter~5 of D7.5, and the whole of D7.6
+\cite{sparta2021d71,sparta2020d72,sparta2021d73,sparta2021d75,sparta2022d76}.
+His D7.4 contribution is recorded as part of this account, without using the confidential
+report as an empirical source.
+
+The contest toolkit and benchmark are published in the candidate's name
+\cite{norouzian2021safairtoolkit,norouzian2021adversarialbenchmark}. The evaluated defensive
+algorithms remain partner methods. In particular, the histopathology configurations originate
+in the Vicomtech study of D7.2 Section~2.3.2; the PDF-malware curves belong to the partner
+study in D7.5 Section~2.8. Authorship of the reporting deliverables does not transfer those
+experiments or algorithms to the candidate. The mathematical analysis and source comparison
+in this chapter examine their implications for the evaluation framework.
+
+\section{Chapter Summary}
+\label{sec:advml:11}
+
+RQ4 concerns the translation of an adversary model into a reproducible benchmark and the
+relation between clean performance and adversarial robustness. The SPARTA work implemented
+a modular interface for attack execution and task-specific model evaluation. Its records
+show that a reproducible measurement also needs an explicit prediction objective, a valid
+perturbation set and an identified experimental configuration. Independent attack
+participation addresses only part of that requirement.
+
+The evidence supports several bounded conclusions. The histopathology table gives different
+comparisons under accuracy loss and absolute attacked accuracy. The SD development account
+reports improved transfer-attack performance in a configuration with lower clean accuracy,
+but changes in ensemble size and training prevent causal attribution. The constant-prediction
+result proves that the historical delta score can assign zero loss to a classifier with low
+utility. Logit thresholding provides a separate mechanism: the attribute decisions remain
+unchanged while direct gradients are obstructed. The invariant activation-detector accuracy
+does not identify either mechanism.
+
+These findings support an evaluation that reports clean and attacked utility together, tests
+attacks against the full defence, and records individual predictions with valid perturbation
+budgets. For detector-based systems, the response to an alarm is part of the method being
+evaluated. The constrained PDF example further shows why the validity of an input must be
+specified for its domain. The chapter establishes these methodological consequences from
+the documented systems and their measurements, while leaving a general clean--robustness
+relation and experiment-level reproduction unresolved.
