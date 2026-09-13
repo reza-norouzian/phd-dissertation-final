@@ -71,6 +71,7 @@ output/pdf/*
 # Figure sources: the matplotlib figures build inside a local virtualenv created by
 # figures/src/build.sh from figures/src/requirements.txt. The environment and the
 # screen-resolution PNG preview are byproducts; the vector PDF in figures/ is tracked.
+.env/
 .venv/
 figures/src/.venv/
 figures/src/*.png
