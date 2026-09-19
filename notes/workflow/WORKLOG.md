@@ -4,6 +4,12 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `15:01` **T-003** in-progress -> review - Redundant reproducibility checklist removed; strict audit and compile pass
+- `15:01` **T-003** Removed the redundant reproducibility checklist paragraph from Section 6.6. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `15:00` **T-003** review -> in-progress - Remove the redundant reproducibility checklist paragraph from Section 6.6
+- `14:59` **T-003** in-progress -> review - Redundant D7.6 Figure 6 sentence removed; strict audit and compile pass
+- `14:59` **T-003** Removed the redundant D7.6 Figure 6 sentence from the targeted-runs paragraph; the implementation-based explanation remains. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `14:58` **T-003** review -> in-progress - Remove the redundant D7.6 Figure 6 sentence from the targeted-runs paragraph
 - `14:47` **T-003** in-progress -> review - Raw-output and histopathology qualification removed; strict audit and compile pass
 - `14:47` **T-003** Removed the requested raw-output consequence and histopathology-result qualification from the perturbation-validation paragraph. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
 - `14:46` **T-003** review -> in-progress - Remove the requested raw-output and histopathology-result qualification from Section 6.6

@@ -111,3 +111,7 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Biometric-deployment qualification removed; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Remove the requested raw-output and histopathology-result qualification from Section 6.6)
 - 2026-09-19 in-progress -> review (Raw-output and histopathology qualification removed; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the redundant D7.6 Figure 6 sentence from the targeted-runs paragraph)
+- 2026-09-19 in-progress -> review (Redundant D7.6 Figure 6 sentence removed; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the redundant reproducibility checklist paragraph from Section 6.6)
+- 2026-09-19 in-progress -> review (Redundant reproducibility checklist removed; strict audit and compile pass)

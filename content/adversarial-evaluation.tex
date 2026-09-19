@@ -362,17 +362,8 @@ the raw output need not satisfy that budget \cite{foolbox2021api}.
 A further distinction concerns targeted runs. The same implementation replaces the reference
 labels with the nominated target before computing its fields labelled accuracy. Those fields
 then measure target-label agreement, with a different interpretation from true-label accuracy
-\cite{norouzian2021adversarialbenchmark}. The examples in D7.6 Figure~6 likewise show a
-targeted result whose value rises under attack \cite{sparta2022d76}. Each output therefore
-needs an explicit task, reference label and denominator.
-
-The inspected source fixes several dependency versions and allows the implementation to be
-identified by a commit. Reproduction of a measured result additionally requires the exact
-checkpoint and evaluation manifest, the preprocessing and attack parameters, and the individual
-outputs. A valid evaluation would check quantisation and distances after all conversions,
-record failed or skipped attacks, and score the candidate that satisfies the declared budget.
-These are requirements derived from the interfaces, not claims that the historical runs
-performed those checks.
+\cite{norouzian2021adversarialbenchmark}. Each output therefore needs an explicit task,
+reference label and denominator.
 
 \section{Defence Mechanisms and Integration}
 \label{sec:advml:7}
