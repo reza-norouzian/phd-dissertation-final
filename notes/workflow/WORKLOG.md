@@ -4,6 +4,12 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `18:45` **T-003** in-progress -> review - Repeated SD comparison conclusion removed; strict audit and compile pass
+- `18:45` **T-003** Removed the repeated sentence concluding the SD submission comparison. The earlier cited thresholding paragraph retains the adaptive and transfer-attack requirement. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain. Existing figure-source changes were preserved.
+- `18:45` **T-003** review -> in-progress - Remove the repeated concluding sentence from the SD submission comparison
+- `18:39` **T-003** in-progress -> review - SD submission sequence and Figure 6.4 scope clarified in text and caption; figure asset unchanged; strict audit and compile pass
+- `18:39` **T-003** Renamed Section 6.8.2 to SD Contest Submissions, tied the three SD models to the contest's three-submission limit, replaced configuration terminology with submission, and clarified why Figure 6.4 omits submission 1. Refined the caption without modifying the figure asset or its source files. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `18:38` **T-003** review -> in-progress - Clarify that the three SD designs were successive contest submissions and refine the Figure 6.4 caption without modifying the figure asset
 - `16:01` **T-003** in-progress -> review - Thresholding interpretation compressed without losing its analytical role; strict audit and compile pass
 - `16:01` **T-003** Compressed the thresholding interpretation after Equation 6.x to two sentences. Removed the exact-zero qualification and repeated discussion while retaining decision invariance, derivative suppression, adaptive/transfer attack relevance, and both citations. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
 - `16:00` **T-003** review -> in-progress - Compress the thresholding interpretation while retaining its mathematical and methodological role

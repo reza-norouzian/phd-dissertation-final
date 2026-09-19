@@ -524,24 +524,25 @@ missing checkpoint association. The report's prose also substitutes 87\% for att
 accuracy and gives 61\% and 88\% values that do not match its table. The numerical record
 used here is the table, with those inconsistencies retained as limits on interpretation.
 
-\subsection{SD Development Configurations}
+\subsection{SD Contest Submissions}
 \label{sec:advml:8:sd}
 
-D7.6 describes three SD models. Its introductory text assigns them to re-identification,
-while the model details specify forty attribute outputs. The high accuracy of a constant
-attribute vector cannot be interpreted as a demonstrated identity-classification result.
-The following analysis therefore follows the attribute-model description and leaves its
-mapping to Table~\ref{tab:advml:contest} unresolved \cite{sparta2022d76}.
+The contest permitted each participant up to three submissions, and D7.6 describes the three
+models submitted by SD \cite{sparta2021d73,sparta2022d76}. Although the report introduces
+them as re-identification models, their technical descriptions specify forty attribute outputs.
+The analysis therefore follows the attribute-model description; their mapping to the official
+SD row in Table~\ref{tab:advml:contest} remains unresolved.
 
-The first configuration was a convolutional network trained on PGD examples with
+The first submission used a convolutional network trained on PGD examples with
 $\varepsilon=0.3$, approximately 9.6 times the contest's $8/255$ budget if both use
 $[0,1]$ pixels. The team reports that training produced the same output for every input,
 with approximately 80\% clean attribute accuracy and zero accuracy loss. It attributes that
 accuracy to the prevalence of absent attributes and recognises a weakness in the dataset
-and contest rules. This is the source's direct account of prediction collapse, although
-neither the checkpoint nor individual predictions accompany the reported result.
+and contest rules. A constant attribute vector cannot be interpreted as a demonstrated
+identity-classification result, and neither the checkpoint nor individual predictions
+accompany the reported collapse.
 
-The second configuration combines six EfficientNet and three pruned ECA-ResNet models.
+The second submission combines six EfficientNet and three pruned ECA-ResNet models.
 Their averaged outputs are thresholded to obscure gradients. For a nonzero scalar attribute
 logit $u$, write the transformation as
 \begin{equation}
@@ -555,29 +556,28 @@ For $u\neq0$, thresholding preserves the binary decision while suppressing its d
 derivative. Adaptive or transfer attacks are therefore needed to assess this construction
 \cite{athalye2018obfuscated,tramer2020adaptive}.
 
-The second configuration achieved approximately 92\% clean accuracy and 79\% under
-transferred attacks in the team's development account. The third used one pruned ECA-ResNet,
-added adversarial training, and retained the threshold operation. Its reported clean
+The second submission achieved approximately 92\% clean accuracy and 79\% under
+transferred attacks in the team's development account. The third submission used one pruned
+ECA-ResNet, added adversarial training, and retained the threshold operation. Its reported clean
 accuracy was approximately 87\%, with 84--85\% under transferred attacks
-\cite{sparta2022d76}. Figure~\ref{fig:advml:sd} shows these values separately from the
-contest table.
+\cite{sparta2022d76}. Figure~\ref{fig:advml:sd} compares the reported values for these two
+submissions.
 
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth]{sparta/thesis/sparta-sd-comparison.pdf}
-  \caption{SD development configurations from D7.6 Sections~2.8.1.2--2.8.1.3, pp.~18--19
-    \cite{sparta2022d76}. The interval 84--85\% is a reported approximate range, not a
-    confidence interval. The source describes attribute outputs despite its re-identification
-    heading. These values are not additional official contest rows.}
+  \caption{Reported clean and transferred-attack accuracies for SD submissions 2 and 3,
+    from D7.6 Sections~2.8.1.2--2.8.1.3, pp.~18--19 \cite{sparta2022d76}.
+    Submission 1 is omitted because D7.6 reports no comparable transferred-attack accuracy
+    for its collapsed model. The 84--85\% interval is an approximate reported range, not a
+    confidence interval; these development values are separate from the official contest scores.}
   \label{fig:advml:sd}
 \end{figure}
 
-The third configuration trades five percentage points of reported clean accuracy for five to
-six points of transferred-attack accuracy relative to the second. This is a descriptive
-comparison between systems: ensemble size and training changed together, and the attacks'
+The third submission trades five percentage points of reported clean accuracy for five to
+six points of transferred-attack accuracy relative to the second submission. This is a
+descriptive comparison between systems: ensemble size and training changed together, and the attacks'
 individual settings are not given. It does not isolate the effect of adversarial training.
-The transfer results nevertheless show why resistance to a direct gradient attack is an
-incomplete measure of these constructions.
 
 \subsection{Histopathology Benchmark}
 \label{sec:advml:8:benchmark}

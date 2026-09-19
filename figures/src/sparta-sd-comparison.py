@@ -37,7 +37,7 @@ def main():
     configs = DATA["sd_development"]["configurations"]
     assert len(configs) == 2
     fig, ax = plt.subplots(figsize=(141.6 / 25.4, 2.25))
-    fig.subplots_adjust(left=.285, right=.968, bottom=.24, top=.77)
+    fig.subplots_adjust(left=.365, right=.968, bottom=.24, top=.77)
     for y, row in zip([1, 0], configs):
         clean = float(Decimal(row["clean"]))
         low = float(Decimal(row["transfer_lower"]))
@@ -63,7 +63,8 @@ def main():
     ax.set_ylim(-.35, 1.55)
     ax.set_xticks([70, 75, 80, 85, 90, 95])
     ax.set_xlabel("Reported accuracy (%)", labelpad=4)
-    ax.set_yticks([1, 0], ["Second configuration", "Third configuration"])
+    ax.set_yticks([1, 0], ["Submission 2:\nensemble + thresholding",
+                           "Submission 3:\nadversarial training + thresholding"])
     ax.tick_params(axis="y", length=0, pad=8)
     ax.tick_params(axis="x", length=3, width=.5)
     ax.xaxis.grid(True, color="#E4E4E2", linewidth=.6, zorder=0)
@@ -79,7 +80,7 @@ def main():
                label="Reported range"),
     ], loc="upper center", bbox_to_anchor=(.54, .98), ncols=3,
        frameon=False, fontsize=7, handlelength=1.2, columnspacing=1.5)
-    fig.text(.285, .035, "Approximate published values; range is not a confidence interval.",
+    fig.text(.365, .035, "Approximate published values; range is not a confidence interval.",
              fontsize=6.7, color="#666666", ha="left")
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(OUTPUT, metadata={"CreationDate": None, "ModDate": None,

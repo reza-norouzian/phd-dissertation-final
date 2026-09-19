@@ -125,3 +125,7 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Two redundant contest-result qualification paragraphs removed without weakening the RQ4 narrative; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Compress the thresholding interpretation while retaining its mathematical and methodological role)
 - 2026-09-19 in-progress -> review (Thresholding interpretation compressed without losing its analytical role; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Clarify that the three SD designs were successive contest submissions and refine the Figure 6.4 caption without modifying the figure asset)
+- 2026-09-19 in-progress -> review (SD submission sequence and Figure 6.4 scope clarified in text and caption; figure asset unchanged; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the repeated concluding sentence from the SD submission comparison)
+- 2026-09-19 in-progress -> review (Repeated SD comparison conclusion removed; strict audit and compile pass)
