@@ -129,7 +129,7 @@ therefore records both the input coordinate system and preprocessing.
 
 \subsection{SAFAIR Contest Scoring and Evaluation Protocol}
 
-SAFAIR Contestranked submissions by the change between clean and perturbed accuracy,
+The SAFAIR contest ranked submissions by the change between clean and perturbed accuracy,
 \begin{equation}
   \Delta=A_{\mathrm{initial}}-A_{\mathrm{final}}.
   \label{eq:advml:delta}
@@ -197,6 +197,11 @@ The contest used CelebA for model training, a corpus described by Liu et al. as 
 forty-attribute annotation of Labeled Faces in the Wild, which contains 13,233 images of
 5,749 identities \cite{huang2007lfw, liu2015celeba}. A separate corpus reduces direct image
 reuse, but does not establish equality of image distributions or attribute prevalences.
+
+Attribute imbalance can give a constant predictor high mean accuracy, as reported for SD
+\cite{sparta2022d76}. Attribute prevalences and per-attribute outcomes are therefore needed
+alongside the aggregate score; the available results do not establish demographic performance
+differences.
 
 Re-identification required identity labels compatible with the trained classifier. The
 organisers therefore used CelebA images under a random choice of colour jitter, greyscale
@@ -297,18 +302,6 @@ since each per-example minimum is no greater than its value for any fixed attack
 The aggregate tables do not identify which examples fail under which attack, so this suite
 score cannot be calculated retrospectively from them.
 
-\subsection{Biometric Data and Data Protection}
-\label{sec:advml:5:ethics}
-
-The contest processed photographs of identifiable people and predicted identities or facial
-attributes.
-
-Attribute imbalance also affects the scientific interpretation. The SD account describes a
-constant attribute predictor whose accuracy remains high because some attributes are rare
-\cite{sparta2022d76}. A complete evaluation would therefore report attribute prevalences and
-per-attribute outcomes alongside the aggregate score. Demographic performance differences
-cannot be inferred from the reported aggregates.
-
 \section{Benchmark Architecture and Reproducibility}
 \label{sec:advml:6}
 
@@ -327,29 +320,26 @@ published architecture.
   \label{fig:advml:architecture}
 \end{figure}
 
-Within this framework, standardisation concerns the component interfaces and execution
-procedure. A run loads a trained checkpoint and evaluation data, converts the model to the
-attack-library interface, measures performance before and after the selected attacks, and emits
-the accuracies in one JSON-formatted result. Researchers can extend the procedure through new
-attack classes and task-specific components. The implementation of this reusable workflow is
-available in the versioned GitHub repository
-\cite{norouzian2021adversarialbenchmark}.
+Foolbox supplies reference attack implementations \cite{rauber2017foolbox}. The SAFAIR
+framework integrates them into a shared evaluation procedure with task-specific adapters.
+Identity classification requires a single-label loss, whereas facial attributes require a
+multi-label loss. The implementation selects cross-entropy or binary cross-entropy for these
+tasks and passes the selected loss to supported attacks
+\cite{norouzian2021adversarialbenchmark}. Researchers can thus change the prediction task
+while retaining the evaluation loop.
 
-The wrapper exposes a model through Foolbox, whose reference implementations supply the
-attacks \cite{rauber2017foolbox}. PyTorch is the native model interface; the report also
-describes conversion of TensorFlow or Keras models. Use-case classes select the prediction
-criterion and loss for the task. A new attack extends a base class and is discovered by the
-loader; a configuration list excludes named attacks. These interfaces permit reuse across
-models. Compatibility still depends on the output semantics: the report's multi-label
-wrapper handles fixed-budget attacks, while some minimum-distance interfaces are omitted
-\cite{sparta2022d76}.
+A run loads trained model weights and evaluation data, converts the model to the attack-library
+interface, and records clean and attacked accuracies in JSON format. New attack classes extend
+a base class and are discovered by the loader; a configuration list excludes named attacks.
+PyTorch is the native model interface, and D7.6 describes conversion of TensorFlow or Keras
+models \cite{sparta2022d76,norouzian2021adversarialbenchmark}. The public benchmark source
+is separate from the contest development toolkit \cite{norouzian2021safairtoolkit}.
 
-D7.6 also contains a description of splitting data and training classifiers, alongside repeated
-statements that weights must already exist. The documented invocations require checkpoints,
-and the inspected public implementation loads trained models
-\cite{norouzian2021adversarialbenchmark}. Accordingly, the benchmark is described here as an
-evaluation tool. Its public source is separate from the contest development toolkit
-\cite{norouzian2021safairtoolkit}.
+Reuse requires compatible prediction criteria and data processing. The multi-label adapter
+handles fixed-budget attacks but omits some minimum-distance interfaces. Vicomtech's
+histopathology evaluation in Section~\ref{sec:advml:8:benchmark} documents use on a different
+dataset and prediction task \cite{sparta2022d76}. Standardisation here concerns the component
+interfaces and execution procedure.
 
 \paragraph{Perturbation validation.} The public revision identified by commit
 \texttt{2fac62b947ed} pins Foolbox~3.3.1. Its attack call returns a raw candidate and a
@@ -713,26 +703,22 @@ demonstration of the SD collapse mechanism.
 \subsection{Comparison with Constrained PDF-Malware Features}
 \label{sec:advml:8:pdf}
 
-The public D7.5 report contains a partner study of evasion against PDF-malware classifiers
-\cite{sparta2021d75}. It provides a comparison with the continuous image setting, rather
-than an additional experiment on the Android systems in this dissertation. The study uses
-10,000 benign and 10,000 malicious Contagio files. PDFiD extracts 21 tag counts; the data
-are partitioned into 45\% for defender training, 45\% for proxy training and 10\% for
-adversarial crafting. A neural proxy generates examples transferred to neural, SVM and
-random-forest classifiers, without queries to the target during generation.
+D7.5 reports a separate partner study of PDF-malware evasion that illustrates domain-specific
+input constraints \cite{sparta2021d75}. It uses 10,000 benign and 10,000 malicious Contagio
+files, with 21 PDFiD tag counts as features. The split assigns 45\% to defender training,
+45\% to proxy training and 10\% to adversarial crafting. A neural proxy generates examples
+transferred to neural, SVM and random-forest classifiers without target queries.
 
-The allowed changes increase tag counts and preserve integer values after inverse
-standardisation and rounding. If $v\in\mathbb N_0^{21}$ is the original count vector,
-the reported feature constraints require
+Tag counts must remain integer-valued and cannot decrease. For an original vector
+$v\in\mathbb N_0^{21}$, the reported constraints require
 \begin{equation}
   v'\in\mathbb N_0^{21},\qquad v'_j\geq v_j\quad(j=1,\ldots,21).
   \label{eq:advml:pdf-constraints}
 \end{equation}
-A perturbation bound also applies in the attack representation. Its interpretation depends
-on standardisation and the subsequent rounding. These constraints restrict the feature
-search, but do not establish that a corresponding modified PDF was constructed or that its
-malicious functionality was preserved. The distinction is the feature-space versus
-problem-space distinction of Section~\ref{sec:background:adversarial}.
+A perturbation bound applies in the standardised representation, followed by inverse
+transformation and rounding. These feature constraints do not establish that a corresponding
+modified PDF was constructed with its malicious functionality preserved, as required by the
+problem-space distinction in Section~\ref{sec:background:adversarial}.
 
 \begin{figure}[tbp]
   \centering
@@ -747,29 +733,23 @@ problem-space distinction of Section~\ref{sec:background:adversarial}.
     \caption{Feature scattering with adversarial training.}
   \end{subfigure}
   \caption{Original iterative-FGSM transfer curves from the partner PDF-malware study,
-    D7.5 Figure~15, p.~23 \cite{sparta2021d75}. Both panels retain the published legends
-    and values. The horizontal axis is the source's $\log_{10}(\delta)$ perturbation
-    budget, distinct from the accuracy loss $\Delta$ used in this chapter. These are
-    feature-space results, with no uncertainty bands or demonstrated construction of
-    modified PDFs with preserved malicious functionality.}
+    D7.5 Figure~15, p.~23 \cite{sparta2021d75}. The horizontal axis is the source's
+    $\log_{10}(\delta)$ perturbation budget, distinct from the accuracy loss $\Delta$.
+    The published feature-space results contain no uncertainty bands.}
   \label{fig:advml:pdf-transfer}
 \end{figure}
 
-The retained legend names the SVM, random forest (FST), neural network (ANN) and their
-ensemble (Ensbl); the prefix r-fgsm denotes adversarial retraining with FGSM examples.
-Proxy measures success against the attack's source model, rather than cross-model transfer.
-In the feature-scattering condition the SVM and random forest receive adversarial
-augmentation, so that panel represents a hybrid defence comparison \cite{sparta2021d75}.
+The legends identify the SVM, random forest (FST), neural network (ANN) and ensemble (Ensbl).
+The prefix r-fgsm denotes adversarial retraining with FGSM examples; Proxy is the attack's
+source model. The feature-scattering comparison also retrains the SVM and random forest
+with adversarial examples \cite{sparta2021d75}.
 
-In Figure~\ref{fig:advml:pdf-transfer}, transfer success for many reported models rises
-sharply as the budget increases, and several approach 100\% at larger budgets. Other curves
-are non-monotone. Such curves record the success of the specified search at each setting;
-they do not establish the monotone worst-case envelope over nested feasible sets. The two
-panels also show dependence on the target model and defence configuration. They support
-reporting a budget-dependent curve with explicit constraints, while the limited settings
-and absent repeated-run information prevent a general ranking of defence families. The
-same methodological requirement applies to Android: an evaluation must state how permitted
-artefact transformations map to the representation used by the detector.
+Figure~\ref{fig:advml:pdf-transfer} reports model-dependent transfer success across perturbation
+budgets. Some curves are non-monotone: they describe the tested searches, not a worst-case
+envelope over all admissible perturbations. The comparison supports budget-dependent reporting
+under explicit feature constraints, but not a general ranking of defence families. For Android,
+the constraints must describe valid application changes and their effect on the detector's
+representation.
 
 \section{Threats to Validity}
 \label{sec:advml:9}
@@ -844,28 +824,24 @@ in this chapter examine their implications for the evaluation framework.
 \section{Chapter Summary}
 \label{sec:advml:11}
 
-RQ4 concerns the translation of an adversary model into a reproducible benchmark and the
-relation between clean performance and adversarial robustness. The SAFAIR work delivered a
-competition with hidden evaluation samples and a reusable framework for evaluating trained
-models against reference attacks. The framework established common component interfaces and
-an execution procedure with adaptations for different prediction tasks. Its reported use by
-Vicomtech on histopathology images documents an application separate from the competition.
-The subsequent analysis identifies the experimental records and measurement checks required
-to interpret the resulting scores.
+The SAFAIR work addressed RQ4 through a competition and a reusable benchmark framework.
+The competition evaluated submitted defences on hidden samples under explicit input
+constraints. SD's reported constant-prediction submission exposes a weakness of accuracy-loss
+ranking: a constant predictor can obtain zero loss despite limited predictive utility.
+Section~\ref{sec:advml:8:metrics} proves that this property persists under any label-preserving
+attack. Logit thresholding raises a separate evaluation problem because it obstructs direct
+gradients while preserving attribute decisions.
 
-The evidence supports several bounded conclusions. The histopathology table gives different
-comparisons under accuracy loss and absolute attacked accuracy. The SD development account
-reports improved transfer-attack performance in a configuration with lower clean accuracy,
-but changes in ensemble size and training prevent causal attribution. The constant-prediction
-result proves that the historical delta score can assign zero loss to a classifier with low
-utility. Logit thresholding provides a separate mechanism: the attribute decisions remain
-unchanged while direct gradients are obstructed. The invariant activation-detector accuracy
-does not identify either mechanism.
+The framework provided a common evaluation procedure with task-specific interfaces.
+Vicomtech used it to evaluate histopathology defences, which documents an application outside
+the contest's facial-image tasks. The resulting table illustrates why the scoring choice
+matters: a configuration with smaller accuracy loss can have lower attacked accuracy.
+For detector-based systems, the comparison also depends on the response to an alarm;
+unchanged aggregate accuracy alone does not identify the underlying mechanism.
 
-These findings support an evaluation that reports clean and attacked utility together, tests
-attacks against the full defence, and records individual predictions with valid perturbation
-budgets. For detector-based systems, the response to an alarm is part of the method being
-evaluated. The constrained PDF example further shows why the validity of an input must be
-specified for its domain. The chapter establishes these methodological consequences from
-the documented systems and their measurements, while leaving a general clean--robustness
-relation and experiment-level reproduction unresolved.
+Evaluators should therefore report clean and attacked utility together and test attacks
+against the complete defence. Per-example outcomes and valid perturbation budgets are
+needed to interpret the scores. The contribution combines a documented evaluation design
+with an analysis of its measurement properties. The available aggregates do not establish
+a general relation between clean performance and adversarial robustness, and experiment-level
+reproduction remains unresolved.

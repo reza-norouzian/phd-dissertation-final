@@ -9,7 +9,7 @@ depends_on: []
 blocks: []
 tags: [writing]
 created: 2026-09-13
-updated: 2026-09-13
+updated: 2026-09-19
 ---
 
 ## Goal
@@ -66,12 +66,22 @@ own strict audit, and each chapter number traces to the source named below.
 | Construction and attention changed together | `hgann-mal.tex` ll. 1263-1266; D-028 | T-012 answer of 14 August 2026 |
 | Constant classifier has zero accuracy loss under label-preserving attacks | `adversarial-evaluation.tex` ll. 717-728, Eq. `eq:advml:constant` | derivation in Ch. 6 |
 | Under PGD the zero-loss defence is 12.9 points below adversarial training | `adversarial-evaluation.tex` ll. 686-692 | SPARTA D7.6 Table 2 (`sparta2022d76`) |
-| Four contest rows show no general clean-robustness relation | `adversarial-evaluation.tex` l. 556; `conclusion.tex` RQ4 | SPARTA D7.6 Table 1 |
+| Four contest rows do not establish a general clean-robustness relation | `adversarial-evaluation.tex` Sections 6.8 and 6.11; `conclusion.tex` RQ4 | SPARTA D7.6 Table 1 |
 | Open step: an ablation that isolates attention in HGANN-Mal | `conclusion.tex` Section 8.3 | none (future work) |
 
 Full-text status: no source is cited in the abstract, so no new reference enters `references/MANIFEST.tsv`.
+
+### RQ4 consistency correction, 19 September 2026
+
+Align both abstracts with the author's approved Chapter 8 correction: the available contest
+results do not establish a general relationship, rather than showing that none exists.
+`sparta2022d76`, Section 2.8 and Table 1: relevant full text inspected again; vault status
+`have`, already registered in the manifest. No citation or new result is added. The strict
+audit passed before drafting.
 
 ## Log
 
 - 2026-09-13 created
 - 2026-09-13 in-progress -> review (Abstract and Kurzfassung written from Chapters 3-8, one page each, compile clean)
+- 2026-09-19 review -> in-progress (Align the English and German abstract wording with the Chapter 6 and Chapter 8 inference)
+- 2026-09-19 in-progress -> review (Both abstracts aligned with the corrected inference; audit and rebuild pass)

@@ -86,6 +86,55 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
   The full 15-page author-hosted ACSAC 2017 paper was inspected; DOI metadata was verified
   against Crossref; vault status `have`.
 
+## Evidence for the concise contribution revision (19 September 2026)
+
+The author approved clearer framework design rationale and a results-led chapter summary,
+with no chapter expansion. Merge the residual biometric subsection into the data discussion
+and shorten the separate PDF-malware comparison; preserve its figure and partner attribution.
+
+- `sparta2021d73`: Section 4.4 and Chapter 5 distinguish the contest from the reusable
+  benchmark and define the component interfaces. Relevant full text inspected again;
+  vault status `have`, already registered in `references/MANIFEST.tsv`.
+- `sparta2022d76`: Sections 3.1.1--3.1.2 document task-specific loss adaptation and the
+  shared execution procedure. Section 3.1.3 and Table 2 document the histopathology
+  application and its detector response policy. Section 2.8 and Table 1 support the
+  contest-score interpretation and its limits. Relevant full text inspected again;
+  vault status `have`, already registered in the manifest.
+- `norouzian2021adversarialbenchmark`: full `README.md`, `main.py`, `attacks/base.py`
+  and `attacks/attack_types/fgsm.py` inspected again at revision
+  `2fac62b947ed77a509f397a9cc316937291395f5`. These support the shared evaluation loop,
+  JSON output and replacement of the attack loss for single-label versus multi-label
+  tasks. Vault status `no-pdf` (versioned software); registered in the manifest, with
+  primary metadata provenance in `references/source-records/chapter6-software.md`.
+- `sparta2021d75`: Section 2.8, including Figure 15 and its surrounding discussion,
+  inspected again. It supports the retained PDF dataset and feature constraints, the
+  transfer setting and the hybrid feature-scattering comparison. Vault status `have`,
+  already registered in the manifest. No new numerical result is introduced.
+- The summary's score properties are deductions already established in Chapter 6.
+  Histopathology use documents one additional application, not general adoption or
+  complete experiment reproduction. No partner defence is reassigned to the candidate.
+- Before drafting, the strict audit passed: 25 cited, 0 needing attention. The standing
+  `notes/known-issues-to-fix.md` ledger is absent from this checkout; the existing chapter
+  limitations and the primary reports were inspected instead.
+
+### Acceptance criteria for this revision
+
+- [x] Explain the design contribution without lengthening the architecture section.
+- [x] Revise the summary around the contest and framework application; preserve inference limits.
+- [x] Merge the biometric subsection and shorten the PDF comparison without losing attribution.
+- [x] Reduce Chapter 6 prose overall; retain the figures and empirical tables.
+- [x] Align the clean-performance/robustness wording in Chapter 8 and both abstracts.
+- [x] Pass strict citation audits, rebuild, and inspect the log; leave visual review to the author.
+
+Revision result: TeXcount main-text words fall from 5,104 to 4,877 (227 fewer); including
+headings and captions, 5,651 to 5,397 (254 fewer). Section 6.6 main text falls from 364 to
+332 words. The 16 equation environments and four table bodies are unchanged, as are all
+figure assets and their inclusion commands. Chapter 6 occupies printed pp. 95--112, down
+from pp. 95--114; the full PDF falls from 159 to 157 pages. Strict audit: 25 cited, zero
+needing attention. `latexmk thesis.tex` succeeds; no undefined citations/references or
+overfull boxes. Template and end-group warnings remain, with underfull-page notices in the
+reflowed text. Visual review is left to the author. The root PDF remains the build symlink.
+
 ## Acceptance criteria
 
 - [x] Revise 6.4-6.11 and align 6.1-6.3 and the introduction with the corrected contribution.
@@ -143,3 +192,5 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Redundant activation-column paragraph removed and DeepFool transition tightened; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Add verified primary references and concise definitions for DeepFool and NewtonFool)
 - 2026-09-19 in-progress -> review (DeepFool and NewtonFool definitions and verified primary citations added; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Apply approved concise contribution framing, summary revision and subsection consolidation)
+- 2026-09-19 in-progress -> review (Concise contribution revision complete; chapter shorter, strict audit and compile pass)

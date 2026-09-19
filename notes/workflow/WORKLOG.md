@@ -4,6 +4,16 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `19:15` **T-016** in-progress -> review - Both abstracts aligned with the corrected inference; audit and rebuild pass
+- `19:15` **T-007** in-progress -> review - RQ4 wording corrected and rebuilt without extending the two-page conclusion
+- `19:15` **T-003** in-progress -> review - Concise contribution revision complete; chapter shorter, strict audit and compile pass
+- `19:15` **T-016** Aligned the English Abstract and German Kurzfassung with the approved Chapter 8 inference: the available contest results do not establish a general relation. No new result or citation; strict audit and rebuild pass.
+- `19:15` **T-007** Changed the RQ4 conclusion to say that the four contest rows do not establish a general clean-performance/robustness relation. No new claim or citation. Chapter 8 remains two pages (119--120); strict audit and rebuild pass.
+- `19:15` **T-003** Applied approved concise contribution revision: Section 6.6 explains the task-specific loss adapters and shared execution procedure; Section 6.11 separates contest lessons from the histopathology application. Merged the residual biometric subsection into 6.5.1 and shortened the PDF-malware comparison while preserving its figure and attribution. Main text is 227 words shorter; Chapter 6 falls from 20 to 18 pages and the thesis from 159 to 157. Strict audit and latexmk pass, with no undefined citations/references or overfull boxes; template/end-group warnings and underfull-page notices remain. Visual review left to the author.
+- `19:14` decision **D-002**: Keep Chapter 6 focused on the contest and reusable benchmark
+- `19:11` **T-016** review -> in-progress - Align the English and German abstract wording with the Chapter 6 and Chapter 8 inference
+- `19:11` **T-007** review -> in-progress - Clarify that the contest results do not establish a general clean-performance versus robustness relation
+- `19:11` **T-003** review -> in-progress - Apply approved concise contribution framing, summary revision and subsection consolidation
 - `18:57` **T-003** in-progress -> review - DeepFool and NewtonFool definitions and verified primary citations added; strict audit and compile pass
 - `18:57` **T-003** Added verified primary references and concise definitions for DeepFool and NewtonFool before Table 6.3. Added jang2017objective to the bibliography and reference vault from the author-hosted 15-page ACSAC 2017 paper; DOI metadata verified against Crossref and full text inspected. Strict Chapter 6 audit passes with 25 citations; latexmk succeeds at 159 pages with no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
 - `18:55` **T-003** review -> in-progress - Add verified primary references and concise definitions for DeepFool and NewtonFool

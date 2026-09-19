@@ -395,13 +395,9 @@ first 56,240 support training and validation, while the later 393,679 form the t
 
 6.5 Data and Evaluation Measures
 
-  6.5.1 Biometric Data and Data Protection
-
-  Added 15 August 2026 on the author's decision under T-035 Q9. The benchmark performs face
-  re-identification and facial-attribute prediction over CelebA and LFW, and no SPARTA
-  deliverable treats biometric data protection, the GDPR position, or dataset bias beyond one
-  sentence. The subsection sits here because 6.5 is where the reader meets the data. It cites
-  D7.1's own data-protection chapter, to which the candidate contributed.
+  On 19 September 2026, the author approved merging the residual Biometric Data and Data
+  Protection subsection into the corpus discussion. Attribute imbalance and the limits of
+  demographic inference remain in Section 6.5.1; no separate subsection is retained.
 
 6.6 Benchmark Architecture and Reproducibility
 
@@ -414,6 +410,16 @@ first 56,240 support training and validation, while the later 393,679 form the t
 6.10 Individual Contribution and Project Attribution
 
 6.11 Chapter Summary
+
+  Revised on 19 September 2026 under T-003 to clarify the framework's design contribution
+  around reference attack implementations and distinguish the contest evidence from the
+  histopathology application. The PDF-malware comparison is shortened, with its original
+  figure and partner attribution retained. The summary answers RQ4 through these two
+  evaluation mechanisms; the available aggregates do not establish a general relation
+  between clean performance and robustness. Chapter 8 and both abstracts use that wording.
+  The rebuild has 157 pages (159 before this revision); Chapter 6 occupies pp. 95--112
+  (18 pages, previously 20). Its main text is 227 words shorter by TeXcount. The six
+  figures, four tables and sixteen numbered equations are retained.
 
   Revised under T-003 and D-041, with D-042/D-043 diagram redraws. The chapter
   contains six figures, four tables and sixteen numbered equations. It separates

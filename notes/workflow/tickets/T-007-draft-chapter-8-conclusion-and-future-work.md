@@ -9,7 +9,7 @@ depends_on: []
 blocks: []
 tags: [writing]
 created: 2026-09-12
-updated: 2026-09-12
+updated: 2026-09-19
 ---
 
 ## Goal
@@ -26,10 +26,19 @@ reprinting the gap. Section 5.15 states that Chapter 8 records the HGANN-Mal abl
 item of future work. On 12 September 2026 the author limited the chapter to two pages, against a
 five-page target in structure v0.3. The earlier ticket (old T-024) was lost in the tracker reset.
 
+## Evidence for the RQ4 wording correction (19 September 2026)
+
+The author approved replacing the ambiguous absence-of-relation wording with the narrower
+statement that the contest results do not establish a general relation. This follows Chapter 6
+Sections 6.8 and 6.11 and introduces no citation or empirical result. Underlying source
+`sparta2022d76`, Section 2.8 and Table 1: relevant full text inspected again, vault status `have`,
+registered in `references/MANIFEST.tsv`. The four aggregate rows do not establish a general
+clean-performance/robustness relationship. The strict audit passed before drafting.
+
 ## Acceptance criteria
 
 - [x] Three sections, Answers, Summary of Contributions and Future Work (`sec:conclusion:1` to `sec:conclusion:3`); the Limitations section of structure v0.3 is removed at the author's instruction (D-052).
-- [x] At most two pages: Chapter 8 on pp. 121-122, References still from p. 123.
+- [x] At most two pages: Chapter 8 on pp. 119-120, References from p. 121 (19 September 2026 rebuild).
 - [x] Every research question typeset from its macro (D-002, D-030, D-034); none retyped.
 - [x] Each answer names its gap with `\gapref` and states how far it is closed; no gap wording reprinted.
 - [x] Every restated number matches the current chapter text and its source; no new empirical number.
@@ -40,3 +49,5 @@ five-page target in structure v0.3. The earlier ticket (old T-024) was lost in t
 - [x] latexmk succeeds, the two PDFs are identical under cmp, and the log is read for new warnings.
 - [x] British spelling (D-001), no em dashes.
 - [x] No limitation statements anywhere in the chapter (author's instruction, 12 September 2026, D-052); the freed space extends Section 8.2.
+- 2026-09-19 review -> in-progress (Clarify that the contest results do not establish a general clean-performance versus robustness relation)
+- 2026-09-19 in-progress -> review (RQ4 wording corrected and rebuilt without extending the two-page conclusion)
