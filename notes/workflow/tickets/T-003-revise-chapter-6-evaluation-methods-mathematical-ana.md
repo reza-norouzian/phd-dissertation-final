@@ -1,7 +1,7 @@
 ---
 id: T-003
 title: Revise Chapter 6 evaluation methods, mathematical analysis and figures
-status: in-progress
+status: review
 priority: P0
 chapter: 6
 owner: claude
@@ -48,3 +48,4 @@ authorises an evidence-based revision with original report figures and explicit 
 - 2026-09-19 review -> in-progress (Author approved the concise Section 6.2 replacement and removal of the source-correction paragraph)
 - 2026-09-19 in-progress -> review (Approved concise Section 6.2 applied; strict audit and compile pass, PDFs identical)
 - 2026-09-19 review -> in-progress (Replace the Chapter 6 title throughout the thesis and planning records at the author's request)
+- 2026-09-19 in-progress -> review (Chapter 6 title replaced throughout the thesis; strict audit and compile pass, PDFs identical)

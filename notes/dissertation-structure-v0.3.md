@@ -148,7 +148,7 @@ The full PDF should remain between 120 and 170 pages; 170 is a maximum, set by D
 | 3. Anomaly Detection in IoT and Industrial Control Systems | 15 |
 | 4. Multimodal Android Malware Analysis with Hybroid | 23 |
 | 5. Higher-Order Android Malware Analysis with HGANN-Mal | 27 |
-| 6. Threat-Guided Evaluation of Adversarial Defences | 15 |
+| 6. Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis | 15 |
 | 7. Cross-Contribution Discussion | 4 |
 | 8. Conclusion and Future Work | 2 |
 | References | 13 |
@@ -383,7 +383,7 @@ first 56,240 support training and validation, while the later 393,679 form the t
 
 5.15 Chapter Summary
 
-### 6. Threat-Guided Evaluation of Adversarial Defences
+### 6. Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis
 
 6.1 Research Problem and Contribution
 
