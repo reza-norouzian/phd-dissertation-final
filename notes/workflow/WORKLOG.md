@@ -4,6 +4,9 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `16:01` **T-003** in-progress -> review - Thresholding interpretation compressed without losing its analytical role; strict audit and compile pass
+- `16:01` **T-003** Compressed the thresholding interpretation after Equation 6.x to two sentences. Removed the exact-zero qualification and repeated discussion while retaining decision invariance, derivative suppression, adaptive/transfer attack relevance, and both citations. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
+- `16:00` **T-003** review -> in-progress - Compress the thresholding interpretation while retaining its mathematical and methodological role
 - `15:51` **T-003** in-progress -> review - Two redundant contest-result qualification paragraphs removed without weakening the RQ4 narrative; strict audit and compile pass
 - `15:50` **T-003** Removed both contest-result qualification paragraphs on submission-count discrepancies and the four-row clean--robustness inference. Confirmed that the narrative remains supported by the later Sampling and uncertainty, Conflicting records, Generalisation, and Chapter Summary passages. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
 - `15:50` **T-003** review -> in-progress - Remove the two redundant contest-result qualification paragraphs while preserving the dissertation-level RQ4 conclusion

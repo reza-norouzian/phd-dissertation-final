@@ -123,3 +123,5 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Redundant history-protocol paragraph removed; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Remove the two redundant contest-result qualification paragraphs while preserving the dissertation-level RQ4 conclusion)
 - 2026-09-19 in-progress -> review (Two redundant contest-result qualification paragraphs removed without weakening the RQ4 narrative; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Compress the thresholding interpretation while retaining its mathematical and methodological role)
+- 2026-09-19 in-progress -> review (Thresholding interpretation compressed without losing its analytical role; strict audit and compile pass)

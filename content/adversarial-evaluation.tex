@@ -551,11 +551,9 @@ logit $u$, write the transformation as
   \qquad q'(u)=0\ \ (u\neq0).
   \label{eq:advml:threshold}
 \end{equation}
-The source does not specify the exact-zero tie. Away from that tie, the operation preserves
-the binary decision and suppresses its direct derivative. It can obstruct a gradient-based
-attack without changing the classifier's decision regions. Attacks adapted to the
-non-differentiable operation or transferred from another model remain relevant
-\cite{athalye2018obfuscated, tramer2020adaptive}.
+For $u\neq0$, thresholding preserves the binary decision while suppressing its direct
+derivative. Adaptive or transfer attacks are therefore needed to assess this construction
+\cite{athalye2018obfuscated,tramer2020adaptive}.
 
 The second configuration achieved approximately 92\% clean accuracy and 79\% under
 transferred attacks in the team's development account. The third used one pruned ECA-ResNet,
