@@ -368,13 +368,13 @@ reference label and denominator.
 \section{Defence Mechanisms and Integration}
 \label{sec:advml:7}
 
-The evaluated configurations instantiate the three defence strategies introduced in
-Section~\ref{sec:advml:1}: adversarial training, transformations of inputs or internal
-representations, and adversarial-input detection.
+Vicomtech used the benchmark described in Section~\ref{sec:advml:6} to evaluate five defence
+configurations documented in D7.2 \cite{sparta2020d72,sparta2022d76}. They instantiate the
+three defence strategies introduced in Section~\ref{sec:advml:1}: adversarial training,
+transformations of inputs or internal representations, and adversarial-input detection.
 
-D7.6 evaluates five partner configurations described in D7.2. The underlying histopathology
-classifier combines a pretrained VGG16 feature extractor with a dense prediction network
-\cite{sparta2020d72,sparta2022d76}. Write its scores as
+The underlying histopathology classifier combines a pretrained VGG16 feature extractor with
+a dense prediction network \cite{sparta2020d72,sparta2022d76}. Write its scores as
 $f_\theta(x)=c_\psi(\phi_\omega(x))$, where $\phi_\omega$ is the convolutional feature
 extractor and $c_\psi$ the prediction head. The following notation makes the intervention
 of each defence explicit without supplying missing layer configurations.
@@ -398,8 +398,9 @@ The first transforms pixels and the second transforms extracted features.
 D7.2 states that the original convolutional network and prediction head retain their weights
 in these autoencoder variants. Its separate encoder-only variant trains a new prediction
 head, but that variant is not a column of the D7.6 benchmark table
-\cite{sparta2020d72}. Figure~\ref{fig:advml:autoencoders} redraws the two published
-placement diagrams in this notation.
+\cite{sparta2020d72}. Figure~\ref{fig:advml:autoencoders} maps the initial and middle
+autoencoder designs of D7.2 to the Top AE and Middle AE configurations compared in
+Table~\ref{tab:advml:benchmark}.
 
 \begin{figure}[tbp]
   \centering
@@ -408,9 +409,7 @@ placement diagrams in this notation.
     and~11, p.~14 \cite{sparta2020d72}. In the top variant (a), the autoencoder
     $r_{\eta_x}$ transforms the input before feature extraction. In the middle variant (b),
     $r_{\eta_z}$ acts between the feature extractor $\phi_\omega$ and the prediction head
-    $c_\psi$, as in Equation~\ref{eq:advml:compositions}. The legend follows D7.2, which
-    keeps the original weights of VGG16 and the dense network in both variants. The
-    diagrams specify placement, not a matched ablation of all training choices.}
+    $c_\psi$, as in Equation~\ref{eq:advml:compositions}.}
   \label{fig:advml:autoencoders}
 \end{figure}
 

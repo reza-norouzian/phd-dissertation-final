@@ -4,6 +4,9 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `15:13` **T-003** in-progress -> review - Figure 6.2 integrated with surrounding sections and results; all Chapter 6 figures audited; strict audit and compile pass
+- `15:13` **T-003** Strengthened Figure 6.2 integration: Section 6.7 now links the five Vicomtech configurations back to the Section 6.6 benchmark, maps D7.2's initial/middle autoencoders to the Top AE/Middle AE columns of the later benchmark table, and preserves the author's shortened caption. Audited all Chapter 6 figures; no other source-purpose-analysis link required revision. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
+- `15:12` **T-003** review -> in-progress - Strengthen Figure 6.2 provenance and its links to the benchmark architecture and later results while preserving the author's caption edit
 - `15:06` **T-003** in-progress -> review - Section 6.7 qualification removed; section reviewed; strict audit and compile pass
 - `15:06` **T-003** Removed the redundant mixture-ratio and optimisation-schedule qualification from Section 6.7. Reviewed the remainder: only the opening meta-sentence is an optional further cut; the technical qualifications remain necessary. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
 - `15:05` **T-003** review -> in-progress - Remove the redundant training-schedule qualification from Section 6.7 and review the remaining section
