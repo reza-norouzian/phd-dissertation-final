@@ -590,6 +590,11 @@ classification. For the two detectors, these include the response policy in
 Equation~\ref{eq:advml:reversal}. The clean row records the prediction cost associated with
 each configuration.
 
+DeepFool iteratively linearises the classifier around the current input and moves towards the
+closest estimated decision boundary \cite{moosavi2016deepfool}. NewtonFool applies gradient
+steps that reduce the original-class softmax probability while bounding the perturbation at
+each iteration \cite{jang2017objective}.
+
 \begin{table}[tbp]
   \caption{Published accuracies for the five partner defence configurations, from D7.6
     Table~2, pp.~28--29 \cite{sparta2022d76}. Attack hyperparameters and the evaluated
@@ -626,17 +631,10 @@ construction is insufficient to explain the results, since DeepFool and NewtonFo
 gradient information. Query sequences and detector alarms would be needed to test that
 mechanism.
 
-The activation column remains at 0.708, including on clean inputs. This establishes equality
-of the printed aggregates to their reported precision. It does not establish identical
-predictions, an always-active detector or insensitivity to inputs.
-Equation~\ref{eq:advml:reversal-gain} also shows that always reversing predictions
-would not, by itself, yield the class prior. The mechanism behind the column remains
-unidentified.
-
-The near-zero DeepFool results for four configurations require a different qualification.
-Minimum-distortion attacks search for an adversarial input and should be compared by the
-distortion required, or by success after imposing a common valid budget
-\cite{moosavi2016deepfool,carlini2019evaluating}. Neither the norm and stopping settings nor
+The near-zero DeepFool results for four configurations require separate interpretation.
+DeepFool searches for an adversarial input with low distortion and should be assessed by the
+distortion required, or by success under a common valid budget
+\cite{carlini2019evaluating}. Neither the norm and stopping settings nor
 achieved distortions are reported for these benchmark runs. The table therefore cannot
 establish that its attack rows represent equally constrained adversaries. The code finding
 in Section~\ref{sec:advml:6} reinforces the need to validate distances, but does not resolve

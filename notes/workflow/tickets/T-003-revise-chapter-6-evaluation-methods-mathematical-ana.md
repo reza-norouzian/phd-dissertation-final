@@ -76,6 +76,16 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
   passed before drafting. Chapter 2 retains the full taxonomy, while Chapter 6 receives a
   concise orientation and definitions at first use.
 
+## Evidence for the DeepFool and NewtonFool definitions
+
+- `moosavi2016deepfool`: Section 3 defines DeepFool as an iterative attack that linearises
+  the classifier and moves the input towards the closest estimated decision boundary. Full
+  text inspected; vault status `have`.
+- `jang2017objective`: Section 3 defines NewtonFool as a gradient-descent attack that lowers
+  the original-class softmax probability while bounding the perturbation at each iteration.
+  The full 15-page author-hosted ACSAC 2017 paper was inspected; DOI metadata was verified
+  against Crossref; vault status `have`.
+
 ## Acceptance criteria
 
 - [x] Revise 6.4-6.11 and align 6.1-6.3 and the introduction with the corrected contribution.
@@ -129,3 +139,7 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (SD submission sequence and Figure 6.4 scope clarified in text and caption; figure asset unchanged; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Remove the repeated concluding sentence from the SD submission comparison)
 - 2026-09-19 in-progress -> review (Repeated SD comparison conclusion removed; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the repeated activation-column qualification and tighten the DeepFool transition)
+- 2026-09-19 in-progress -> review (Redundant activation-column paragraph removed and DeepFool transition tightened; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Add verified primary references and concise definitions for DeepFool and NewtonFool)
+- 2026-09-19 in-progress -> review (DeepFool and NewtonFool definitions and verified primary citations added; strict audit and compile pass)

@@ -4,6 +4,12 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `18:57` **T-003** in-progress -> review - DeepFool and NewtonFool definitions and verified primary citations added; strict audit and compile pass
+- `18:57` **T-003** Added verified primary references and concise definitions for DeepFool and NewtonFool before Table 6.3. Added jang2017objective to the bibliography and reference vault from the author-hosted 15-page ACSAC 2017 paper; DOI metadata verified against Crossref and full text inspected. Strict Chapter 6 audit passes with 25 citations; latexmk succeeds at 159 pages with no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `18:55` **T-003** review -> in-progress - Add verified primary references and concise definitions for DeepFool and NewtonFool
+- `18:48` **T-003** in-progress -> review - Redundant activation-column paragraph removed and DeepFool transition tightened; strict audit and compile pass
+- `18:47` **T-003** Removed the repeated activation-column paragraph from the histopathology results and changed the DeepFool transition to 'require separate interpretation.' Rephrased the following sentence to eliminate a new overfull line. Strict Chapter 6 audit and latexmk pass; 155 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `18:46` **T-003** review -> in-progress - Remove the repeated activation-column qualification and tighten the DeepFool transition
 - `18:45` **T-003** in-progress -> review - Repeated SD comparison conclusion removed; strict audit and compile pass
 - `18:45` **T-003** Removed the repeated sentence concluding the SD submission comparison. The earlier cited thresholding paragraph retains the adaptive and transfer-attack requirement. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain. Existing figure-source changes were preserved.
 - `18:45` **T-003** review -> in-progress - Remove the repeated concluding sentence from the SD submission comparison

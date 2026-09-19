@@ -120,6 +120,7 @@ iuno_ap4	have	30	2248965	af388bdbc3f55138	yes	author		2026-08-14	title match 100
 iuno_ap7	have	40	2225412	033350fb4b282ff3	yes	author		2026-08-14	title match 100%
 jagielski2018manipulating	have	17	1112912	fcd171272d00e4a6	yes	arxiv	https://arxiv.org/pdf/1804.00308v3	2026-08-14	title match 100%
 jain2026hybrid	have	24	5222912	4f94cd54ef19cb60	yes	publisher	https://doi.org/10.1016/j.cosrev.2026.100980	2026-08-14	title match 100%
+jang2017objective	have	15	1879758	c952f1f138d7504e	yes	author	https://andrewxiwu.github.io/public/papers/2017/JWJ17-objective-metrics-and-gradient-descent-based-algorithms-for-adversarial-examples-in-machine-learning.pdf	2026-09-19	Author-hosted ACSAC 2017 paper; full 15-page text inspected; Section 3 defines NewtonFool; DOI metadata verified against Crossref.
 jeon2020dynamic	have	13	2501509	56b59cdcbe2eed1f	yes	ieee-access-oa	https://ieeexplore.ieee.org/document/9097224	2026-08-14	title match 100%
 jiang2026widthwall	have	40	741531	c9996188c078ba19	yes	arxiv	https://arxiv.org/pdf/2605.13690	2026-08-14	title match 86%
 jin2009unveiling	have	12	2968754	4f77863e27336b2c	yes	author	https://web.archive.org/web/20110401060356/http://www.cs.umn.edu/~zhzhang/Papers/Unveiling-Jin09-Sigmetrics09.pdf	2026-08-14	title match 100%
