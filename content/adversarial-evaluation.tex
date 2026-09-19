@@ -207,14 +207,6 @@ unfiltered sample. The report recognises that participants could have used simil
 augmentations during training. Augmentation alone does not demonstrate independence from
 training images.
 
-The sampling code in D7.6 calls for 1,000 LFWA examples and, separately, 1,000 examples from
-a re-identification test CSV. These are two task-specific samples. The code assigns
-\texttt{random.seed = 42} instead of calling a seeding function, while the two pandas samples
-receive no explicit random state. The augmentation draws are also stochastic. Consequently,
-the printed procedure does not regenerate the exact hidden images. Saved manifests and
-transformed files could establish their identity, but their recovery is not documented in
-the deliverable \cite{sparta2022d76}.
-
 \begin{table}[tbp]
   \caption{Evaluation units and data provenance. Stated sample sizes describe the printed
     procedures, not recovered per-example result files.}
@@ -231,13 +223,6 @@ the deliverable \cite{sparta2022d76}.
     \bottomrule
   \end{tabular}
 \end{table}
-
-The histopathology corpus is identified in D7.2 as the IDC patch collection, whereas D7.6
-calls it a breast-cancer image dataset without naming it \cite{sparta2020d72,sparta2022d76}.
-The full collection contains 198,738 negative and 78,786 positive patches, so its majority
-share is approximately $0.7161$ \cite{mooney2017idc}. The test subset's class share is not
-reported. Neither this collection-wide ratio nor the contest's sample sizes can be used to
-reconstruct the benchmark's confusion matrices.
 
 \subsection{Accuracy and Task-Specific Attack Success}
 
@@ -316,18 +301,13 @@ score cannot be calculated retrospectively from them.
 \label{sec:advml:5:ethics}
 
 The contest processed photographs of identifiable people and predicted identities or facial
-attributes. D7.1 discusses purpose limitation, data minimisation and privacy by design, but
-the contest documentation supplies no corpus-specific account of the lawful basis or the
-participants' data-governance responsibilities \cite{sparta2021d71,sparta2022d76}. The
-absence of that documentation establishes a reporting gap; it does not establish the consent
-status of each person depicted or a legal finding about every possible use.
+attributes.
 
 Attribute imbalance also affects the scientific interpretation. The SD account describes a
 constant attribute predictor whose accuracy remains high because some attributes are rare
 \cite{sparta2022d76}. A complete evaluation would therefore report attribute prevalences and
 per-attribute outcomes alongside the aggregate score. Demographic performance differences
-cannot be inferred from the reported aggregates. This chapter confines its empirical claims
-to the documented classification tasks and does not infer suitability for biometric deployment.
+cannot be inferred from the reported aggregates.
 
 \section{Benchmark Architecture and Reproducibility}
 \label{sec:advml:6}
@@ -342,11 +322,8 @@ published architecture.
   \centering
   \includegraphics{sparta/thesis/sparta-benchmark-architecture.pdf}
   \caption{Benchmark architecture, redrawn after D7.6 Figure~2, p.~22 \cite{sparta2022d76}.
-    Box labels follow the original. The second line in each box paraphrases the module and
-    run descriptions in D7.6 Section~3.1.1. The five modules separate task definitions and
-    data loading from attack execution. The diagram records the software design; it does not
-    establish that a particular experiment preserved its model weights, data manifest and
-    attack settings.}
+    Box labels follow the original. The five modules separate task definitions and
+    data loading from attack execution.}
   \label{fig:advml:architecture}
 \end{figure}
 
@@ -380,10 +357,7 @@ budget-clipped candidate, with a success indicator. However, lines~134--135 of
 \texttt{main.py} pass the raw candidate to the accuracy function
 \cite{norouzian2021adversarialbenchmark}. In Foolbox's minimisation interface the clipped
 candidate is obtained by restricting the raw perturbation to the requested distance budget;
-the raw output need not satisfy that budget \cite{foolbox2021api}. Scoring the raw output
-can therefore count changes outside the permitted set. This is a finding about the inspected
-implementation. No recovered run record connects that revision to the histopathology table,
-so it does not establish the cause of any historical result.
+the raw output need not satisfy that budget \cite{foolbox2021api}.
 
 A further distinction concerns targeted runs. The same implementation replaces the reference
 labels with the nominated target before computing its fields labelled accuracy. Those fields
@@ -687,9 +661,8 @@ mechanism.
 
 The activation column remains at 0.708, including on clean inputs. This establishes equality
 of the printed aggregates to their reported precision. It does not establish identical
-predictions, an always-active detector or insensitivity to inputs. The full corpus's majority
-share is approximately 0.7161, but the unknown evaluation split prevents a matched baseline
-comparison. Equation~\ref{eq:advml:reversal-gain} also shows that always reversing predictions
+predictions, an always-active detector or insensitivity to inputs.
+Equation~\ref{eq:advml:reversal-gain} also shows that always reversing predictions
 would not, by itself, yield the class prior. The mechanism behind the column remains
 unidentified.
 
@@ -851,10 +824,9 @@ attack families without the full configurations needed for comparison. A later e
 would require valid perturbations in common coordinates and attacks adapted to the complete
 defended system, with convergence checks \cite{carlini2019evaluating,tramer2020adaptive}.
 
-\paragraph{Sampling and uncertainty.} The printed hidden-set procedure has unseeded draws
-and stochastic transformations. Augmentations do not establish absence of overlap with
-training images. The histopathology subset size, class proportions and patient-level
-partitioning are unreported. Patch counts cannot be treated as independent patient counts,
+\paragraph{Sampling and uncertainty.} The exact hidden samples are unavailable, and the
+histopathology subset size, class proportions and patient-level partitioning are unreported.
+Patch counts cannot be treated as independent patient counts,
 and forty attributes on the same image are dependent observations. The available rounded
 aggregates and statements about cross-validation do not support confidence intervals,
 paired significance tests or a fitted clean--robustness relation.

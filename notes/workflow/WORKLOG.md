@@ -4,6 +4,18 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `14:47` **T-003** in-progress -> review - Raw-output and histopathology qualification removed; strict audit and compile pass
+- `14:47` **T-003** Removed the requested raw-output consequence and histopathology-result qualification from the perturbation-validation paragraph. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `14:46` **T-003** review -> in-progress - Remove the requested raw-output and histopathology-result qualification from Section 6.6
+- `14:44` **T-003** in-progress -> review - Biometric-deployment qualification removed; strict audit and compile pass
+- `14:44` **T-003** Removed the requested biometric-deployment qualification from Section 6.5.4. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `14:43` **T-003** review -> in-progress - Remove the requested biometric-deployment qualification from Section 6.5.4
+- `14:39` **T-003** in-progress -> review - Section 6.5.4 data-governance paragraph removed; strict audit and clean rebuild pass
+- `14:39` **T-003** Removed the requested data-governance reporting paragraph from Section 6.5.4. Strict Chapter 6 reference audit passes. Cleared corrupted generated auxiliary files and rebuilt successfully; 157 pages, no undefined citations/references or overfull boxes; template, underfull and end-group warnings remain.
+- `14:38` **T-003** review -> in-progress - Remove the requested data-governance reporting paragraph from Section 6.5.4
+- `14:38` **T-003** in-progress -> review - Unnecessary Section 6.5.1 passages removed; dependent comparison deleted; strict audit and compile pass
+- `14:38` **T-003** Removed the two forensic sampling and corpus-ratio passages from Section 6.5.1, deleted the dependent 0.7161 comparison in the histopathology results, and compressed the sampling limitation to one sentence. Strict Chapter 6 reference audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; only pre-existing template and end-group warnings remain.
+- `14:37` **T-003** review -> in-progress - Remove the unnecessary forensic sampling passages from Section 6.5.1 and the dependent corpus-ratio comparison
 - `14:33` **T-003** in-progress -> review - Removed the redundant budget qualification and clarified the SAFAIR scope in the subsection title; strict audit and compile pass
 - `14:33` **T-003** Removed the redundant sentence that prematurely qualified the histopathology results and renamed Section 6.4.2 to 'SAFAIR Contest Scoring and Evaluation Protocol'. Strict reference audit and latexmk pass; 159 pages, with no undefined citations or references and no overfull boxes.
 - `14:32` **T-003** review -> in-progress - Remove the redundant histopathology-budget sentence and identify the SAFAIR contest explicitly in the scoring subsection title
