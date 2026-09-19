@@ -4,6 +4,7 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `14:01` **T-003** review -> in-progress - Apply the approved Chapter 6 revisions that foreground the competition and reusable benchmark framework, with an explicit citation to the versioned GitHub repository
 - `13:46` **T-003** in-progress -> review - Chapter 6 title replaced throughout the thesis; strict audit and compile pass, PDFs identical
 - `13:46` **T-003** Chapter 6 retitled throughout the LaTeX source and structure plan as 'Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis'. Strict reference audit passes; latexmk succeeds at 159 pages; no undefined citations/references or overfull boxes; tracked PDFs are identical.
 - `13:45` **T-003** review -> in-progress - Replace the Chapter 6 title throughout the thesis and planning records at the author's request

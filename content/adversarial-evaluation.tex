@@ -18,22 +18,23 @@ defences accepted at ICLR~2018 and circumvented six completely and one partially
 \cite{athalye2018obfuscated}. Evaluators therefore need to examine the measurement procedure
 alongside the defended classifier.
 
-The contribution examined here is the SPARTA SAFAIR evaluation framework: a contest with a
-hidden evaluation set and a modular benchmark for combinations of attacks and defences
-\cite{sparta2021d73, sparta2022d76}. Using the project records, this chapter reconstructs 
-the implemented evaluation and assesses whether the reported measurements are consistent with 
-the documented attack objectives, attacker access, and perturbation constraints. It then derives
-properties of the accuracy-loss score and the binary detector response policy. These deductions
-explain what the published aggregate results can establish and which additional observations
-would be needed to distinguish competing explanations. They are analytical results of this
-chapter, rather than additional experiments from the project.
+The SPARTA SAFAIR work produced two complementary evaluation mechanisms: an adversarial
+machine-learning competition and a reusable benchmark framework
+\cite{sparta2021d73,sparta2022d76}. The competition evaluated submitted defences on hidden
+test samples. The benchmark provided common interfaces for evaluating trained models against
+reference attack implementations, with task-specific components for different prediction
+problems. Its versioned source code is publicly available on GitHub
+\cite{norouzian2021adversarialbenchmark}.
 
-The empirical evidence comprises the contest submissions and a benchmark evaluation of partner
-defences on histopathology images. A short comparison with the project's PDF-malware study
-examines how feature constraints alter the evaluation problem. The SD submission descriptions
-provide evidence of constant attribute predictions and gradient masking; the benchmark's
-unchanging activation-detector accuracy leaves its mechanism unresolved. The contribution is an
-assessment of evaluation validity, with no claim to a new attack algorithm or certified defence.
+Using the project records, this chapter reconstructs both evaluation mechanisms and assesses
+whether the reported measurements are consistent with the documented attack objectives,
+attacker access and perturbation constraints. The empirical evidence comprises the contest
+submissions and the application of the benchmark to partner defences on histopathology images.
+The chapter then derives properties of the accuracy-loss score and the binary detector response
+policy. These analytical results establish what the published aggregates support and what
+additional observations would be required to distinguish competing explanations. A short
+comparison with the project's PDF-malware study examines how feature constraints alter the
+evaluation problem.
 
 SPARTA was funded under Horizon~2020 grant agreement No.~830892. Its seventh work package,
 SAFAIR, concerned the security of artificial-intelligence systems. The candidate wrote the
@@ -313,12 +314,11 @@ to the documented classification tasks and does not infer suitability for biomet
 \section{Benchmark Architecture and Reproducibility}
 \label{sec:advml:6}
 
-The benchmark separates attack execution from the task-specific model and data interface.
-D7.3 proposed five modules, which D7.6 reports as implemented: attacks, datasets and models,
-together with use cases and a wrapper \cite{sparta2021d73,sparta2022d76}.
-Figure~\ref{fig:advml:architecture} redraws the published architecture. A run loads a
-checkpoint and the evaluation data, converts the model to the attack-library interface, and
-reports task-dependent outputs for the selected attacks.
+The benchmark implements a common software procedure for adversarial evaluation. It separates
+attack execution from the task-specific model and data interfaces. D7.3 proposed five modules,
+which D7.6 reports as implemented: attacks, datasets and models, together with use cases and a
+wrapper \cite{sparta2021d73,sparta2022d76}. Figure~\ref{fig:advml:architecture} redraws the
+published architecture.
 
 \begin{figure}[tbp]
   \centering
@@ -331,6 +331,14 @@ reports task-dependent outputs for the selected attacks.
     attack settings.}
   \label{fig:advml:architecture}
 \end{figure}
+
+Within this framework, standardisation concerns the component interfaces and execution
+procedure. A run loads a trained checkpoint and evaluation data, converts the model to the
+attack-library interface, measures performance before and after the selected attacks, and emits
+the accuracies in one JSON-formatted result. Researchers can extend the procedure through new
+attack classes and task-specific components. The implementation of this reusable workflow is
+available in the versioned GitHub repository
+\cite{norouzian2021adversarialbenchmark}.
 
 The wrapper exposes a model through Foolbox, whose reference implementations supply the
 attacks \cite{rauber2017foolbox}. PyTorch is the native model interface; the report also
@@ -611,10 +619,13 @@ incomplete measure of these constructions.
 \subsection{Histopathology Benchmark}
 \label{sec:advml:8:benchmark}
 
-Table~\ref{tab:advml:benchmark} reproduces the partner benchmark results. It measures binary
-IDC classification after the defence and, for the two detectors, after the response policy
-in Equation~\ref{eq:advml:reversal} \cite{sparta2022d76}. The clean row records the
-prediction cost associated with each configuration.
+D7.6 reports that Vicomtech used the benchmark tool to evaluate five defence configurations
+on a histopathology classification task \cite[Section~3.1.3]{sparta2022d76}. This application
+documents use of the framework for a prediction problem distinct from the competition's facial
+image tasks. Table~\ref{tab:advml:benchmark} reproduces the reported accuracies for binary IDC
+classification. For the two detectors, these include the response policy in
+Equation~\ref{eq:advml:reversal}. The clean row records the prediction cost associated with
+each configuration.
 
 \begin{table}[tbp]
   \caption{Published accuracies for the five partner defence configurations, from D7.6
@@ -861,7 +872,9 @@ Sections~3.1 and~3.2 of D7.4, Chapter~5 of D7.5, and the whole of D7.6
 His D7.4 contribution is recorded as part of this account, without using the confidential
 report as an empirical source.
 
-The contest toolkit and benchmark are published in the candidate's name
+Within SAFAIR, the candidate contributed to organising the competition and to developing the
+reusable benchmark framework. The contest toolkit and benchmark source code are published on
+GitHub under the candidate's name
 \cite{norouzian2021safairtoolkit,norouzian2021adversarialbenchmark}. The evaluated defensive
 algorithms remain partner methods. In particular, the histopathology configurations originate
 in the Vicomtech study of D7.2 Section~2.3.2; the PDF-malware curves belong to the partner
@@ -873,11 +886,13 @@ in this chapter examine their implications for the evaluation framework.
 \label{sec:advml:11}
 
 RQ4 concerns the translation of an adversary model into a reproducible benchmark and the
-relation between clean performance and adversarial robustness. The SPARTA work implemented
-a modular interface for attack execution and task-specific model evaluation. Its records
-show that a reproducible measurement also needs an explicit prediction objective, a valid
-perturbation set and an identified experimental configuration. Independent attack
-participation addresses only part of that requirement.
+relation between clean performance and adversarial robustness. The SAFAIR work delivered a
+competition with hidden evaluation samples and a reusable framework for evaluating trained
+models against reference attacks. The framework established common component interfaces and
+an execution procedure with adaptations for different prediction tasks. Its reported use by
+Vicomtech on histopathology images documents an application separate from the competition.
+The subsequent analysis identifies the experimental records and measurement checks required
+to interpret the resulting scores.
 
 The evidence supports several bounded conclusions. The histopathology table gives different
 comparisons under accuracy loss and absolute attacked accuracy. The SD development account
