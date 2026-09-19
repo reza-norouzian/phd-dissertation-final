@@ -194,3 +194,5 @@ reflowed text. Visual review is left to the author. The root PDF remains the bui
 - 2026-09-19 in-progress -> review (DeepFool and NewtonFool definitions and verified primary citations added; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Apply approved concise contribution framing, summary revision and subsection consolidation)
 - 2026-09-19 in-progress -> review (Concise contribution revision complete; chapter shorter, strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the two disliked and redundant threats-to-validity paragraphs without replacement)
+- 2026-09-19 in-progress -> review (Two redundant threats-to-validity paragraphs removed; chapter remains consistent and audit/build pass)

@@ -4,6 +4,9 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `19:19` **T-003** in-progress -> review - Two redundant threats-to-validity paragraphs removed; chapter remains consistent and audit/build pass
+- `19:19` **T-003** Removed the Sampling and uncertainty and Conflicting records and implementation provenance paragraphs from Section 6.9 without replacement at the author's request. Their essential qualifications remain beside Table 6.1, the contest results, the benchmark table, and the code inspection. Strict Chapter 6 audit passes; latexmk succeeds at 157 pages with no undefined citations/references or overfull boxes. Template, end-group, and underfull-page warnings remain.
+- `19:19` **T-003** review -> in-progress - Remove the two disliked and redundant threats-to-validity paragraphs without replacement
 - `19:15` **T-016** in-progress -> review - Both abstracts aligned with the corrected inference; audit and rebuild pass
 - `19:15` **T-007** in-progress -> review - RQ4 wording corrected and rebuilt without extending the two-page conclusion
 - `19:15` **T-003** in-progress -> review - Concise contribution revision complete; chapter shorter, strict audit and compile pass

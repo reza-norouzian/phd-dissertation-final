@@ -769,21 +769,6 @@ attack families without the full configurations needed for comparison. A later e
 would require valid perturbations in common coordinates and attacks adapted to the complete
 defended system, with convergence checks \cite{carlini2019evaluating,tramer2020adaptive}.
 
-\paragraph{Sampling and uncertainty.} The exact hidden samples are unavailable, and the
-histopathology subset size, class proportions and patient-level partitioning are unreported.
-Patch counts cannot be treated as independent patient counts,
-and forty attributes on the same image are dependent observations. The available rounded
-aggregates and statements about cross-validation do not support confidence intervals,
-paired significance tests or a fitted clean--robustness relation.
-
-\paragraph{Conflicting records and implementation provenance.} The SD task names and the
-submission totals disagree across the reports. No checkpoint mapping resolves the zero
-and 0.02 deltas or the best and worst score associations. The inspected code exposes a
-raw-versus-clipped scoring issue, but its connection to the published experiment is unknown.
-The source repository and dependency versions therefore support implementation inspection,
-while experiment reproduction still requires the corresponding data and model artefacts.
-These distinctions remain explicit rather than being resolved by a presumed run history.
-
 \paragraph{Generalisation and attribution.} The four participating teams belonged to SPARTA,
 so the contest did not test participation beyond the consortium. The evaluated image tasks
 also differ from Android malware analysis in their inputs and validity constraints. The
