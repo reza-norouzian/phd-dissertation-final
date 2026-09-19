@@ -383,9 +383,8 @@ of each defence explicit without supplying missing layer configurations.
 
 The adversarial-training configuration retrains the classifier with clean and perturbed
 examples. D7.6 identifies FGSM, BIM and PGD as the attacks used to generate its adversarial
-training examples \cite{sparta2022d76}. The surviving description does not specify the
-mixture ratio or a complete optimisation schedule. This method exposes the model to those
-attacks during training; resistance to other attacks remains an empirical question.
+training examples \cite{sparta2022d76}. This method exposes the model to those attacks during
+training; resistance to other attacks remains an empirical question.
 
 For the dimensionality-reduction variants, let $r_\eta$ denote an autoencoder. The two
 configurations have score functions

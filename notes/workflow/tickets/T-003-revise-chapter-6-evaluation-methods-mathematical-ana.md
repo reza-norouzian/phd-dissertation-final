@@ -115,3 +115,5 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Redundant D7.6 Figure 6 sentence removed; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Remove the redundant reproducibility checklist paragraph from Section 6.6)
 - 2026-09-19 in-progress -> review (Redundant reproducibility checklist removed; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the redundant training-schedule qualification from Section 6.7 and review the remaining section)
+- 2026-09-19 in-progress -> review (Section 6.7 qualification removed; section reviewed; strict audit and compile pass)
