@@ -4,6 +4,18 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `14:33` **T-003** in-progress -> review - Removed the redundant budget qualification and clarified the SAFAIR scope in the subsection title; strict audit and compile pass
+- `14:33` **T-003** Removed the redundant sentence that prematurely qualified the histopathology results and renamed Section 6.4.2 to 'SAFAIR Contest Scoring and Evaluation Protocol'. Strict reference audit and latexmk pass; 159 pages, with no undefined citations or references and no overfull boxes.
+- `14:32` **T-003** review -> in-progress - Remove the redundant histopathology-budget sentence and identify the SAFAIR contest explicitly in the scoring subsection title
+- `14:29` **T-003** in-progress -> review - Clarified and cited both contest tasks; strict audit and compile pass
+- `14:29` **T-003** Section 6.4 now names targeted face re-identification and attribute alteration before defining each task. The definitions were checked against D7.3 Section 3.3; strict reference audit and latexmk pass, producing a 159-page PDF.
+- `14:27` **T-003** review -> in-progress - Clarify that the contest comprised targeted face re-identification and attribute alteration, with attack and defence tracks for each task
+- `14:26` **T-003** in-progress -> review - Section 2.5 now appears as the same clickable numeric cross-reference as Section 6.4; exact rendered wording verified and strict audit/build passed
+- `14:26` **T-003** Restored the Section 6.3 cross-reference to the same numeric hyperlink form used for Section 6.4, retained the explicit white-box, black-box and grey-box terminology, passed the strict Chapter 6 reference audit, and rebuilt the 159-page thesis after clearing corrupted generated auxiliary files.
+- `14:24` **T-003** review -> in-progress - Restore the original Section 6.3 wording and use the same numeric hyperlink form as the Section 6.4 reference
+- `14:23` **T-003** in-progress -> review - Section 2.5 cross-reference clarified and made fully clickable; strict audit and compile pass
+- `14:23` **T-003** Section 6.3 now cites the threat-model definition directly and presents the complete phrase 'Section 2.5, Adversarial Machine Learning' as one internal hyperlink. The grey-box convention is stated directly. Strict audit and latexmk pass; 159 pages; no undefined citations/references or overfull boxes; root PDF symlink valid.
+- `14:22` **T-003** review -> in-progress - Clarify the Section 2.5 cross-reference and make its full descriptive phrase clickable
 - `14:13` **T-003** in-progress -> review - Adversarial-ML orientation and first-use attack descriptions added; strict audit and compile pass
 - `14:13` **T-003** Chapter 6 now introduces adversarial ML, poisoning, evasion and the three defence strategies in Section 6.1. Section 6.4 defines FGSM, BIM, PGD and Carlini-Wagner at first use with source-specific citations; D7.3 now supports the contest weights. Section 6.7 links the evaluated configurations to the defence taxonomy. Strict audit passes with 25 citations; latexmk succeeds at 159 pages; no undefined citations/references or overfull boxes; root PDF symlink is valid.
 - `14:01` **T-003** review -> in-progress - Apply the approved Chapter 6 revisions that foreground the competition and reusable benchmark framework, with an explicit citation to the versioned GitHub repository

@@ -71,10 +71,11 @@ the conditions under which these measurements can be interpreted.
 \label{sec:advml:3}
 
 The threat model specifies the attack objective, the information available to the attacker and
-the operations permitted on the input. Section~\ref{sec:background:adversarial} fixes the
-knowledge terminology used throughout the dissertation. Under its grey-box convention, some
-model information is known and the training process cannot be influenced. Knowledge of
-training data and the ability to alter those data are separate assumptions.
+the operations permitted on the input. Section~\ref{sec:background:adversarial} defines the
+white-box, black-box and grey-box terminology used throughout the dissertation. Under its
+grey-box convention, some model information is known and the training process cannot be
+influenced. Knowledge of training data and the ability to alter those data are separate
+assumptions.
 
 The contest granted knowledge of the training corpus, withheld the defence technique and model
 architecture, and allowed gradient-based updates against the deployed model
@@ -97,12 +98,14 @@ the scoring rule and the validity of each generated input require separate check
 
 \subsection{Prediction Tasks and Permitted Perturbations}
 
-The contest specified an attack and a defence track for each of two tasks
-\cite{sparta2021d73}. In targeted face re-identification, the attacker receives an image and
-a target identity and attempts to induce that identity as the prediction. In attribute
-alteration, the attacker receives a nominated subset of the forty binary facial attributes
-and attempts to cause errors on that subset. A participant could attack one task and defend
-the other, but could not enter both sides of the same task.
+The contest defined two tasks, each with an attack track and a defence track: targeted face
+re-identification and attribute alteration. In targeted face re-identification, the attacker
+modifies a face image so that the classifier assigns the image to a specified target identity. In
+attribute alteration, the attacker modifies an image so that the classifier misclassifies a
+nominated subset of its forty binary facial attributes. The corresponding defence tracks
+evaluated model robustness against the same perturbations \cite{sparta2021d73}. A
+participant could attack one task and defend the other, but could not enter both sides of the
+same task.
 
 Let $f_\theta$ denote the model scores and $h$ the resulting class decision. For an image $x$
 in a specified input coordinate system, define the feasible perturbations by
@@ -122,13 +125,11 @@ and CUDA~10.1. These are reported resource limits, not measured per-example runt
 
 The budget must be interpreted before any model-specific normalisation. For example, a linear
 rescaling from $[0,1]$ to $[-1,1]$ doubles the numerical distance. A reproducible evaluation
-therefore records both the input coordinate system and preprocessing. The contest's
-$8/255$ setting is not assumed for the histopathology results, whose attack configurations
-are absent from the reported result table.
+therefore records both the input coordinate system and preprocessing.
 
-\subsection{Scoring and the Delivered Protocol}
+\subsection{SAFAIR Contest Scoring and Evaluation Protocol}
 
-SAFAIR ranked submissions by the change between clean and perturbed accuracy,
+SAFAIR Contestranked submissions by the change between clean and perturbed accuracy,
 \begin{equation}
   \Delta=A_{\mathrm{initial}}-A_{\mathrm{final}}.
   \label{eq:advml:delta}
