@@ -2,6 +2,13 @@
 
 Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the shape.
 
+## 2026-09-19
+
+- `13:45` **T-003** review -> in-progress - Replace the Chapter 6 title throughout the thesis and planning records at the author's request
+- `13:41` **T-003** in-progress -> review - Approved concise Section 6.2 applied; strict audit and compile pass, PDFs identical
+- `13:41` **T-003** Section 6.2 retitled and reduced to the SPARTA threat-analysis link, evasion scope, affected input and measured outcome; source-correction paragraph removed. Strict audit passes. Forced latexmk build succeeds after running the installed universal biber through its ARM slice; 159 pages, tracked PDFs identical, no undefined citations/references or overfull boxes. Pre-existing template and end-group warnings remain.
+- `13:39` **T-003** review -> in-progress - Author approved the concise Section 6.2 replacement and removal of the source-correction paragraph
+
 ## 2026-09-13
 
 - `23:32` **T-016** in-progress -> review - Abstract and Kurzfassung written from Chapters 3-8, one page each, compile clean

@@ -387,7 +387,7 @@ first 56,240 support training and validation, while the later 393,679 form the t
 
 6.1 Research Problem and Contribution
 
-6.2 AI-System Threat Analysis
+6.2 Threat Analysis and Evaluation Scope
 
 6.3 Evaluation Requirements and Threat Models
 

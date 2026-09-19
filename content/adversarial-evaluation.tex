@@ -40,31 +40,21 @@ whole of D7.6, which reports the contest and benchmark, and Chapter~5 of D7.5
 \cite{sparta2022d76, sparta2021d75}. Section~\ref{sec:advml:10} distinguishes this contribution
 from the partner methods and experiments discussed below.
 
-\section{AI-System Threat Analysis}
+\section{Threat Analysis and Evaluation Scope}
 \label{sec:advml:2}
 
-D7.1 surveys AI-system assets and threat taxonomies, and D7.2 describes the defensive mechanisms
-studied by the partners \cite{sparta2021d71, sparta2020d72}. The project's relational threat
-model combines threat groups from ENISA, asset categories from the Software Engineering
-Institute, and attack techniques and knowledge levels from NIST
-\cite{damiani2016bigdatathreat, galyardt2020nistir8269comments, tabassi2019nistir8269}.
-This combination supplies a common vocabulary for the knowledge base. Its categories must still
-be translated into operational assumptions before an experiment can be specified.
+SPARTA's threat analysis links attack techniques to affected ML assets and the adversary's
+knowledge \cite[Sections~3.3.2--3.3.6]{sparta2021d71}. Applied to the evaluations in this
+chapter, these distinctions locate the attack within the ML life cycle. Poisoning concerns
+training data or the learning process; evasion concerns inputs supplied to a trained model.
 
-In particular, D7.1 Section~3.3.6 distinguishes grey-box cases by knowledge of model architecture,
-parameter values, training method or training data. Its agent classification has no separate
-axis for an attacker's objective or permitted modifications. This chapter specifies those
-conditions for each evaluation, following the security-evaluation framework introduced in
-Section~\ref{sec:background:adversarial} \cite{biggio2014security}.
-
-One source definition requires correction. D7.1 Section~2.3.5 describes obtaining model
-parameters as an availability attack. This concerns confidentiality of the model. The cited
-source defines availability in terms of timely service to authorised users
-\cite{auernhammer2019attacks}. The distinction limits the scope of the present evaluation:
-the reported outcome is predictive performance under evasion, with no separate measurement of
-service availability. The current NIST taxonomy provides the broader terminology
-\cite{vassilev2025adversarial}; the earlier draft is cited above as the historical source of
-the project's classification.
+The evaluations examined here concern evasion. The contest specified attacks that induce a
+chosen identity or errors in selected facial attributes \cite[Section~3.3]{sparta2021d73}.
+The histopathology benchmark reports classification accuracy on clean and perturbed images
+\cite[Section~3.1.3]{sparta2022d76}. The affected asset is therefore the inference input, and
+the measured outcome is prediction correctness under attack. Sections~\ref{sec:advml:3}
+and~\ref{sec:advml:4} specify attacker access and permitted perturbations, which determine
+the conditions under which these measurements can be interpreted.
 
 \section{Evaluation Requirements and Threat Models}
 \label{sec:advml:3}
