@@ -430,12 +430,6 @@ monitored interaction. A sequence of related optimisation queries may then trigg
 A transferred adversarial example submitted once presents a different observation to this
 stateful detector.
 
-For reproducibility, a history-based evaluation must specify the sequence order, user
-association and reset policy. The contest's stateless-submission rule does not describe this
-benchmark configuration. The reports do not establish a common history protocol across the
-attacks in the result table, so their differences cannot be attributed solely to whether an
-attack uses gradients.
-
 The activation detector instead characterises the response of the underlying classifier to
 an input. For each of nineteen hidden layers it calculates nine statistics: mean and median;
 skewness and kurtosis; standard deviation and interquartile range; minimum and maximum;
@@ -529,20 +523,6 @@ would give 0.20, but it would not establish a worst-case loss for the same model
 missing checkpoint association. The report's prose also substitutes 87\% for attacked
 accuracy and gives 61\% and 88\% values that do not match its table. The numerical record
 used here is the table, with those inconsistencies retained as limits on interpretation.
-
-The counts of submissions also disagree. D7.5 states seven defence submissions, six for
-re-identification and one for attributes, whereas D7.6 states six submissions in total
-\cite{sparta2021d75,sparta2022d76}. An unscored ITTI account appears in D7.6, but the
-reports do not state that this explains the difference. Similarly, D7.5 gives SD a zero
-$\Delta$ while D7.6 Table~1 gives 0.02. The development accounts describe models compatible
-with different scores, but do not supply the identifiers needed to reconcile the two reports.
-
-The four rows do not establish a general relation between clean performance and robustness.
-They combine different prediction tasks and selected submissions from three teams. No
-regression or significance test is appropriate for this table. D7.6 mentions ten-fold
-cross-validation in the Vicomtech and BPI accounts, but does not provide fold assignments or
-fold-level outcomes. Those statements cannot supply uncertainty estimates for the printed
-scores.
 
 \subsection{SD Development Configurations}
 \label{sec:advml:8:sd}

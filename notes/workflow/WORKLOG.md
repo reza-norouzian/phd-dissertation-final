@@ -4,6 +4,12 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `15:51` **T-003** in-progress -> review - Two redundant contest-result qualification paragraphs removed without weakening the RQ4 narrative; strict audit and compile pass
+- `15:50` **T-003** Removed both contest-result qualification paragraphs on submission-count discrepancies and the four-row clean--robustness inference. Confirmed that the narrative remains supported by the later Sampling and uncertainty, Conflicting records, Generalisation, and Chapter Summary passages. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
+- `15:50` **T-003** review -> in-progress - Remove the two redundant contest-result qualification paragraphs while preserving the dissertation-level RQ4 conclusion
+- `15:46` **T-003** in-progress -> review - Redundant history-protocol paragraph removed; strict audit and compile pass
+- `15:46` **T-003** Removed the redundant history-protocol paragraph from Section 6.7. Its statefulness premise remains in the defence description, and the result-specific gradient interpretation remains in Section 6.8.3. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
+- `15:46` **T-003** review -> in-progress - Remove the redundant history-protocol paragraph from Section 6.7 at the author's request
 - `15:13` **T-003** in-progress -> review - Figure 6.2 integrated with surrounding sections and results; all Chapter 6 figures audited; strict audit and compile pass
 - `15:13` **T-003** Strengthened Figure 6.2 integration: Section 6.7 now links the five Vicomtech configurations back to the Section 6.6 benchmark, maps D7.2's initial/middle autoencoders to the Top AE/Middle AE columns of the later benchmark table, and preserves the author's shortened caption. Audited all Chapter 6 figures; no other source-purpose-analysis link required revision. Strict Chapter 6 audit and latexmk pass; 157 pages, no undefined citations/references or overfull boxes; pre-existing template, underfull and end-group warnings remain.
 - `15:12` **T-003** review -> in-progress - Strengthen Figure 6.2 provenance and its links to the benchmark architecture and later results while preserving the author's caption edit

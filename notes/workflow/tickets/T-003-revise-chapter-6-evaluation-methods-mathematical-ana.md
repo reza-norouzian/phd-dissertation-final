@@ -119,3 +119,7 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 in-progress -> review (Section 6.7 qualification removed; section reviewed; strict audit and compile pass)
 - 2026-09-19 review -> in-progress (Strengthen Figure 6.2 provenance and its links to the benchmark architecture and later results while preserving the author's caption edit)
 - 2026-09-19 in-progress -> review (Figure 6.2 integrated with surrounding sections and results; all Chapter 6 figures audited; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the redundant history-protocol paragraph from Section 6.7 at the author's request)
+- 2026-09-19 in-progress -> review (Redundant history-protocol paragraph removed; strict audit and compile pass)
+- 2026-09-19 review -> in-progress (Remove the two redundant contest-result qualification paragraphs while preserving the dissertation-level RQ4 conclusion)
+- 2026-09-19 in-progress -> review (Two redundant contest-result qualification paragraphs removed without weakening the RQ4 narrative; strict audit and compile pass)
