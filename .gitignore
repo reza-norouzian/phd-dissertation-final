@@ -81,7 +81,8 @@ figures/src/*.png
 references/pdf/
 references/.manifest.lock
 
-# The root thesis.pdf is a tracked copy of output/pdf/thesis.pdf, written by $success_cmd
-# in .latexmkrc after every successful compile. Do not ignore it.
+# The root thesis.pdf is a tracked symlink to output/pdf/thesis.pdf, not a second copy. Git
+# stores the link itself, so a clone resolves it against the tracked build output. Do not
+# ignore it, and do not replace it with a regular file.
 
 /tmp

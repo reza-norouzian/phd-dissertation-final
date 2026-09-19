@@ -107,21 +107,20 @@ If two files or sections contradict each other, flag the inconsistency.
 
 - Build from the repository root: `latexmk thesis.tex`. Use `latexmk -c thesis.tex` to clear
   intermediates.
-- **A successful compile must leave two identical PDFs**, and both are tracked in git:
-  `output/pdf/thesis.pdf`, the build output, because `.latexmkrc` sets `$out_dir`; and
-  `thesis.pdf` at the repository root, which is the file the author opens. The copy is made by
-  `$success_cmd` in `.latexmkrc` and must not be removed. Because `$success_cmd` runs only when
-  latexmk actually rebuilds, a run that reports `All targets are up-to-date` copies nothing. If
-  the two files ever disagree, force the rebuild with `latexmk -g thesis.tex`. Confirm with
-  `cmp thesis.pdf output/pdf/thesis.pdf` before reporting a compile as done.
+- **There is exactly one compiled PDF**: `output/pdf/thesis.pdf`, the build output, because
+  `.latexmkrc` sets `$out_dir`. `thesis.pdf` at the repository root is a symlink to it, and that
+  symlink is what the author opens. Git tracks both the build output and the symlink, so a
+  fresh clone resolves the root path without compiling. `$success_cmd` in `.latexmkrc` only
+  recreates the link when it is missing or repointed; it copies nothing, so the two paths cannot
+  disagree. Never replace the root symlink with a regular file, and never delete it.
 - The bibliography backend is **biber** (biblatex, `style=numeric`, `sorting=none`). Do not run
   `bibtex`. `latexmk`, `pdflatex`, `biber` are installed at `/Library/TeX/texbin`.
 - After editing any `.tex` file, compile before reporting the change as done, and read the log
   for new warnings. Never claim a build succeeded without running it.
-- Both PDFs **are tracked**, so that the author can review the compiled thesis from git. Rebuild
-  before handing work back, so that the two PDFs in the tree always match the `.tex` files
-  beside them and the author can commit all of it in one go. A commit that changes a chapter but
-  carries a stale PDF is the failure this rule exists to prevent.
+- The compiled PDF **is tracked**, so that the author can review the thesis from git. Rebuild
+  before handing work back, so that the PDF in the tree always matches the `.tex` files beside
+  it and the author can commit all of it in one go. A commit that changes a chapter but carries
+  a stale PDF is the failure this rule exists to prevent.
   Everything else in `output/pdf/` is ignored, and no stray root-level build output such as
   `t.bbl`, `t.blg` or `texput.log` may be added.
 

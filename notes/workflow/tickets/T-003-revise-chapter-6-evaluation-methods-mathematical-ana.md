@@ -32,6 +32,30 @@ authorises an evidence-based revision with original report figures and explicit 
 - `sparta2022d76`: Section 3.1.3 reports clean and perturbed classification accuracy for the
   histopathology benchmark. Full text inspected; reference-vault status `have`.
 
+## Evidence for the proposed benchmark-contribution clarification
+
+Scope: proposed wording only, at the author's request; no chapter changes applied.
+
+- `sparta2021d73`: Section 4.4 and Chapter 5 distinguish the contest from the planned
+  reusable benchmark and specify its common component interfaces. Relevant full text
+  inspected in this conversation; reference-vault status `have`; registered in MANIFEST.tsv.
+- `sparta2022d76`: Sections 3.1.1--3.1.2 document the implemented modular tool, task
+  adaptations and execution procedure. Section 3.1.3 and Table 2 report Vicomtech's use
+  on histopathology classification. Chapter 3 full text inspected in this conversation;
+  reference-vault status `have`; registered in MANIFEST.tsv.
+- `norouzian2021adversarialbenchmark`: the versioned README and main.py document the
+  checkpoint-based evaluation loop and JSON result output; attacks/base.py and
+  attacks/attack_types/fgsm.py implement task-specific loss selection and its integration
+  with a Foolbox attack. These files were read in full in this conversation at revision
+  2fac62b947ed77a509f397a9cc316937291395f5. Reference-vault status `no-pdf` (software),
+  registered in MANIFEST.tsv; metadata provenance in references/source-records/chapter6-software.md.
+- The author's clarification identifies organising the competition and developing the
+  reusable benchmark as contributions of the collaborative work. Proposed attribution
+  must not imply sole authorship or ownership of the partner defence algorithms.
+- The strict chapter audit passed before drafting the proposal: 24 cited, 0 needing
+  attention. Standardisation refers to software interfaces and the execution procedure;
+  the proposal does not claim community adoption or complete experimental reproducibility.
+
 ## Acceptance criteria
 
 - [x] Revise 6.4-6.11 and align 6.1-6.3 and the introduction with the corrected contribution.
