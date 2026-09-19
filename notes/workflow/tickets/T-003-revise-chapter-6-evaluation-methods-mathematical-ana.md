@@ -1,7 +1,7 @@
 ---
 id: T-003
 title: Revise Chapter 6 evaluation methods, mathematical analysis and figures
-status: in-progress
+status: review
 priority: P0
 chapter: 6
 owner: claude
@@ -56,6 +56,26 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
   attention. Standardisation refers to software interfaces and the execution procedure;
   the proposal does not claim community adoption or complete experimental reproducibility.
 
+## Evidence for the Chapter 6 adversarial-ML orientation
+
+- `biggio2018wildpatterns`: defines adversarial machine learning as the study of deliberately
+  crafted training- or test-time perturbations and countermeasures, and distinguishes
+  training-time poisoning from test-time evasion. Full text inspected; vault status `have`.
+- `goodfellow2015explaining`: introduces FGSM as one update in the sign of the input-loss
+  gradient under a max-norm budget. Full text inspected; vault status `have`.
+- `kurakin2017bim`: defines the basic iterative method as repeated small FGSM-style updates
+  clipped to the permitted max-norm neighbourhood and valid pixel range. Full text inspected;
+  vault status `have`.
+- `madry2018pgd`: describes PGD as multi-step projected gradient ascent on the loss within
+  the perturbation set and evaluates multiple starting points. Full text inspected; vault
+  status `have`.
+- `carlini2017robustness`: formulates adversarial-example generation as constrained distance
+  minimisation and develops attacks for L0, L2 and Linf distances. Full text inspected; vault
+  status `have`.
+- All five sources are registered in `references/MANIFEST.tsv`; the strict chapter audit
+  passed before drafting. Chapter 2 retains the full taxonomy, while Chapter 6 receives a
+  concise orientation and definitions at first use.
+
 ## Acceptance criteria
 
 - [x] Revise 6.4-6.11 and align 6.1-6.3 and the introduction with the corrected contribution.
@@ -74,3 +94,4 @@ Scope: proposed wording only, at the author's request; no chapter changes applie
 - 2026-09-19 review -> in-progress (Replace the Chapter 6 title throughout the thesis and planning records at the author's request)
 - 2026-09-19 in-progress -> review (Chapter 6 title replaced throughout the thesis; strict audit and compile pass, PDFs identical)
 - 2026-09-19 review -> in-progress (Apply the approved Chapter 6 revisions that foreground the competition and reusable benchmark framework, with an explicit citation to the versioned GitHub repository)
+- 2026-09-19 in-progress -> review (Adversarial-ML orientation and first-use attack descriptions added; strict audit and compile pass)

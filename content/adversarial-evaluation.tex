@@ -10,6 +10,15 @@
 This chapter addresses RQ4: \rqFourText{} The question concerns gap~\gapref{4},
 which links adversary assumptions to the validity of the resulting measurements.
 
+Adversarial machine learning studies how deliberate changes to training data or inference
+inputs can cause a learning system to fail, together with methods for resisting such changes
+\cite{biggio2018wildpatterns}. A poisoning attack intervenes during training, whereas an
+evasion attack modifies an input presented to an already trained model. Defences may expose
+the model to adversarial examples during training, transform its inputs or internal
+representations, or detect and respond to suspected adversarial inputs. This chapter concerns
+evasion attacks and the evaluation of these three defence strategies. The broader attack
+taxonomy and terminology are defined in Section~\ref{sec:background:adversarial}.
+
 An empirical robustness estimate depends on the permitted perturbations and the attacks used
 to search for them \cite{biggio2014security, carlini2019evaluating}. An unsuccessful search
 may reflect resistance to the tested attack, or a failure of the attack to exploit the model.
@@ -131,11 +140,19 @@ percentage points. D7.5 specifies clean accuracy and runtime as tie-breakers
 outranking a more accurate model.
 
 The planned opening round evaluated defences against FGSM, BIM and PGD, with respective
-weights $0.2$, $0.4$ and $0.4$ \cite{goodfellow2015explaining, kurakin2017bim, madry2018pgd}.
+weights $0.2$, $0.4$ and $0.4$ \cite{sparta2021d73}.
+FGSM makes one update in the sign of the input-loss gradient
+\cite{goodfellow2015explaining}. BIM repeats smaller
+FGSM-style updates and clips each result to the permitted input range and perturbation
+neighbourhood \cite{kurakin2017bim}. PGD also applies iterative gradient updates, projects
+each result onto the feasible perturbation set, and can use multiple starting points
+\cite{madry2018pgd}. Carlini--Wagner instead
+formulates adversarial-example generation as an optimisation problem that balances the
+required classification outcome against perturbation size \cite{carlini2017robustness}.
 The five selected attacks would then face the five selected defences, with the final score
 averaged over opponents \cite{sparta2021d73}. No attack submissions arrived. The organisers
 used fixed baseline attacks instead; D7.5 lists Carlini--Wagner in addition to FGSM, BIM and PGD
-\cite{sparta2021d75, carlini2017robustness}. Table~\ref{tab:advml:designdelivery} records the
+\cite{sparta2021d75}. Table~\ref{tab:advml:designdelivery} records the
 change in protocol.
 
 \begin{table}[tbp]
@@ -384,6 +401,10 @@ performed those checks.
 
 \section{Defence Mechanisms and Integration}
 \label{sec:advml:7}
+
+The evaluated configurations instantiate the three defence strategies introduced in
+Section~\ref{sec:advml:1}: adversarial training, transformations of inputs or internal
+representations, and adversarial-input detection.
 
 D7.6 evaluates five partner configurations described in D7.2. The underlying histopathology
 classifier combines a pretrained VGG16 feature extractor with a dense prediction network

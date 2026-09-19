@@ -4,6 +4,8 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-19
 
+- `14:13` **T-003** in-progress -> review - Adversarial-ML orientation and first-use attack descriptions added; strict audit and compile pass
+- `14:13` **T-003** Chapter 6 now introduces adversarial ML, poisoning, evasion and the three defence strategies in Section 6.1. Section 6.4 defines FGSM, BIM, PGD and Carlini-Wagner at first use with source-specific citations; D7.3 now supports the contest weights. Section 6.7 links the evaluated configurations to the defence taxonomy. Strict audit passes with 25 citations; latexmk succeeds at 159 pages; no undefined citations/references or overfull boxes; root PDF symlink is valid.
 - `14:01` **T-003** review -> in-progress - Apply the approved Chapter 6 revisions that foreground the competition and reusable benchmark framework, with an explicit citation to the versioned GitHub repository
 - `13:46` **T-003** in-progress -> review - Chapter 6 title replaced throughout the thesis; strict audit and compile pass, PDFs identical
 - `13:46` **T-003** Chapter 6 retitled throughout the LaTeX source and structure plan as 'Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis'. Strict reference audit passes; latexmk succeeds at 159 pages; no undefined citations/references or overfull boxes; tracked PDFs are identical.
