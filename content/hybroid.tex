@@ -18,24 +18,20 @@ on the same application cohort. The comparison measures the additional value of 
 prediction task and learner.
 
 \hybroid{} combines program structure recovered from an Android application package with
-network traffic recorded during execution on a physical handset. Both observations are converted
-to feature vectors, which form the input to a supervised classifier. Two tasks are evaluated
-separately: binary malware detection and five-class classification into Benign or one of four
-malware categories. Figure~\ref{fig:hybroid:architecture} presents the pipeline.
+network traffic recorded during execution on a physical handset. Every sample enters the
+pipeline as such a pair~(1), and the two observations are analysed in parallel~(2). The static
+branch yields a 64-dimensional code vector, the dynamic branch \netfeatures{}~network-flow
+features, and the two are concatenated into one joint vector per sample~(3). A supervised
+classifier is trained and cross-validated on that vector~(4) and produces the predictions~(5).
+Two tasks are evaluated separately: binary malware detection and five-class classification into
+Benign or one of four malware categories. Figure~\ref{fig:hybroid:architecture} presents the
+pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
 
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{hybroid-architecture.pdf}
-  \caption{The Hybroid architecture. Every application sample provides a pair of inputs: the
-  application package and a capture of the traffic it generates~(1). Both are analysed in
-  parallel~(2). Androguard extracts opcodes, basic blocks and control-flow graphs for the
-  64-dimensional code representation, while Argus turns the
-  capture into bidirectional flows that are aggregated, normalised and reduced to
-  \netfeatures{}~network-flow features. The two representations form one joint
-  vector per sample~(3), on which a gradient-boosting classifier is trained and
-  cross-validated~(4), separately for binary detection and five-class classification
-  into Benign or one of four malware categories~(5). Redrawn by the candidate from
-  \cite{norouzian2021hybroid}.}
+  \caption{The \hybroid{} architecture, with the numbered stages as described above. Redrawn by
+  the candidate from \cite{norouzian2021hybroid}.}
   \label{fig:hybroid:architecture}
 \end{figure}
 
