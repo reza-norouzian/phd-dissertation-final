@@ -431,19 +431,27 @@ first 56,240 support training and validation, while the later 393,679 form the t
 
 ### 7. Cross-Contribution Discussion
 
-7.1 Communication Context and Program Context
+7.1 Contributions of Contextual Representations
 
-7.2 Multimodal and Higher-Order Representations
+7.2 Observation Requirements and Analysis Cost
 
-7.3 Observation Requirements and Data-Acquisition Cost
+7.3 Evaluation Principles Across the Contributions
 
-7.4 Predictive Evaluation and Adversarial Evaluation
+7.4 Implications for Android Malware Analysis
 
-7.5 Dataset Limitations and Extraction Failures
+Revised on 20 September 2026 under D-003 and T-004 after the author approved the T-017
+review and requested a contribution-led tone. The four sections connect the scientific
+contributions; brief qualifications remain beside the claims they bound, and detailed
+limitations stay in Chapters 3 to 6. The earlier evaluation-condition table and repeated
+defect inventory are removed. The chapter keeps its four-page ceiling and its conceptual
+comparison of the Android systems. Original section labels remain as aliases, so Chapter 5's
+acquisition reference resolves to the new Section 7.2. No common experiment or historical
+progression from IoT to Android is implied.
 
-7.6 Scope of Generalisation
-
-7.7 Implications for Android Malware Analysis
+The revision compiles to three content pages (113--115), followed by the recto-opening blank
+on page 116; Chapter 8 starts on page 117. Main text decreases from 1,414 to 956 words by
+TeXcount, and the full PDF decreases from 157 to 155 pages. The planning allowance remains
+four pages.
 
 ### 8. Conclusion and Future Work
 

@@ -1,204 +1,136 @@
 \chapter{Cross-Contribution Discussion}
 \label{chap:discussion}
 
-% Drafted under T-004 from the current text of Chapters 3 to 6, and revised on 11 September 2026
-% from the author's proposed text (tmp/chapter7-review/chapter7-proposed.md). Constraints from
-% notes/dissertation-structure-v0.3.md: the comparison is conceptual, no result of Hybroid is
-% compared numerically with a result of HGANN-Mal, and no developmental sequence from the IoT
-% work to the Android work is claimed. Section 5.3 cites sec:discussion:3 by label.
-% Length fixed at four pages by D-044.
+% Revised under T-004 and D-003 as a contribution-led, four-section synthesis.
+% Comparisons between the Android systems are conceptual; empirical contrasts stay within
+% each study. The original section labels remain as aliases, including sec:discussion:3,
+% which Chapter 5 cites for observation requirements. Length target: at most four pages.
 
-The contribution chapters examine different forms of context under separate experimental
-protocols. This discussion relates the observations each representation requires to the
-conclusions its evaluation supports. Comparisons between \hybroid{} and \hgann{} are conceptual;
-their scores do not provide a direct comparison because the corpora and tasks differ. The central
-question is when additional context provides useful information and how the evidence for that
-benefit is bounded.
+Chapters~\ref{chap:anomaly} to~\ref{chap:advml} contribute methods for representing
+security-relevant context and procedures for evaluating learning-based decisions. This
+discussion relates their design choices to the evidence each study provides. The comparison
+between \hybroid{} and \hgann{} is conceptual; empirical comparisons remain within the
+corpus and protocol of each study.
 
-\section{Communication Context and Program Context}
+\section{Contributions of Contextual Representations}
+\label{sec:discussion:representations}
 \label{sec:discussion:1}
-
-In the network studies of Chapter~\ref{chap:anomaly}, context comprises the communication
-partners of a device or service and the exchanges observed between them. In \hgann{}, context
-consists of relations among methods within an application. \hybroid{} combines program structure
-with network observations. Each representation depends on its observation process: the service
-graph contains relations encountered during learning, whereas the call graph contains
-invocations recovered by static analysis. Neither is a complete record of system behaviour. This
-comparison concerns their methodological properties; it does not imply a developmental link
-between the IoT and Android studies.
-
-Legitimate changes can also produce anomalous observations. Each of the nine false alarm episodes
-on the industrial benign monitoring day had a benign cause. Three followed engineering
-workstation activity and two followed planned device restarts. The service-graph design
-permits an operator to approve new relations. An application update that changes its call graph
-presents a related problem, but the Android evaluations did not examine it. The industrial
-observations therefore motivate a question about adaptation to legitimate change, without
-demonstrating its effect on either Android detector.
-
-\section{Multimodal and Higher-Order Representations}
 \label{sec:discussion:2}
 
-Both Android systems derive method-level call graphs with Androguard and use opcode information
-with operands discarded. \hybroid{} adds traffic captured from the application. \hgann{}
-constructs hyperedges over information derived from its static representation. The additions
-address different observational limits. Flow averaging removes the order and detailed temporal
-organisation of exchanges, while retaining aggregate features such as mean record duration.
-Hypergraph construction remains dependent on the calls and methods recovered by the analyser.
+The IoT service-graph design makes communication partners part of the detection decision.
+Each node stores observed relations as its reference and permits an operator to approve
+new legitimate interactions \cite{aubet2018graph}. In the industrial work, \nadics{}
+represents network connections through protocol features, while the SWaT detector analyses
+process measurements in multivariate time windows. Chapter~\ref{chap:anomaly} thus
+connects representation design to the unit of observation available in each setting.
 
-Within the \hybroid{} evaluation, fusion increased detection $F_1$ by one or two percentage
-points over the better single modality. For category classification, its effect ranged from a
-two-point decrease to a three-point increase. Network features led code features for detection
-and trailed them for category classification under each reported learner. Thus, the observed
-benefit of an additional modality depends on the task and classifier.
+\hybroid{} studies context across evidence sources. Its static graph describes program
+structure, and its flow features summarise network behaviour observed during execution
+\cite{norouzian2021hybroid}. The within-system comparison in
+Table~\ref{tab:hybroid:fusion-effects} reports higher detection $F_1$ for fusion than for
+either branch alone. For category classification, fusion improved the ensemble results,
+while the decision tree favoured static features. The contribution includes a direct
+measurement of the value of combining these observations for the tested tasks and learners.
 
-The hypergraph systems in Chapter~\ref{chap:hgann} exceeded the pairwise baselines under the
-reported protocols. \hgann{}'s advantage over the non-attentive systems was metric-dependent: on
-CICMalDroid binary detection, it trailed HGNN+ by 0.1 accuracy points but led by 0.3 $F_1$
-points. Hyperedge construction and attention changed together, so these differences cannot be
-attributed to attention alone. The results support comparisons between complete systems; the
-missing ablation limits conclusions about the mechanism responsible.
+\hgann{} studies context within the application package. It groups methods by call
+neighbourhood and semantic similarity; slice-aware hyperedges add relations around
+security-sensitive call sites \cite{norouzian2025hgannmal}. These groups define which
+methods contribute together to a hyperedge representation. The hypergraph configurations
+achieved higher reported accuracy than the pairwise baselines for binary detection and for
+the dataset-specific classification tasks: families on Drebin and categories on CICMalDroid
+(Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}). These are comparisons of complete
+configurations. Comparisons with non-attentive operators vary both construction and
+weighting; an attention-only effect requires a controlled ablation.
 
-\section{Observation Requirements and Data-Acquisition Cost}
+The operator analysis in Section~\ref{sec:hgann:8} gives a separate account of what learned
+weighting can represent. Different hyperedge groupings can produce different attentive
+propagation even when they produce the same fixed propagation matrix. This capacity depends
+on the grouping retained during construction: attention adjusts existing memberships. The
+distinction connects the model's mathematical properties to the program relations made
+available by static analysis.
+
+The SWaT comparison adds an operating-objective perspective. Full process inputs gave the
+highest reported recall, while the PCA configurations reduced the false-positive rate
+(Table~\ref{tab:anomaly:gan-representations}). The preferred configuration therefore depends
+on the relative importance of detecting anomalous observations and reducing false-positive
+observations. Across these studies, the useful question is which context serves the
+prediction task, with the comparison made under a stated protocol.
+
+\section{Observation Requirements and Analysis Cost}
+\label{sec:discussion:observation}
 \label{sec:discussion:3}
-
-The fused \hybroid{} model requires a traffic capture for each application. Its evaluation used
-CICAndMal2017 captures recorded by the dataset authors on three physical handsets under scripted
-use. Both branches excluded 47 graph-extraction failures from the 2,126 matched samples, leaving
-2,079 for evaluation. The static branch was also evaluated on 135,905 applications without
-corresponding traffic records. This demonstrates its use on a larger corpus, although it does not
-quantify a runtime advantage over the fused model.
-\hgann{} likewise requires application packages without traffic acquisition, but reports no
-extraction-time or memory measurements.
-
-The industrial study required access to the plant and manual labelling of 25 attack episodes.
-The Raspberry Pi~3 experiment measured extractor throughput separately, including a moderate
-load of about 2,500 input frames per second. Collection effort and extraction throughput are
-therefore different costs. The available records do not isolate how either determined corpus
-size.
-
-These requirements affect which applications and operating conditions can be evaluated. The
-S7-300 test partition contains one episode per attack class; each \hybroid{} malware category
-contains between 101 and 112 applications in the corpus. Additional traffic may provide evidence
-absent from static code, but its benefit must justify the required observation.
-Chapter~\ref{chap:hybroid}'s hypothesis that unreachable injected calls could leave traffic
-unchanged remains untested against \hybroid{}.
-
-\section{Predictive Evaluation and Adversarial Evaluation}
-\label{sec:discussion:4}
-
-The predictive results of Chapters~\ref{chap:anomaly}--\ref{chap:hgann} concern samples and
-attacks that were not adapted to the evaluated detector. Chapter~\ref{chap:advml} adds an
-explicit adversary and shows why attack performance must be interpreted alongside useful
-classification. A constant classifier has zero accuracy loss under every label-preserving attack
-(Equation~\ref{eq:advml:constant}). One SD configuration reportedly reached constant attribute
-predictions at approximately 80 per cent accuracy. This makes a matched trivial baseline relevant
-to interpretation, even when an aggregate score appears high.
-
-For Android malware, the attacker must also preserve a functioning application and its malicious
-behaviour. Published attacks can satisfy such constraints while changing recovered call graphs
-\cite{song2026fcghunter}. Both Android systems derive their program representations from those
-graphs; constructing hyperedges does not remove the upstream influence of code modification. An
-evaluation would need to specify valid package transformations and attack the complete pipeline,
-including the fusion stage where applicable. Clean and attacked performance would then be
-reported under the same conditions \cite{carlini2019evaluating}. Neither Android system underwent
-that evaluation, so their predictive results establish neither adversarial robustness nor a
-demonstrated exploitable weakness.
-
-\section{Dataset Limitations and Extraction Failures}
 \label{sec:discussion:5}
 
-Evaluation depends on which samples reach the classifier. \hybroid{} excluded the same 47
-graph-extraction failures from both branches. \hgann{} does not report its extraction-failure count or how failures were handled. Their
-extraction coverage therefore cannot be compared. CICMalDroid retains 11,598 of 17,341 collected applications after its
-analysis filters, which may exclude some evasive behaviour. The industrial extractor requires
-observed traffic, while the hidden contest procedure excludes images that fail its
-face-detection check. Each result is conditional on the samples retained by its pipeline.
+Static and multimodal analysis place different requirements on data acquisition.
+\hybroid{}'s evaluation reused traffic supplied by CICAndMal2017 alongside each application
+package. Its fused representation therefore requires a recorded execution. \hgann{}
+constructs its representation from the package, so it can be applied without arranging a
+runtime capture. This separates the effort of obtaining an additional observation from the
+computational work of modelling static structure.
 
-Application provenance and traffic acquisition also require separate treatment. CICAndMal2017
-collected benign applications from Google Play and malware from VirusTotal and Contagio, although
-their traffic was captured using common handsets and procedures. Shared capture conditions
-control part of the measurement process; they do not eliminate differences in application
-origin. The Drebin experiment combines malware with benign applications drawn from AndroZoo, with
-no documented collection-window restriction on that draw. Such differences can provide
-predictive cues unrelated to malicious behaviour, as demonstrated in the Android case study of
-Arp et al.~\cite{arp2022dos}.
+Chapter~\ref{chap:hgann} also provides a computational account of higher-order
+representation. The hyperedge cardinality cap bounds retained memberships, and the sparse
+representation grows linearly with the numbers of methods and slices
+(Equation~\ref{eq:hgann:sizes}). Construction adds call-graph searches and comparisons
+between semantic embeddings. The bounds in Section~\ref{sec:hgann:13} distinguish this
+stage from propagation and make their scaling assumptions explicit. An end-to-end runtime
+comparison would require measurements under common hardware and workloads.
 
-The contribution chapters identify inconsistencies in their source records and recompute the
-quantities supported by the available counts. Remaining unknowns limit interpretation even where
-a reported score can be reproduced arithmetically.
+Observation requirements also define the evaluation cohort. \hybroid{} compares modalities
+on the same applications with both representations available, which permits a matched
+comparison on that cohort. CICMalDroid supplies applications retained by its authors'
+dynamic-analysis procedure \cite{mahdavifar2020dynamic}; \hgann{} then extracts static
+representations from these packages. The processing requirements of a detector and the
+acquisition history of its benchmark are therefore separate properties. Recording both
+makes explicit which applications and operating conditions a reported result describes.
 
-\section{Scope of Generalisation}
+\section{Evaluation Principles Across the Contributions}
+\label{sec:discussion:evaluation}
+\label{sec:discussion:4}
 \label{sec:discussion:6}
 
-Table~\ref{tab:discussion:scope} distinguishes evaluation protocols and the populations behind
-the reported class shares. These percentages describe binary detection; they do not characterise
-the multiclass label distributions. Corpus proportions need not equal an undocumented
-test partition.
+Reusable software provides a second connection between the contribution chapters.
+\nadics{} places estimators behind a common interface, so that researchers can change
+learning methods without rewriting the surrounding pipeline \cite{iuno_ap4}.
+SAFAIR applies a corresponding separation to evaluation: attack implementations share an
+execution procedure, while task-specific components define the model and data interfaces
+\cite{sparta2022d76}. Vicomtech's application of the framework to histopathology defences
+demonstrates reuse on a prediction task outside the facial-image contest. Both frameworks
+separate components that researchers can vary within one configured procedure.
 
-\begin{table}[tbp]
-  \caption[Evaluation conditions and reported binary class shares]{Evaluation conditions and
-  reported binary class shares. ``Unreported'' denotes missing information, rather than a
-  measured absence. Baseline descriptions refer to the evidence presented in the contribution
-  chapters.}
-  \label{tab:discussion:scope}
-  \centering
-  \small
-  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.9cm}
-    *{4}{>{\raggedright\arraybackslash}X}@{}}
-    \toprule
-    Study & Reported split & Positive class and share & Population represented & Trivial
-      baseline \\
-    \midrule
-    S7-300 & Whole capture sessions & Attack, 6.2\% & Confirmed test records & Stated in the
-      text \\
-    SWaT GAN & Chronological; later 393,679 timestamps for testing & Anomalous, 13.1\% &
-      Later part of one SWaT attack recording & Stated in the text \\
-    \hybroid{} & Five-fold cross-validation & Malware, 20.0\% in source corpus & 2,079 of 2,126
-      samples & Not reported \\
-    \hgann{}: Drebin/AndroZoo & Random 70/20/10 & Malware, approximately 37.0\% & Assembled
-      binary corpus & Corpus majority \\
-    \hgann{}: CICMalDroid & Random 70/20/10 & Malware, 84.5\% & Full study corpus & Corpus
-      majority \\
-    SAFAIR histopathology benchmark & Evaluated subset unreported & IDC, unreported & Test
-      population unidentified & Analytical discussion only \\
-    \bottomrule
-  \end{tabularx}
-\end{table}
+The Android studies provide within-system comparisons under their own protocols. \hybroid{} holds
+the applications and learner fixed when comparing input modalities. The \hgann{}
+evaluation supplies common call graphs and node features to its relational configurations.
+Matching inputs and protocols makes these contrasts interpretable; their reported margins
+remain point estimates. Time-ordered evaluation addresses the additional question of
+performance on later observations \cite{pendlebury2019tesseract}. Each comparison can thus
+be read against the conditions it was designed to examine.
 
-The SWaT protocol evaluates the later 393,679 timestamps of the same attack-period recording;
-the earlier 56,240 timestamps support training and validation. This split prevents reuse of test
-observations during model development, but it does not measure transfer to another campaign or
-installation. Session separation and random partitioning address different questions from a
-time-ordered evaluation \cite{pendlebury2019tesseract}. The reported folds also do not provide
-the independent repeated-run outcomes needed to quantify variability. In the industrial
-studies, the S7-300 test attacks belong to classes present during training, and the SWaT detector
-is developed with attack observations in training and supervised selection.
-
-Within-study contrasts provide the most direct evidence for performance differences under their
-reported conditions. Their interpretation still depends on the controls: \hybroid{} does not
-specify whether preprocessing and embeddings were fitted within each fold, and \hgann{} does not
-isolate attention from hyperedge construction. These limitations concern internal validity.
-Transfer to another population is a separate question, as illustrated by performance
-deterioration under challenging conditions in the comparative Android study of Gao
-et al.~\cite{gao2024comprehensive}. Chapter~\ref{chap:advml}'s analytical identities apply
-independently of a particular corpus under their stated assumptions; its empirical measurements
-retain their sampling and implementation limits.
+Chapter~\ref{chap:advml} adds analytical criteria for interpreting evaluation scores. A
+constant predictor has zero accuracy loss under label-preserving attacks
+(Equation~\ref{eq:advml:constant}), even when its classification utility is limited.
+Clean and attacked accuracy therefore answer different questions and should be reported
+together. Under the benchmark's binary label-reversal response,
+Equation~\ref{eq:advml:reversal-gain} relates the change in task accuracy to the correct and
+incorrect base predictions that trigger an alarm. These derivations make the scoring
+procedure part of the scientific contribution. Their assumptions can be examined independently of a particular benchmark,
+and they specify outcomes needed to assess the complete defended system
+\cite{carlini2019evaluating}.
 
 \section{Implications for Android Malware Analysis}
+\label{sec:discussion:implications}
 \label{sec:discussion:7}
 
-The results support choosing context according to the prediction task and the observations
-available. Traffic improved detection relative to code features in the \hybroid{} experiment, but
-fusion did not improve every category-classification configuration. Higher-order systems
-performed well in the Chapter~\ref{chap:hgann} comparisons, although the contribution of
-attention remains unidentified. Additional context therefore requires evidence of benefit within
-the intended task, together with controls that identify what produced the difference.
+For Android analysis, the distinction between acquiring evidence and structuring it gives
+two design choices that can be investigated together. A common-cohort evaluation could
+compare static relational encodings and then measure the additional value of traffic for
+the same prediction task. Acquisition effort and construction time would give those
+performance differences an operational interpretation.
 
-Observation limits remain after a representation is enriched. Static analysis avoids
-per-application traffic acquisition but cannot recover behaviour absent from its analysis.
-Traffic depends on the exercised behaviour and capture environment; the protocol mix in the
-\hybroid{} corpus further limits conclusions about encrypted communication. A deployment claim
-would require evaluation of these conditions as well as prediction quality. The dissertation
-establishes bounded benefits of contextual representations and a method for examining the
-validity of their evaluation. Its remaining empirical questions concern the missing component
-ablations and performance under valid application transformations or later data.
+The SAFAIR evaluation design provides a basis for extending such a comparison to an
+explicit adversary. Android-specific tests would use valid package transformations that
+preserve malicious functionality and would assess the complete pipeline, including fusion
+where applicable \cite{carlini2019evaluating}. The Android studies establish predictive
+results; resistance to those transformations remains a question for that evaluation.
+Together, the contributions relate contextual modelling to the evidence and measurement
+procedures needed to assess a security-analysis system.

@@ -4,17 +4,21 @@ title: Draft Chapter 7 Cross-Contribution Discussion
 status: review
 priority: P1
 chapter: 7
-owner: claude
+owner: codex
 depends_on: []
 blocks: []
 tags: [writing]
 created: 2026-09-10
-updated: 2026-09-11
+updated: 2026-09-20
 ---
 
 ## Goal
 
-Four pages relating the contributions of Chapters 3 to 6 along the seven sections fixed by the structure plan, written from the current chapter text, conceptual only, with no numerical comparison between Hybroid and HGANN-Mal.
+Revise Chapter 7 as a contribution-led synthesis in at most four pages. Under D-003, replace
+the earlier seven sections with four connected discussions of contextual representations,
+observation requirements and analysis cost, evaluation principles, and Android implications.
+Remove repeated limitations and incidental detail while retaining brief qualifications
+needed to interpret the evidence. The Hybroid/HGANN-Mal comparison remains conceptual.
 
 ## Why it matters
 
@@ -27,15 +31,93 @@ and 8 as stubs, and the author fixed the length of this chapter at four pages. T
 ticket for this chapter (old T-023, created 13 August 2026) was lost in the tracker reset; its
 three acceptance criteria are carried over below.
 
+On 20 September 2026 the author approved the T-017 proposal and requested a constructive
+dissertation voice. The revision should explain the scientific contribution before its
+scope, and should not reproduce the earlier review as a catalogue of criticism. D-003
+supersedes the seven-section requirement. Detailed limitations remain in Chapters 3 to 6.
+
 ## Acceptance criteria
 
-- [x] Seven sections under the headings and labels of structure v0.3; `sec:discussion:3` keeps its label because Section 5.3 cites it.
-- [ ] At most four pages. (Met by the 10 September draft; the 11 September revision runs to five pages, see log.)
-- [x] No numerical comparison between Hybroid and HGANN-Mal, whose protocols differ (old T-023).
-- [x] The conceptual comparison is stated as conceptual (old T-023).
-- [x] The scope of generalisation is bounded honestly, against the standard of Section 2.6 (old T-023).
-- [x] No claim that HGANN-Mal corrects a Hybroid limitation, and no developmental sequence from the IoT work to the Android work (structure v0.3, Section 1.2).
-- [x] Every number restated from Chapters 3 to 6 matches the current chapter text and its source; no new empirical number.
-- [x] Only keys already cited elsewhere in the thesis; strict audit of content/discussion.tex passes.
-- [x] latexmk succeeds, the two PDFs are identical under cmp, and the log is read for new warnings.
-- [x] The author's writing rules hold: British spelling (D-001), no em dashes.
+- [x] Four contribution-led sections under D-003; the plan matches the text and the
+      acquisition cross-reference `sec:discussion:3` remains valid.
+- [x] At most four pages, with less main text than the previous 1,414-word draft. Remove
+      Table 7.1 and the repeated limitations inventory.
+- [x] Explain the joint significance of the studies, including the SWaT representation
+      comparison and the reusable NADICS/SAFAIR interfaces, without implying a common experiment.
+- [x] State the conceptual comparison; preserve the distinction between whole-system
+      results and attribution to attention, and between predictive and adversarial evidence.
+- [x] No numerical ranking between Hybroid and HGANN-Mal, no claim that one corrects the
+      other's limitations, and no historical progression from IoT to Android.
+- [x] Introduce no new empirical number or claim of confirmed SWaT selection independence.
+      Retain the existing empirical results and detailed limitations in contribution chapters.
+- [x] Only use keys already cited in the dissertation, with full-text/claim records below;
+      pass strict audits for all changed chapter files.
+- [x] Compile with latexmk, inspect new warnings and confirm that the tracked PDF is updated
+      and the root symlink is intact. Leave visual review to the author.
+- [x] Use concise academic English with varied paragraphs, British spelling and no em dashes;
+      pass the workflow check and leave changes unstaged.
+
+## Evidence and sources
+
+### Pre-draft claim-to-source record, 20 September 2026
+
+T-017 records the full cross-chapter review and primary metadata checks of 19 September.
+The revision uses the same verified sources, with the IoT and TUM framework passages read
+again for their positive design contributions. All core cited sources below are already
+in `references/MANIFEST.tsv` with status `have` and a positive title check. A strict audit of
+Chapters 3 to 7 passed before drafting: 113 cited keys, 104 PDFs and no unresolved entries
+(the remaining keys have documented non-PDF status). The audit is saved locally in
+`tmp/chapter7-revision-2026-09-20/pre-draft-reference-audit.txt`.
+
+| Section | Core citekeys / evidence | Supported claim and verification status |
+| --- | --- | --- |
+| Contextual representations | `aubet2018graph` | Observed service relations and operator-approved updates. Full two-page primary text inspected; venue metadata recorded in the bibliography and the false template DOI is excluded. Vault PDF present. |
+| Contextual representations | `norouzian2021hybroid` | Static and traffic observation, matched modality comparisons and task-dependent reported performance. Original method/evaluation text inspected in T-017; current Table 4.6 and its figure-provenance account checked. DOI metadata verified against Crossref on 19 September; vault PDF present. No new numerical claim is planned. |
+| Contextual representations and cost | `norouzian2025hgannmal` | Static inputs, hyperedge construction and complete-system comparison. Original method and numerical tables inspected in T-017; DOI metadata verified through the DOI resolver. The additional operator and complexity statements come from the explicit derivations in current Sections 5.8 and 5.13, inspected before this revision. Vault PDF present. |
+| Process representation | Current Chapter 3, Table 3.6; T-001 and structure v0.3 D-054/D-055 account | Qualitative comparison of the full-input and PCA configurations' reported recall/false-positive profiles. The later author-approved chapter account governs; the older supplied report describes a different evaluation. This paragraph will not identify a best configuration, assert test-independent selection, add numerical results or cite the unpublished report as a published source. |
+| Observation requirements and cohort | `mahdavifar2020dynamic`; current Chapter 4 and T-012 | CICMalDroid's dynamic-analysis acquisition history versus HGANN-Mal's static inference; Hybroid's matched retained cohort. Dataset full-text Sections IV--V inspected and DOI metadata verified in T-017; vault PDF present. T-012 records the author's confirmation of the common Hybroid cohort. |
+| Reusable learning framework | `iuno_ap4`; current Section 3.4 | TUM protocol-feature extraction and interchangeable learning methods. Full-text TUM account on printed pp. 12--13 inspected; document metadata verified against its primary cover/author record in the existing bibliography. Vault PDF present. The later partner LDA/Spark account is not attributed to NADICS. |
+| Reusable evaluation and metric analysis | `sparta2022d76`; current Sections 6.6 and 6.8 | Shared execution with task-specific interfaces and the partner benchmark application. Full-text Sections 3.1.1--3.1.3 inspected; public deliverable metadata previously verified against its primary record. Mathematical claims refer to the current Chapter 6 derivations, not to new empirical findings. Vault PDF present. |
+| Evaluation scope and Android implications | `pendlebury2019tesseract`, `carlini2019evaluating` | Time-aware evaluation as distinct from random corpus comparison; explicit valid perturbations and attacks against the complete defence. Relevant full-text arguments inspected in T-017; USENIX and arXiv primary metadata checked on 19 September. Both PDFs present. |
+
+### Limits retained outside the main discussion
+
+The missing source-publication defect ledger and old source-record directories remain as
+recorded in T-017; current limitations and surviving tickets supply the available record.
+The author's editorial approval does not resolve the SWaT configuration-selection wording
+conflict in Chapter 3. The new Chapter 7 will omit the disputed assurance and will use only
+the reported configuration profiles. No experimental fact will be supplied by assumption.
+
+## Revision outcome, 20 September 2026
+
+- Replaced the seven-section limitations-heavy discussion with four contribution-led
+  sections. Removed Table 7.1, repeated extraction-failure counts and peripheral hardware
+  detail. The text now relates additional observations to relational encoding, identifies
+  the distinct acquisition and computation requirements, and connects the reusable
+  frameworks to controlled evaluation and the Chapter 6 analytical results.
+- Retained brief qualifications for point estimates, attention attribution and the scope
+  of Android robustness claims. Detailed contribution-chapter limitations and empirical
+  values are unchanged. The Chapter 3 selection-language question remains recorded in
+  T-017; this revision supplies no answer by inference.
+- Applied narrow Chapter 5 consistency edits: distinguish conceptual from numerical
+  comparison and separate static acquisition requirements from measured computation.
+  Corrected the same cost conflation at the end of the efficiency discussion. The legacy
+  acquisition label now resolves to Section 7.2. No other contribution chapter was edited.
+- TeXcount: 1,414 to 956 main-text words, a reduction of 458 (32.4%). Chapter 7 occupies
+  printed pages 113--115, with the recto-opening blank on page 116. Chapter 8 begins on
+  page 117. The complete thesis has 155 pages, previously 157.
+- Strict Chapter 7 audit passes with eight cited keys and eight PDFs. The combined strict
+  audit of the changed chapters passes with 41 keys and no unresolved entries. No
+  bibliography or reference-vault modification was needed.
+- The first build used a prepended TeX Live PATH and reached the native biber launcher's
+  obsolete `lipo -extract_family` call. The existing `~/.local/bin/biber` shim already
+  handles this local toolchain issue. Preserving the configured PATH and running
+  `latexmk -g thesis.tex` cleared the cached failure and completed successfully. No
+  toolchain or build configuration was changed.
+- Read the final LaTeX and biber logs. Undefined citations/references and overfull boxes
+  remain at zero; template warnings and the pre-existing end-group warning remain.
+  Underfull vbox notices decrease from 41 to 39. Biber reports no warning or error. The
+  root `thesis.pdf` symlink resolves to the updated tracked PDF. No visual review was
+  performed.
+- 2026-09-20 review -> in-progress (Apply the approved four-section revision with a contribution-led tone and concise claim qualifications)
+- 2026-09-20 in-progress -> review (Contribution-led four-section revision complete; three pages, strict audits and build pass)

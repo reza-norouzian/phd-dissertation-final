@@ -2,6 +2,14 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-003 Make Chapter 7 a contribution-led synthesis
+
+- **Date:** 2026-09-20
+- **Status:** accepted
+- **Context:** On 20 September 2026 the author approved the general T-017 revision proposal and requested a constructive dissertation voice rather than a chapter dominated by criticism.
+- **Decision:** Replace the seven-section Chapter 7 with four connected sections on contextual representations, observation requirements and analysis cost, evaluation principles, and Android implications. Lead with established contributions and their joint significance; remove the repeated limitations inventory, Table 7.1 and incidental numerical detail. Retain brief qualifications needed for accurate claims and leave detailed limitations in the contribution chapters. Keep the conceptual comparison and four-page ceiling.
+- **Consequence:** Revise Chapter 7 under T-004, update structure v0.3, preserve the acquisition cross-reference from Chapter 5, and compile the tracked PDF. Do not infer new experiments, resolved ablations or a confirmed SWaT model-selection history from this editorial approval.
+
 ### D-002 Keep Chapter 6 focused on the contest and reusable benchmark
 
 - **Date:** 2026-09-19

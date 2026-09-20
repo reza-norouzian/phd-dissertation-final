@@ -67,8 +67,8 @@ Chapter~\ref{chap:hybroid} reports. The second buys context inside an observatio
 Chapter~\ref{chap:discussion} takes up that trade directly, and it is the reason the two chapters
 sit next to each other.
 
-Their results are not comparable, and no comparison between them is offered anywhere in this
-dissertation. The corpora differ, the class definitions differ, and the protocols differ. Where
+The comparison between them is conceptual. Their corpora, class definitions and protocols differ,
+so their numerical results are not ranked against one another in this dissertation. Where
 the source publication of this chapter cites \hybroid{} as third-party prior work on hybrid
 analysis, it is naming the candidate's own earlier work, and this chapter states the relationship
 rather than repeating that framing.
@@ -181,10 +181,10 @@ Everything this chapter measures follows from one decision about what is observe
 the application package and does not run it. The manifest and the Dalvik bytecode are the whole
 of the evidence, which fixes both the cost of the analysis and the limits on what it can see.
 
-The cost is low and it scales. No device, no emulator and no scripted interaction is needed, and
-the analysis of one application is independent of every other, so the pipeline parallelises across
-a corpus without coordination. The second modality of Chapter~\ref{chap:hybroid} depends on
-traffic that the CICAndMal2017 authors captured on physical handsets, and
+Static analysis removes the need for a device or emulator and for scripted interaction. Packages
+can be analysed independently across a corpus; Section~\ref{sec:hgann:13} treats the computational
+cost of representation construction and learning. The second modality of
+Chapter~\ref{chap:hybroid} depends on traffic that the CICAndMal2017 authors captured on physical handsets, and
 Section~\ref{sec:discussion:3} compares the two observation requirements directly.
 
 The limits are the standard limits of static analysis on Android, stated in
@@ -1126,9 +1126,8 @@ one breadth-first search from each member of each slice,
 $O\bigl(\sum_s \lvert F_s \rvert (n + \lvert E \rvert)\bigr)$ in total. The cap is applied after a
 candidate is built, so it does not limit the cost of candidates that are then rejected, and
 centrality computation and the semantic embedding add costs outside these bounds. None of these
-quantities is a measurement. The claim in the source publication that the approach is inexpensive
-because it is static is true of the analysis. For the representation, the bounds above are the only
-evidence, and those for construction are quadratic in the number of methods.
+quantities is a measurement. Static analysis removes the need for runtime capture, while graph
+searches and semantic-neighbour construction retain the computational costs specified above.
 
 \subsection*{Interpretability}
 

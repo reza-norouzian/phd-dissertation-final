@@ -2,8 +2,19 @@
 
 Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the shape.
 
+## 2026-09-20
+
+- `09:43` **T-004** in-progress -> review - Contribution-led four-section revision complete; three pages, strict audits and build pass
+- `09:43` **T-017** Author approved the general review proposal and requested a contribution-led tone. Implementation is recorded under T-004 and D-003. The former Chapter 7 test-independence assurance was omitted; the Chapter 3 selection-history question was not resolved by assumption.
+- `09:43` **T-004** Applied the approved contribution-led Chapter 7 revision under D-003: four sections, no repeated limitations table, and 956 main-text words instead of 1,414. The chapter now occupies pp. 113-115 and the thesis is 155 pages. Brief claim qualifications remain; detailed limitations and empirical results are preserved. Made narrow Chapter 5 comparison/cost wording corrections and retained its acquisition cross-reference. Strict audits pass; latexmk -g succeeds with the configured biber shim, with no undefined references/citations or overfull boxes. Existing template/end-group warnings remain; underfull notices fall from 41 to 39. No visual review or toolchain changes.
+- `09:29` decision **D-003**: Make Chapter 7 a contribution-led synthesis
+- `09:29` **T-004** review -> in-progress - Apply the approved four-section revision with a contribution-led tone and concise claim qualifications
+
 ## 2026-09-19
 
+- `20:15` **T-017** in-progress -> review - Critical review and revision proposal complete; structural changes await author approval; LaTeX and PDF unchanged
+- `20:15` **T-017** Read Chapter 7 against the current Chapters 1-6, conclusion, abstracts, RQs and primary evidence. Saved a section-by-section critique and four-section proposal in notes/chapter7-critical-review-2026-09-19.md. Main findings: repeated limitations displace synthesis; clarify SWaT configuration selection before asserting test independence; connect Hybroid common-cohort exclusion and CICMalDroid dynamic filtering to coverage; distinguish acquisition requirements from computation; represent the SAFAIR framework contribution. The missing defect ledger and old source-record directories limit archival verification. No dissertation text or PDF changed; strict Chapter 7 audit and workflow check pass.
+- `19:58` **T-017** created: Critically review Chapter 7 across the dissertation
 - `19:19` **T-003** in-progress -> review - Two redundant threats-to-validity paragraphs removed; chapter remains consistent and audit/build pass
 - `19:19` **T-003** Removed the Sampling and uncertainty and Conflicting records and implementation provenance paragraphs from Section 6.9 without replacement at the author's request. Their essential qualifications remain beside Table 6.1, the contest results, the benchmark table, and the code inspection. Strict Chapter 6 audit passes; latexmk succeeds at 157 pages with no undefined citations/references or overfull boxes. Template, end-group, and underfull-page warnings remain.
 - `19:19` **T-003** review -> in-progress - Remove the two disliked and redundant threats-to-validity paragraphs without replacement
