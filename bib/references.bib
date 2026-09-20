@@ -16412,17 +16412,19 @@
 }
 % harvest: 11
 % verified: arxiv
-% [11] src: search; band: C;  preprint, title was revised on arXiv from an
-%   earlier version indexed elsewhere as concerning function metadata and LLM
-%   embeddings
+% [11] src: search; band: C; updated under T-021 from arXiv v3 (2026-09-16).
+%   Title and authors checked against the versioned arXiv record and full text;
+%   the record states acceptance at IEEE DSAA 2026. Retain the arXiv citation
+%   because no final proceedings DOI has been verified.
 @misc{tran2025quantifying,
   author        = {Tran, Ngoc N. and Said, Anwar and Abbas, Waseem and Derr, Tyler and Koutsoukos, Xenofon D.},
-  title         = {Quantifying the Generalization Gap: A New Benchmark for Out-of-Distribution Graph-Based {Android} Malware Classification},
-  year          = {2025},
+  title         = {Evaluating Out-of-Distribution Robustness in Graph-Based {Android} Malware Classification: A New Principled Benchmark},
+  date          = {2026-09-16},
   doi           = {10.48550/arXiv.2508.06734},
   keywords      = {android, dataset, eval-method, graph-learn, malware},
-  eprint        = {2508.06734},
-  archiveprefix = {arXiv}
+  eprint        = {2508.06734v3},
+  archiveprefix = {arXiv},
+  note          = {Accepted at IEEE DSAA 2026}
 }
 % harvest: 05
 % verified: no
@@ -19545,4 +19547,16 @@
   eprint        = {2112.10035},
   archiveprefix = {arXiv},
   keywords      = {analysis-hybrid, android, graph-prog, malware, net-traffic}
+}
+
+% harvest: T-021
+% verified: publisher
+% Official CICAndMal2017 dataset page, inspected 2026-09-20. Its family listing
+% supports the corrected category counts; the related paper reports different counts.
+@online{cicandmal2017dataset,
+  author       = {{Canadian Institute for Cybersecurity}},
+  title        = {{Android} Malware Dataset ({CICAndMal2017})},
+  organization = {University of New Brunswick},
+  url          = {https://www.unb.ca/cic/datasets/andmal2017.html},
+  urldate      = {2026-09-20}
 }

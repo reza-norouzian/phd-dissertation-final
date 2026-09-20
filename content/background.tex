@@ -66,11 +66,11 @@ security-relevant members are a manifest and one or more files of compiled bytec
 Dalvik virtual machine \cite{arp2014drebin} and stored in \texttt{classes.dex}, with further
 numbered files such as \texttt{classes2.dex} for larger applications. The container is specified by the
 platform \cite{aosp2026dexformat}, as is the instruction set \cite{aosp2026dalvikbytecode}.
-Since Android~5 that bytecode is compiled ahead of time and executed by the Android Runtime
-rather than interpreted by Dalvik \cite{aosp2026art}, although the instructions an analyst reads
-are the same in either case. Section~\ref{sec:hybroid:5} depends on this distinction,
-because the operand values attached to an instruction vary with the runtime while the opcode
-does not.
+The Android Runtime (ART) replaced Dalvik as the default runtime from Android~5 and executes
+DEX bytecode \cite{aosp2026art}. Its instructions encode both opcodes and operands. Operand
+fields can contain register indices or literal values and can reference other DEX items,
+such as methods and strings \cite{aosp2026dalvikbytecode}. Section~\ref{sec:hybroid:5}
+describes an embedding that retains the opcode while omitting this operand information.
 
 The manifest declares the components an application provides, the permissions it requests, the
 intents its components filter, and the hardware features it expects. It is recoverable without
@@ -576,13 +576,13 @@ choices support detection as the observed system changes. RQ1 takes up the quest
 communication graphs and modular analysis of network and process features.
 
 \phantomsection
-\paragraph{G2. What combining program structure with observed behaviour buys.}\label{gap:2} Static and
-dynamic analysis are usually set against one another as alternatives. Where they have been
-measured under one protocol, static analysis proved at least as effective as dynamic analysis
-and the combination measured best \cite{onwuzurike2018family}, but that comparison has rarely
-been repeated, and hybrid systems are seldom evaluated against each modality alone on the same
-samples \cite{lindorfer2015marvin}. The gain attributable to the combination, as distinct from
-the gain attributable to either part, is therefore not established. RQ2 takes up this question.
+\paragraph{G2. The value of combining program structure with observed behaviour.}\label{gap:2}
+MARVIN and the study by Onwuzurike et al.\ report benefits from combining static and dynamic
+features in within-system comparisons \cite{lindorfer2015marvin, onwuzurike2018family}.
+Those results concern particular observation types and prediction tasks. Whether the benefit
+persists when either changes requires comparison of the fused representation with each
+modality alone on the same samples. RQ2 investigates this question for program-graph and
+network-flow features in binary detection and malware-category classification.
 
 \phantomsection
 \paragraph{G3. Whether higher-order representation of program structure pays for itself.}\label{gap:3}
