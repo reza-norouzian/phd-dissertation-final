@@ -4,6 +4,13 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-20
 
+- `11:34` **T-007** in-progress -> review - Approved Chapter 8 revision complete; two-page limit, citation audit and build pass
+- `11:34` **T-018** Author approved application of the recommendations. Implementation and verification are recorded under T-007; Chapter 8 revised and rebuilt within two pages.
+- `11:34` **T-007** Applied the approved T-018 revision to Chapter 8: stronger Android contribution framing, scoped G3/G4 answers, precise CICMalDroid comparison, PCA-specific later-test-data wording, explicit partner histopathology setting, and controlled ablation followed by temporal and complete-system adversarial evaluation. Main text falls from 712 to 591 words. Strict audit and build pass; Chapter 8 remains pp. 117-118 and the thesis 155 pages. No new warnings; 39 existing underfull notices remain. No visual review. Chapter 3 selection history remains unresolved.
+- `11:26` **T-007** review -> in-progress - Apply the approved T-018 Chapter 8 recommendations within the existing three sections and two-page limit
+- `10:38` **T-018** in-progress -> review - Critical review and revision proposal complete; dissertation edits await author decision
+- `10:37` **T-018** Reviewed Chapter 8 against the RQs, gaps, current contribution chapters, Chapter 7 and abstracts. Saved notes/chapter8-critical-review-2026-09-20.md. Recommend retaining three sections and two pages, rebalancing toward the Android and evaluation contributions, qualifying G3/G4 closure, clarifying the inherited SWaT selection wording, identifying the partner benchmark for the PGD comparison, and improving the future-work ending. Strict citation audit passes with zero direct citations. No LaTeX or PDF changes, compilation or visual review.
+- `10:35` **T-018** created: Critically review Chapter 8 across the dissertation
 - `10:25` **T-004** in-progress -> review - Approved Section 7.3 opening paragraph added; citation audit and build pass
 - `10:25` **T-004** Inserted the approved short paragraph at the beginning of Section 7.3, linking representation design and predictive evaluation to adversarial evaluation and the Chapter 6 SAFAIR contribution. The remainder of Chapter 7, including Section 7.4 and the Vicomtech citation, is unchanged. Strict citation audit and latexmk pass at 155 pages; Chapter 7 remains pp. 113-115. No undefined references/citations or overfull boxes; existing warnings remain. No visual review.
 - `10:24` **T-004** review -> in-progress - Insert the approved short paragraph at the beginning of Section 7.3

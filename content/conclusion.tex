@@ -1,76 +1,70 @@
 \chapter{Conclusion and Future Work}
 \label{chap:conclusion}
 
-% Drafted under T-007 from the current text of Chapters 1 to 7, and limited to two pages at the
-% author's request of 12 September 2026. The research questions are typeset from
-% dissertationmacros.tex (D-002). The gaps of Section 2.7 are referred to by \gapref and are not
-% reprinted. Section 5.15 states that the HGANN-Mal ablation opens the future work. At the author's
-% instruction the chapter carries no limitation statements (D-052).
+% Revised under T-007 following the author's approval of T-018 on 20 September 2026.
+% Retain three sections and the two-page limit. Questions use dissertationmacros.tex;
+% gaps are referenced without reprinting their wording. Detailed limitations remain in
+% Chapters 3 to 6; brief qualifications specify the scope of each answer. The HGANN-Mal
+% ablation opens the future work, as Section 5.15 promises.
 
 \section{Answers to the Research Questions}
 \label{sec:conclusion:1}
 
-\paragraph{RQ1.} \emph{\rqOneText} Behaviour can be represented at the unit that a deployment
-exposes, but the representation must also admit legitimate change. On a benign industrial day,
-all nine false alarm episodes had benign causes, five of them engineering work or planned device
-restarts. Chapter~\ref{chap:anomaly} closes gap~\gapref{1} at the implementation level.
+\paragraph{RQ1.} \emph{\rqOneText} Communication graphs represent service relationships,
+while protocol records and process windows support industrial anomaly detection.
+Chapter~\ref{chap:anomaly} addresses gap~\gapref{1} through these implementations.
 
-\paragraph{RQ1.1.} \emph{\rqOneOneText} Each node learns the relations observed while a service
-starts and reports any relation absent from its graph, which the site owner may then legitimate.
-Detection added about 6~ms to a 24~ms round trip, and this cost did not grow between ten and forty
-services.
+\paragraph{RQ1.1.} \emph{\rqOneOneText} A node-local graph stores relations observed during
+service start-up. Unexpected relations trigger an alert and can be approved by the site owner
+as the deployment changes.
 
-\paragraph{RQ1.2.} \emph{\rqOneTwoText} \nadics{} fixes the interfaces around the learning stage,
-so that estimators can be exchanged by name. Under a session-disjoint split of the S7-300 corpus
-from \iuno{}, a random forest reached an attack $F_1$ of 94.50 per cent at a record false-positive
-rate of 0.484 per cent. On 393,679 later SWaT timestamps withheld from model development, a
-GAN-based detector added at the same interface flags 92.00 per cent of anomalous timestamps at a
-false-positive rate of 5.12 per cent.
+\paragraph{RQ1.2.} \emph{\rqOneTwoText} \nadics{} separates feature preparation from
+interchangeable learning components. On the session-disjoint S7-300 evaluation, a random forest
+achieved 94.50 per cent attack $F_1$ at a record-level false-positive rate of 0.484 per cent.
+The GAN-based extension with 24 PCA components achieved 92.00 per cent timestamp recall at a
+false-positive rate of 5.12 per cent on later SWaT test data.
 
-\paragraph{RQ2.} \emph{\rqTwoText} On CICAndMal2017, fusion added one or two points of detection
-$F_1$ over the better single modality, and between minus two and plus three points in category
-classification. Network flow led program code in detection and trailed it in category
-classification. The combination therefore helps detection slightly and category classification
-only with some learners, which closes gap~\gapref{2} for this corpus and protocol.
+\paragraph{RQ2.} \emph{\rqTwoText} On CICAndMal2017, fusion improved reported detection
+$F_1$ by one or two percentage points over the better single modality. For category
+classification, the difference ranged from minus two to plus three points across learners.
+These matched comparisons address gap~\gapref{2} within the evaluated corpus and protocol.
 
-\paragraph{RQ3.} \emph{\rqThreeText} With identical inputs, every hypergraph operator exceeded both
-pairwise operators in all four task and corpus combinations, and HGNN+ led GraphSAGE by 3.8 to 6.7
-points of accuracy. \hgann{} led the non-attentive operators by 1.2 to 4.1 points in three
-combinations and was level in the fourth. Its attention can separate hypergraphs that share a
-clique expansion, although within one layer it ranks the hyperedges of every method in one shared
-order. These comparisons of complete systems close gap~\gapref{3}.
+\paragraph{RQ3.} \emph{\rqThreeText} On Drebin and CICMalDroid, all hypergraph configurations
+achieved higher reported accuracy than the pairwise baselines with common call graphs and
+node features. \hgann{} exceeded the strongest non-attentive baseline by 1.2 to 4.1
+percentage points in three of four task and
+corpus combinations; on CICMalDroid binary detection, it scored 97.6 against 97.7 per cent.
+These results address gap~\gapref{3} through comparisons of complete systems.
+Attention-specific attribution requires a controlled ablation.
 
-\paragraph{RQ4.} \emph{\rqFourText} The SAFAIR work translated the adversary model into an
-evaluation protocol, realised as a contest and then as a modular benchmark that combines attacks
-and defences by configuration. Reproducible measurement also requires a fixed prediction objective
-and a valid perturbation set. The accuracy-loss score used for ranking is indifferent to utility:
-any constant classifier has zero loss under label-preserving attacks, and under PGD the defence
-with zero loss was 12.9 points less accurate than adversarial training. Gap~\gapref{4} is closed
-for building and scoring such a benchmark; the four contest rows do not establish a general
-relation between clean performance and robustness.
+\paragraph{RQ4.} \emph{\rqFourText} SAFAIR translated attacker assumptions into a contest
+protocol and a benchmark with task-specific interfaces. The implementation and scoring analysis
+address the design and measurement aspects of gap~\gapref{4}. Any constant classifier has zero
+accuracy loss under label-preserving attacks. In Vicomtech's histopathology benchmark,
+the activation detector had zero loss under PGD but an attacked accuracy 12.9 percentage points
+below adversarial training. Clean and attacked accuracy therefore need to be reported together,
+under an explicit prediction objective and valid perturbation constraints. The four contest
+rows do not establish a general relation between clean performance and robustness.
 
 \section{Summary of Contributions}
 \label{sec:conclusion:2}
 
-For IoT services, the candidate contributed to the concept and the measurement design of a
-communication-graph model that each node keeps current as services change, at a measured cost in
-memory and latency. For industrial control systems, he designed and implemented \nadics{} with its
-S7 and PROFINET extractor, whose 63-field schema reaches from flow statistics to S7 function codes,
-and he produced the labelled S7-300 corpus of 25 attack episodes. The GAN-based detector for SWaT
-process data is also his work.
+The Android studies form the main contribution. \hybroid{} combines static program-graph
+representations with observed network flows and measures the value of fusion on the same
+applications. The candidate designed the overall pipeline and traffic analysis and conducted
+the evaluation; his contribution to graph processing was partial.
+\hgann{} represents context within the application package through groups of related methods
+and learned membership weights. Chapter~\ref{chap:hgann} formalises the construction and
+analyses the operator's representational capacity. Different hyperedge groupings can produce
+different attentive propagation even when their fixed propagation matrices coincide.
 
-\hybroid{} contributes a flow pipeline that reduces the traffic of an application to
-\netfeatures{} features, together with a comparison of each modality with their fusion on the same
-samples. \hgann{} lifts the function-call graph to a hypergraph under three construction rules and
-learns membership weights by attention. The third rule builds a hyperedge from the backward slice
-of each security-sensitive call site and weights it by the transmission and access calls in that
-slice. Chapter~\ref{chap:hgann} restores the construction algorithm and analyses the attention
-operator, and it shows that the hypergraph grows linearly with the numbers of methods and slices.
-The SAFAIR contest toolkit and benchmark, both published in the candidate's name, form the
-evaluation contribution. Chapter~\ref{chap:advml} derives how the accuracy-loss score behaves under
-constant predictions and how label reversal after an alarm changes accuracy. In
-Chapter~\ref{chap:discussion}, the observations each representation requires are related to the
-conclusions its evaluation supports.
+The industrial contribution is a modular framework for network and process observations,
+supported by the candidate's extractor and labelled corpus, with a GAN-based extension for
+SWaT. His contribution to the IoT study concerns the communication-graph concept and measurement
+design.
+SAFAIR contributes a threat-guided evaluation design and reusable software with task-specific
+interfaces. Chapter~\ref{chap:advml} analyses accuracy-loss scoring and the effect of binary
+label reversal after an alarm. Partner defences provide applications of the framework.
 
 % Structure v0.3 placed a Limitations section here. It was removed at the author's instruction of
 % 12 September 2026; the limits of each study stay in the Limitations sections of Chapters 3 to 6.
@@ -78,9 +72,16 @@ conclusions its evaluation supports.
 \section{Future Work}
 \label{sec:conclusion:3}
 
-The first open item is the \hgann{} ablation, which isolates the effect of attention: the
-non-attentive operator over the identical fused hyperedges, and \hgann{} over topological
-hyperedges alone, on both corpora and under a stated normalisation convention. Both Android
-systems then need time-ordered splits and attacks through valid package transformations, with
-clean and attacked performance reported under one protocol. For \hybroid{}, such an attack would
-test whether unreachable injected calls leave its traffic features unchanged.
+The first priority is a controlled \hgann{} ablation on both corpora. Comparing learned and
+fixed weighting over identical fused hyperedges requires common preprocessing and a fixed
+normalisation convention, with repeated runs. A separate comparison with topological
+hyperedges alone would assess the contribution of construction.
+A common Android cohort with time-ordered splits would permit comparison of static relational
+encodings and the additional value of traffic, as proposed in Chapter~\ref{chap:discussion}.
+Acquisition effort and computation cost should be measured separately. Adversarial evaluation
+would then apply valid package transformations that preserve malicious functionality, under
+stated attacker access and budgets. It should measure clean and attacked performance of the
+complete pipeline, including fusion.
+
+The dissertation connects contextual representation design with the evidence and evaluation
+procedures needed to assess learning-based security decisions.

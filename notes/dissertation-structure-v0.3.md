@@ -465,6 +465,15 @@ Revised on 12 September 2026 under D-052: the Limitations section is removed at 
 instruction, so Future Work becomes Section 8.3. The limits of each study remain in the
 Limitations sections of Chapters 3 to 6.
 
+Revised on 20 September 2026 under T-007 after the author approved the T-018 review.
+The three-section structure and two-page limit are retained. The conclusion now gives the
+Android contributions greater prominence, scopes the RQ3 and RQ4 answers to the evidence,
+identifies the partner histopathology benchmark, and connects controlled ablation to temporal
+and adversarial evaluation. Chapter 8 occupies pp. 117-118, with references from p. 119;
+the thesis remains 155 pages. Main text decreases from 712 to 591 words before question-macro
+expansion. The SWaT description refers to later test data; configuration-selection history in
+Chapter 3 remains a separate unresolved question.
+
 ## Structure status
 
 The author accepted the RQ1 hierarchy on 12 August 2026. The Chapter 2 section list was
