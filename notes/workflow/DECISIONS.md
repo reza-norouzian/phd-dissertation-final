@@ -2,6 +2,14 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-004 Add shared performance measures within Section 2.6
+
+- **Date:** 2026-09-20
+- **Status:** accepted
+- **Context:** On 20 September 2026 the author requested a more mathematical performance-measures treatment in the background, guided by a colleague's screenshot but based on the metrics used across this dissertation.
+- **Decision:** Expand Chapter 2 Section 2.6 into Performance Measures and Evaluation Methodology, with a dissertation-wide mathematical treatment of the measures actually reported and the related scoring conventions. Retain the seven main background sections and the existing evaluation label. Keep algorithm-specific derivations and empirical metric caveats in the contribution chapters; do not infer missing averaging conventions or add new experimental results.
+- **Consequence:** Implement under T-023, update the section outline and literature map, verify the new references, and rebuild the tracked PDF. Preserve the existing Chapter 5 changes and leave visual review to the author.
+
 ### D-003 Make Chapter 7 a contribution-led synthesis
 
 - **Date:** 2026-09-20

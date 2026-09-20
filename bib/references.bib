@@ -19560,3 +19560,58 @@
   url          = {https://www.unb.ca/cic/datasets/andmal2017.html},
   urldate      = {2026-09-20}
 }
+
+% harvest: T-023
+% verified: doi
+% DOI-registry metadata and the complete publisher PDF on the UC Davis mathematics
+% site inspected 2026-09-20. Supports binary confusion counts, ROC construction,
+% tied-score handling, AUC as a ranking probability, and ROC aggregation caveats.
+@article{fawcett2006roc,
+  author   = {Fawcett, Tom},
+  title    = {An Introduction to {ROC} Analysis},
+  journal  = {Pattern Recognition Letters},
+  volume   = {27},
+  number   = {8},
+  pages    = {861--874},
+  year     = {2006},
+  doi      = {10.1016/j.patrec.2005.10.010},
+  keywords = {eval-method}
+}
+
+% harvest: T-023
+% verified: arxiv
+% Official arXiv record and full text inspected 2026-09-20. White paper, not a
+% claimed peer-reviewed publication. Used for confusion-matrix orientation,
+% ordinary balanced accuracy (Section 3), and micro averaging (Section 4.3).
+% Do not adopt its weighted-balanced-accuracy normalisation or the printed
+% macro-F1 expression in Equation 16; macro-F1 conventions follow Opitz and Burst.
+@misc{grandini2020metrics,
+  author        = {Grandini, Margherita and Bagli, Enrico and Visani, Giorgio},
+  title         = {Metrics for Multi-Class Classification: An Overview},
+  year          = {2020},
+  eprint        = {2008.05756},
+  archiveprefix = {arXiv},
+  primaryclass  = {stat.ML},
+  doi           = {10.48550/arXiv.2008.05756},
+  note          = {White paper},
+  keywords      = {eval-method}
+}
+
+% harvest: T-023
+% verified: arxiv
+% Official arXiv title, authors and first-submission date verified 2026-09-20.
+% Version 3 (8 February 2021) inspected in full text: distinguishes averaged F1
+% from F1 of averaged precision/recall and proves their ordering. The paper uses
+% an explicit zero-fill convention, which must not be silently assigned to the
+% source experiments in this dissertation.
+@misc{opitz2019macrof1,
+  author        = {Opitz, Juri and Burst, Sebastian},
+  title         = {Macro {F1} and Macro {F1}},
+  year          = {2019},
+  eprint        = {1911.03347},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.LG},
+  doi           = {10.48550/arXiv.1911.03347},
+  note          = {Version 3, revised 8 February 2021},
+  keywords      = {eval-method}
+}

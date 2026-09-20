@@ -238,7 +238,30 @@ meets hypergraphs only after function-call graphs have been defined.
 
 2.5 Adversarial Machine Learning
 
-2.6 Evaluation Methodology and Experimental Bias
+2.6 Performance Measures and Evaluation Methodology
+
+  Expanded on 20 September 2026 under D-004 and T-023. The section defines the measures used
+  across the contribution chapters, with the following subsections:
+
+  - 2.6.1 Observation Units and Confusion Counts
+  - 2.6.2 Binary Detection Measures and Class Prevalence
+  - 2.6.3 Multiclass and Multilabel Aggregation
+  - 2.6.4 ROC Curves and Area under the Curve
+  - 2.6.5 Performance under Adversarial Input
+  - 2.6.6 Aggregation and Operational Reporting
+  - 2.6.7 Experimental Protocol and Bias
+
+  The seven main sections and the existing evaluation label are retained. Mathematical
+  definitions do not resolve unreported averaging conventions in the source studies, and no
+  contribution-chapter results are changed. The addition introduces 18 numbered equations and
+  three verified references. The first rebuild has 155 pages, with Chapter 2 occupying printed
+  pages 9-26, above its original 15-page planning allowance. The original allocation below is
+  retained as a planning reference; the overall 170-page maximum is unchanged.
+
+  The author requested a shorter version later that day. T-023 reduces Section 2.6 prose from
+  1,857 to 1,460 words while preserving all 18 equations and the subsection structure. The
+  section now occupies pages 18-23. The thesis remains 155 pages because the shorter background
+  is followed by a recto-opening blank before Chapter 3.
 
 2.7 Summary and Research Gaps
 
@@ -255,7 +278,7 @@ as an open question in the field, not as a description of the method used to clo
 | 2.3 Learning over Graphs | 2.5 |
 | 2.4 Detection in Networked and Cyber-Physical Systems | 2.0 |
 | 2.5 Adversarial Machine Learning | 1.5 |
-| 2.6 Evaluation Methodology and Experimental Bias | 1.5 |
+| 2.6 Performance Measures and Evaluation Methodology (original allocation before D-004) | 1.5 |
 | 2.7 Summary and Research Gaps | 1.5 |
 | **Total** | **15.0** |
 

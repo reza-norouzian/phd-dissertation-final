@@ -18,6 +18,9 @@
 % figure in 2.2 marking the clique-expansion collapse.
 % Section 2.3 is written neutrally on attention and commits to no causal claim, so that it
 % stands whichever way T-012 is decided.
+% T-023 / D-004, 20 September 2026: shared performance measures added within Section 2.6.
+% The seven main sections and the evaluation label are retained. Claim-to-source records
+% and the inventory of reported versus proposed metrics are in the T-023 writing ticket.
 
 This chapter sets out the material the later chapters share: the artefacts an Android
 application exposes to analysis, the graph and hypergraph representations used to describe
@@ -487,12 +490,282 @@ cannot be compared with another \cite{carlini2019evaluating}. Gradient-based att
 perturbation budgets \cite{goodfellow2015explaining, madry2018pgd} are the reference instruments
 against which the defences of Chapter~\ref{chap:advml} are measured.
 
-\section{Evaluation Methodology and Experimental Bias}
+\section{Performance Measures and Evaluation Methodology}
 \label{sec:background:evaluation}
 
-Chapter~\ref{chap:introduction} reported what happens to published performance under a stricter
-protocol. This section states the mechanisms behind those results and fixes the standard this
-dissertation holds itself to.
+This section defines the measures used in Chapters~\ref{chap:anomaly} to~\ref{chap:advml}, with
+explicit observation units and aggregation rules. Dimensionless scores are proportions:
+$m$ corresponds to $100m$ per cent, and $m_1-m_2$ to $100(m_1-m_2)$ percentage points.
+
+\subsection{Observation Units and Confusion Counts}
+\label{sec:background:metrics:counts}
+
+Let $\mathcal D=\{(x_i,y_i)\}_{i=1}^{N}$ be a labelled evaluation set with $N>0$, and let
+$\widehat y_i=h(x_i)$ be the prediction of a fitted classifier. For a single-label task with
+class set $\mathcal Y$, the confusion matrix $\mathbf C$ records true labels in its rows and
+predicted labels in its columns:
+\begin{equation}
+  C_{ab}=\sum_{i=1}^{N}\mathbf1\{y_i=a,\ \widehat y_i=b\},
+  \qquad a,b\in\mathcal Y.
+  \label{eq:background:confusion}
+\end{equation}
+In binary detection, $1$ denotes an attack or malware and $0$ denotes normal or benign behaviour. With both axes
+ordered as $(0,1)$,
+\begin{equation}
+  \mathbf C_{\mathrm{bin}}=
+  \begin{pmatrix}\mathrm{TN}&\mathrm{FP}\\\mathrm{FN}&\mathrm{TP}\end{pmatrix},
+  \qquad N=\mathrm{TP}+\mathrm{TN}+\mathrm{FP}+\mathrm{FN}.
+  \label{eq:background:binary-confusion}
+\end{equation}
+True positives and true negatives are correct decisions. A false positive flags a negative
+observation; a false negative misses a positive observation \cite{fawcett2006roc}.
+
+The S7-300 evaluation counts network records, SWaT counts timestamps, and the Android studies
+count applications. Timestamp metrics give longer attacks more weight; episode-level assessment
+requires a separate matching rule and denominator \cite{sorbo2024navigating}. Collapsing attack
+types into one positive class turns errors between those types into correct binary detections
+(Section~\ref{sec:anomaly:iuno-results}).
+
+\subsection{Binary Detection Measures and Class Prevalence}
+\label{sec:background:metrics:binary}
+
+Accuracy $A$ is the fraction of all observations classified correctly. Precision $P$ is the
+fraction of positive predictions that are correct, whereas recall $R$ is the fraction of
+positive observations detected:
+\begin{equation}
+  A=\frac{\mathrm{TP}+\mathrm{TN}}{N},\qquad
+  P=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FP}},\qquad
+  R=\frac{\mathrm{TP}}{\mathrm{TP}+\mathrm{FN}}.
+  \label{eq:background:accuracy-precision-recall}
+\end{equation}
+Recall is also called sensitivity or the true-positive rate (TPR). The $F_1$ score combines
+precision and recall through their harmonic mean:
+\begin{equation}
+  F_1=\frac{2\mathrm{TP}}{2\mathrm{TP}+\mathrm{FP}+\mathrm{FN}},\qquad
+  H(P,R)=\frac{2PR}{P+R}=F_1
+  \quad\text{when the ratios are defined}.
+  \label{eq:background:f1}
+\end{equation}
+The count form omits true negatives and gives $F_1=0$ when $\mathrm{TP}=0$ and
+$\mathrm{FP}+\mathrm{FN}>0$. We use the continuous extension $H(0,0)=0$ when both defined rates
+are zero
+\cite{fawcett2006roc,sorbo2024navigating}.
+
+False-positive and false-negative rates (FPR and FNR) measure class-conditional errors.
+Specificity, or true-negative rate (TNR), complements FPR; balanced accuracy averages the two class recalls
+\cite{fawcett2006roc,grandini2020metrics}:
+\begin{equation}
+  \begin{aligned}
+    \mathrm{FPR}&=\frac{\mathrm{FP}}{\mathrm{FP}+\mathrm{TN}},
+    &\mathrm{TNR}&=\frac{\mathrm{TN}}{\mathrm{TN}+\mathrm{FP}}=1-\mathrm{FPR},\\
+    \mathrm{FNR}&=\frac{\mathrm{FN}}{\mathrm{TP}+\mathrm{FN}}=1-R,
+    &\mathrm{BAcc}&=\frac{R+\mathrm{TNR}}{2}.
+  \end{aligned}
+  \label{eq:background:error-rates}
+\end{equation}
+The false fraction among positive predictions is $1-P=\mathrm{FP}/(\mathrm{TP}+\mathrm{FP})$,
+with a different denominator from FPR. Zero denominators make ratios undefined unless an
+explicit replacement or exclusion rule is given.
+
+Let $\pi=(\mathrm{TP}+\mathrm{FN})/N$ be the positive-class prevalence. Writing precision and
+accuracy in terms of the class-conditional rates gives
+\begin{equation}
+  \begin{aligned}
+    P(\pi)&=\frac{\pi\,\mathrm{TPR}}
+      {\pi\,\mathrm{TPR}+(1-\pi)\,\mathrm{FPR}},\\
+    A(\pi)&=\pi\,\mathrm{TPR}+(1-\pi)\,\mathrm{TNR}.
+  \end{aligned}
+  \label{eq:background:prevalence}
+\end{equation}
+Bayes' rule gives the precision identity \cite{axelsson2000base}. Varying $\pi$ at fixed TPR
+and FPR gives a conditional prevalence-sensitivity calculation (Section~\ref{sec:hgann:10}).
+Balanced accuracy removes the explicit prevalence weights, but changes in class-conditional
+data distributions can still change both recalls.
+
+\subsection{Multiclass and Multilabel Aggregation}
+\label{sec:background:metrics:aggregation}
+
+For $K$ mutually exclusive classes indexed by $1,\ldots,K$, let $n_k=\sum_b C_{kb}$ be the support of class $k$ and
+$\pi_k=n_k/N$. A one-versus-rest calculation treats class $k$ as positive and all other classes
+as negative:
+\begin{equation}
+  \begin{aligned}
+    \mathrm{TP}_k&=C_{kk},
+    &\mathrm{FN}_k&=n_k-C_{kk},\\
+    \mathrm{FP}_k&=\sum_a C_{ak}-C_{kk},
+    &\mathrm{TN}_k&=N-\mathrm{TP}_k-\mathrm{FP}_k-\mathrm{FN}_k.
+  \end{aligned}
+  \label{eq:background:one-vs-rest}
+\end{equation}
+The binary definitions then give $P_k$, $R_k$ and $F_{1,k}$. For any of these measures $M_k$,
+macro averaging assigns equal class weights, while support-weighted averaging assigns weights
+proportional to class size:
+\begin{equation}
+  M_{\mathrm{macro}}=\frac1K\sum_{k=1}^{K}M_k,
+  \qquad
+  M_{\mathrm{weighted}}=\sum_{k=1}^{K}\pi_k M_k.
+  \label{eq:background:class-averages}
+\end{equation}
+Multiclass balanced accuracy is $R_{\mathrm{macro}}$. S7-300 results report both macro and
+weighted $F_1$ to account for the dominant normal class. A high macro average does not establish
+uniform per-class performance.
+
+Micro averaging instead pools the one-versus-rest counts before calculating a ratio
+\cite{grandini2020metrics}:
+\begin{equation}
+  P_{\mathrm{micro}}=
+  \frac{\sum_k\mathrm{TP}_k}{\sum_k(\mathrm{TP}_k+\mathrm{FP}_k)},\qquad
+  R_{\mathrm{micro}}=
+  \frac{\sum_k\mathrm{TP}_k}{\sum_k(\mathrm{TP}_k+\mathrm{FN}_k)}.
+  \label{eq:background:micro-averages}
+\end{equation}
+Micro $F_1$ uses the same count formula as Equation~\ref{eq:background:f1}, after summing over
+classes. With one true and one predicted label per observation and all classes included,
+both denominators in Equation~\ref{eq:background:micro-averages} equal $N$. With defined class
+recalls, or an explicit zero-fill convention for classes of zero support, this gives
+\begin{equation}
+  P_{\mathrm{micro}}=R_{\mathrm{micro}}=F_{1,\mathrm{micro}}
+  =R_{\mathrm{weighted}}=A=\frac{\operatorname{tr}(\mathbf C)}{N}.
+  \label{eq:background:micro-identity}
+\end{equation}
+Opitz and Burst distinguish the mean of class $F_1$ scores from the harmonic mean of macro
+precision and recall
+\cite{opitz2019macrof1}. For defined class ratios,
+\begin{equation}
+  F_{1,\mathrm{macro}}
+  =\frac1K\sum_k H(P_k,R_k)
+  \leq H(P_{\mathrm{macro}},R_{\mathrm{macro}})
+  \leq\frac{P_{\mathrm{macro}}+R_{\mathrm{macro}}}{2}.
+  \label{eq:background:macro-f1}
+\end{equation}
+Here, macro $F_1$ denotes the mean of class scores. Unspecified source conventions remain
+unresolved in Chapters~\ref{chap:hybroid} and~\ref{chap:hgann}. Reporting must identify the class
+set and any zero-denominator policy.
+
+Always predicting class $k$ gives accuracy $\pi_k$, while $\max_k\pi_k$ is the empirical
+majority-class reference. A deployable baseline must choose its label before test evaluation,
+for example from training labels, and may not match the test majority.
+
+Multilabel prediction assigns several binary labels to each observation. In the facial-attribute
+task, $y_i,\widehat y_i\in\{0,1\}^{J}$ and the reported accuracy averages individual label
+decisions:
+\begin{equation}
+  A_{\mathrm{attr}}=\frac1{NJ}\sum_{i=1}^{N}\sum_{j=1}^{J}
+    \mathbf1\{\widehat y_{ij}=y_{ij}\}.
+  \label{eq:background:attribute-accuracy}
+\end{equation}
+Chapter~\ref{chap:advml} uses $J=40$ \cite{sparta2022d76}. Each attribute decision contributes
+separately; the score does not require all labels of an image to be correct.
+
+\subsection{ROC Curves and Area under the Curve}
+\label{sec:background:metrics:roc}
+
+For scores $s_i$ whose larger values favour the positive class, thresholding gives
+$\widehat y_i(\tau)=\mathbf1\{s_i\geq\tau\}$. Varying $\tau$ traces the receiver operating
+characteristic (ROC) points $(\mathrm{FPR}(\tau),\mathrm{TPR}(\tau))$
+\cite{fawcett2006roc}. With $r(u)$ the linearly interpolated TPR at FPR $u$, the empirical area
+under the curve (AUC) is
+\begin{equation}
+  \begin{aligned}
+    \mathrm{AUC}&=\int_0^1 r(u)\,\mathrm du\\
+    &=\frac1{N_+N_-}\sum_{i:y_i=1}\sum_{j:y_j=0}
+      \left[\mathbf1\{s_i>s_j\}+\frac12\mathbf1\{s_i=s_j\}\right],
+  \end{aligned}
+  \label{eq:background:auc}
+\end{equation}
+where $N_+,N_->0$ count positive and negative observations. AUC measures positive--negative pair ranking,
+with half credit for ties. Perfect and independent random rankings give one and expected
+$0.5$, respectively. One confusion matrix gives only an operating point; AUC specifies neither
+a deployment threshold nor probability calibration.
+
+Multiclass one-versus-rest curves compare each class with the remainder. Unweighted macro AUC
+is $K^{-1}\sum_k\mathrm{AUC}_k$; other weighting or curve-averaging conventions must be stated
+\cite{fawcett2006roc}. \hybroid{} reports per-class ROC AUC (Chapter~\ref{chap:hybroid}).
+
+\subsection{Performance under Adversarial Input}
+\label{sec:background:metrics:adversarial}
+
+An adversarial performance measure requires a fixed threat model and valid perturbed inputs
+\cite{carlini2019evaluating}. For an attack $a$ applied to matched, single-label observations,
+let $A_{\mathrm{clean}}$ be the clean accuracy and define
+\begin{equation}
+  A_a=\frac1N\sum_{i=1}^{N}\mathbf1\{h(a(x_i))=y_i\},
+  \qquad \Delta_a=A_{\mathrm{clean}}-A_a.
+  \label{eq:background:accuracy-loss}
+\end{equation}
+The SAFAIR score in Chapter~\ref{chap:advml} uses this signed accuracy difference
+\cite{sparta2022d76}. For the attribute task, Equation~\ref{eq:background:attribute-accuracy}
+supplies both terms. Report clean and attacked accuracy alongside the loss: equal differences
+can occur at different levels of classification performance.
+
+Attack success measures attainment of a specified goal. One explicit convention restricts
+evaluation to initially correct examples, $I_{\mathrm{corr}}=\{i:h(x_i)=y_i\}$. For target
+labels $t_i$, let $I_t=\{i\in I_{\mathrm{corr}}:t_i\neq y_i\}$. Conditional untargeted and
+targeted attack-success rates are then
+\begin{equation}
+  \begin{aligned}
+    \mathrm{ASR}_{\mathrm{untargeted}}
+      &=\frac1{|I_{\mathrm{corr}}|}\sum_{i\in I_{\mathrm{corr}}}
+        \mathbf1\{h(a(x_i))\neq y_i\},\\
+    \mathrm{ASR}_{\mathrm{targeted}}
+      &=\frac1{|I_t|}\sum_{i\in I_t}\mathbf1\{h(a(x_i))=t_i\}.
+  \end{aligned}
+  \label{eq:background:attack-success}
+\end{equation}
+Report eligible-set sizes and any alternative eligibility rule; empty sets give undefined rates.
+These goal-specific rates differ from $\Delta_a$. Chapter~\ref{chap:advml} develops attribute
+criteria and per-example attack-suite aggregation as analytical measures, not recovered contest
+scores. Finite attacks do not certify worst-case robustness
+\cite{carlini2019evaluating}.
+
+\subsection{Aggregation and Operational Reporting}
+\label{sec:background:metrics:reporting}
+
+Let $M_b$ be a metric from fold or run $b$. Its mean and sample standard deviation are
+\begin{equation}
+  \overline M=\frac1B\sum_{b=1}^{B}M_b,
+  \qquad
+  s_M=\sqrt{\frac1{B-1}\sum_{b=1}^{B}(M_b-\overline M)^2},\qquad B>1.
+  \label{eq:background:run-aggregation}
+\end{equation}
+Fold averaging can differ from calculating $M(\sum_b\mathbf C^{(b)})$ on pooled counts,
+especially for nonlinear measures such as $F_1$. Class and fold averaging must be specified
+separately. \hybroid{} reports five-fold means without the values needed for $s_M$.
+Confidence intervals additionally require a sampling model that accounts for dependence;
+correlated timestamps are not independent repetitions \cite{sorbo2024navigating}.
+
+Operational performance uses time and resource denominators. For an observation interval of
+duration $T$, let $n_{\mathrm{in}}$, $n_{\mathrm{proc}}$ and $n_{\mathrm{drop}}$ count input,
+processed and dropped frames. The extractor measurements in Chapter~\ref{chap:anomaly} use
+\begin{equation}
+  q_{\mathrm{in}}=\frac{n_{\mathrm{in}}}{T},\qquad
+  q_{\mathrm{proc}}=\frac{n_{\mathrm{proc}}}{T},\qquad
+  p_{\mathrm{drop}}=\frac{n_{\mathrm{drop}}}{n_{\mathrm{in}}}.
+  \label{eq:background:throughput}
+\end{equation}
+Using seconds gives frame rates per second. Chapter~\ref{chap:anomaly} also reports mean
+whole-device CPU utilisation and peak memory. Its 95th-percentile delay from window close to
+record emission excludes acquisition time; service-graph latency measures inter-service round trips. Timing endpoints
+and summary statistics must be stated before comparison.
+
+Two further ratios describe operational scope:
+\begin{equation}
+  r_{\mathrm{FA}}=\frac{n_{\mathrm{false\ alarm\ episodes}}}{T_{\mathrm{benign}}},
+  \qquad
+  c_{\mathrm{proc}}=\frac{N_{\mathrm{analysed}}}{N_{\mathrm{source}}}.
+  \label{eq:background:alarm-coverage}
+\end{equation}
+The episode rate requires a grouping rule and benign exposure in a stated time unit; record FPR
+alone cannot determine it. Processing coverage gives the analysed fraction of source applications.
+Classification scores exclude the remaining applications, as in \hybroid{}. Complexity bounds
+in Chapter~\ref{chap:hgann} describe scaling under stated assumptions, rather than measured
+runtime or memory use.
+
+\subsection{Experimental Protocol and Bias}
+\label{sec:background:evaluation:bias}
+
+Metric definitions fix the quantities calculated from an evaluation. The following considerations
+concern how the data and protocol determine which conclusions those quantities support.
 
 \paragraph{Sampling bias in space and time.} \emph{Temporal bias} is a split that allows a model
 to learn from samples postdating the ones it is tested on, which reports a figure no deployment
@@ -513,14 +786,8 @@ copies of one application may fall on both sides of the split. The measured cost
 limited for supervised classification, and substantially larger for unsupervised family
 clustering \cite{zhao2021impact, irolla2018duplication}.
 
-\paragraph{What a score means.} Axelsson derived the constraint that binds every detector
-deployed against a rare event: because the base rate of intrusions is low, the probability that
-an alarm signals a genuine intrusion is dominated by the false-alarm rate, and a detector must
-therefore reach a false-alarm rate that is difficult to attain before its alarms carry
-information \cite{axelsson2000base}. Accuracy and precision are consequently uninterpretable
-without the class ratio that produced them \cite{arp2022dos}, and a reported accuracy is read
-against the floor set by a majority-class or constant-output predictor. In time-series detection a further convention
-distorts comparison: \emph{point adjustment} marks an entire anomalous window as detected once
+\paragraph{Event definitions and benchmark labels.} In time-series detection,
+\emph{point adjustment} marks an entire anomalous window as detected once
 any single point inside it is flagged, which inflates F1 to the point that randomly generated
 scores outperform published detectors \cite{kim2022towards, sorbo2024navigating}. Some standard
 benchmarks also contain mislabelled or trivially separable anomalies, so a high score on them is

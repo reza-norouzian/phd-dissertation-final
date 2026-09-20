@@ -92,6 +92,34 @@ has been added during this review.
 
 ## Log
 
+### Follow-up: priority 3 wording preview
+
+The author asked to leave priority 2 aside and preview proposed wording for priority 3 in the
+conversation before deciding whether to apply it. This is not authorisation to edit LaTeX or
+to resolve missing method records by assumption. Existing methodological qualifications remain.
+
+Claim-to-source record for the preview, checked before drafting:
+
+- `norouzian2025hgannmal`: the original result tables were re-read. All hypergraph configurations
+  have higher reported accuracy than the pairwise baselines, and HGANN-Mal exceeds the best
+  non-attentive hypergraph accuracy in three of four task/corpus combinations. CICMalDroid
+  binary accuracy is 97.6% versus HGNN+ at 97.7%. Full-text and DOI/vault verification from
+  this ticket remain applicable. Current Sections 5.13-5.14 document the construction/attention
+  confound and single-run scope; the preview introduces no new causal attribution.
+- `opitz2019macrof1`: Sections 1-2 of the vaulted version 3 full text were re-read. Its classwise
+  definition supports equal weighting of class F1 scores; a high mean does not establish uniform
+  per-family performance. Metadata, revision date and full-text/vault status were verified under
+  T-023. Section 2.6.3 supplies the corresponding dissertation definition. The source experiment's
+  averaging convention remains unresolved, so the preview does not recast its F1 as verified macro-F1.
+
+Preview source audit: \cite{norouzian2025hgannmal,opitz2019macrof1}.
+The proposed replacements concern the results discussion and the Drebin family interpretation.
+No LaTeX, bibliography, PDF or empirical result is changed, and no compilation is required.
+
+Subsequent author approval: the author requested "add them". Implementation is recorded under
+T-024, including replacement of the conflicting passages and narrow consistency changes to
+the category discussion and chapter summary. Priority 2 remains outside the revision.
+
 - 2026-09-20 created
 - 2026-09-20 Reviewed the current chapter and source material; recorded the proposal and its evidence.
 - 2026-09-20 in-progress -> review (Scientific and editorial review complete; concise proposal and evidence saved; dissertation edits await author approval)

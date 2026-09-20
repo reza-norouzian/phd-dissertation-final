@@ -78,6 +78,7 @@ erba2020constrained	have	16	5935124	10d50417e6e26e04	yes	author	file:///Users/re
 europeanunion2024regulation	have	144	2583319	bba630444b3278e8	yes	eurlex	https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ:L_202401689	2026-08-14	title match 71%
 fahad2013feature	have	19	2851810	63293bbe003e7549	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Feature%20Selection/Toward%20an%20efficient%20and%20scalable%20feature%20selection%20approach%20for%20internet%20traffic%20classification.pdf	2026-08-14	title match 100%
 fang2025kaa	have	25	697462	8446faa1ddcae6db	yes	arxiv	https://arxiv.org/pdf/2501.13456v4	2026-08-14	title match 100%
+fawcett2006roc	have	14	784702	f912f86f83470921	yes	institutional	https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf	2026-09-20	DOI metadata and full text inspected; binary metrics and ROC/AUC
 felt2011android	have	11	661909	2cac7d9ded6c5685	partial	author	https://people.eecs.berkeley.edu/~dawnsong/papers/2011%20Android%20permissions%20demystified.pdf	2026-08-14	title match 67%
 feng2017multi	have	12	1120714	d7af6403d28e2616	yes	author	file:///Users/reza/Downloads/phd/TUM/student_thesis/Yalvac/Related%20works/Multi-level%20Anomaly%20Detection%20in%20Industrial%20Control%20Systems%20via%20Package%20Signatures%20and%20LSTM%20networks.pdf.pdf	2026-08-14	title match 100%
 feng2019hypergraph	have	9	665260	6a52a23caeb7aabc	yes	arxiv	https://arxiv.org/pdf/1809.09401	2026-08-14	title match 100%
@@ -101,6 +102,7 @@ gogoi2011outlier	have	19	615643	9a2ae318dae763e6	yes	author	file:///Users/reza/D
 goh2016swatdataset	have	13	3424358	c83bcb5850123bcf	yes	author	https://www.researchgate.net/profile/Khurum-Junejo/publication/305809559_A_Dataset_to_Support_Research_in_the_Design_of_Secure_Water_Treatment_Systems/links/57a2beb308ae5f8b258cb437/A-Dataset-to-Support-Research-in-the-Design-of-Secure-Water-Treatment-Systems.pdf	2026-09-10	Full author paper inspected, 12 pages plus ResearchGate cover; local author-upload copy replaces the earlier 16-page presentation. Metadata verified against Springer DOI 10.1007/978-3-319-71368-7_8; printed proceedings year 2017 retained.
 goodfellow2015explaining	have	11	1036360	7f6c0a50475149e1	yes	arxiv	https://arxiv.org/pdf/1412.6572	2026-08-14	title match 100%
 google2025android	no-pdf				-	publisher	https://blog.google/products/android/the-android-show-io-2025/	2026-08-13	live blog post, 13 May 2025; h1/og:title = 'The Android Show: I/O Edition'; states 'more than 3 billion active devices in over 190 countries'; bib URL 302s to /products-and-platforms/platforms/android/
+grandini2020metrics	have	17	660560	eb78cffc3ccaa903	yes	arxiv	https://arxiv.org/pdf/2008.05756	2026-09-20	Official arXiv metadata and full text inspected; use ordinary balanced accuracy and micro averaging only
 grosse2017adversarial	have	18	676301	7e9e273c7d5b184a	yes	author	https://patrickmcdaniel.org/pubs/esorics17.pdf	2026-08-14	title match 100%
 grosse2024towards	have	19	749841	075da45c125c057e	yes	usenix	https://www.usenix.org/system/files/usenixsecurity24-grosse.pdf	2026-08-14	title match 100%
 gu2019badnets	have	15	9493224	f1eb719bde0056fa	yes	ieee	https://doi.org/10.1109/ACCESS.2019.2909068	2026-08-14	title match 100%
@@ -198,6 +200,7 @@ norouzian2021safairtoolkit	no-pdf				-	publisher	https://github.com/reza-norouzi
 norouzian2025hgannmal	have	21	501922	aeb85cda2fa1e68a	yes	local	https://doi.org/10.1007/978-3-032-08124-7_23	2026-08-14	title match 100%
 onwuzurike2018family	have	12	694384	1eb456ac92b3b2e2	yes	arxiv	https://arxiv.org/pdf/1803.03448	2026-08-14	title match 100%
 onwuzurike2019mamadroid	have	33	1485044	bdaf31955921bfe5	yes	arxiv	https://arxiv.org/pdf/1711.07477	2026-08-14	title match 100%
+opitz2019macrof1	have	12	1151174	40cdcaffe6adbedd	yes	arxiv	https://arxiv.org/pdf/1911.03347v3	2026-09-20	Official arXiv metadata and v3 full text inspected; two macro-F1 conventions and their ordering
 pahl2016distributed	have	6	290758	5dad9aaa233abdcc	yes	author	https://doi.org/10.1109/NOMS.2016.7502936	2026-08-14	title match 100%
 pahl2018all	have	9	912710	0ce4d39db1f0cd79	yes	author	https://s2labs.org/download/publications/2018-11_CNSM_All_Eyes_On_You_pahl.pdf	2026-08-14	title match 100%
 pahl2018graphbased	have	3	378954	ed1edf0c6b684edf	yes	author	https://s2labs.org/download/publications/NOMS2018_Demo_Graph-based_IoT_Microservice_Security.pdf	2026-08-14	title match 100%

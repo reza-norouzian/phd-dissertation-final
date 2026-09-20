@@ -21,8 +21,26 @@ cited key to the reference vault.
 | 2.3 Learning over Graphs | message passing, graph attention, hypergraph convolution, and their limits | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
 | 2.4 Detection in Networked and Cyber-Physical Systems | flow representation, anomaly-detection families, industrial and IoT settings, datasets, and measurement limits | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
 | 2.5 Adversarial Machine Learning | attack and defence classes, threat models, adaptive attacks, and failure modes | Adversarial Machine Learning; Ch.6 Threat-Guided Evaluation |
-| 2.6 Evaluation Methodology and Experimental Bias | temporal and spatial bias, leakage, weak baselines, point adjustment, and adaptive evaluation | Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Threat-Guided Evaluation |
+| 2.6 Performance Measures and Evaluation Methodology | confusion counts; binary and class-averaged metrics; ROC AUC; prevalence sensitivity; adversarial and operational measures; temporal/spatial bias, leakage and evaluation protocols | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Threat-Guided Evaluation |
 | 2.7 Summary and Research Gaps | a short synthesis followed by G1-G4, using sources already cited in Sections 2.1-2.6 | no new source pool |
+
+### Verified performance-measures sources (T-023, 20 September 2026)
+
+These entries were added or inspected for the D-004 expansion. Their full texts and reference
+vault records were checked before drafting; the detailed claim-to-source record is in T-023.
+
+| Key | Role in Section 2.6 | Scope |
+| --- | --- | --- |
+| `fawcett2006roc` | Binary rates, ROC construction, ties and AUC ranking interpretation | DOI-registry metadata and publisher full text verified |
+| `grandini2020metrics` | Ordinary balanced accuracy and micro-averaging identities | arXiv white paper; use Sections 3 and 4.3, not its weighted-balanced-accuracy or printed macro-F1 formula |
+| `opitz2019macrof1` | Averaged class F1 versus F1 of macro precision/recall, including their inequality | arXiv version 3; first submitted 2019 and revised 2021; source zero-fill is not assigned to historical experiments |
+| `axelsson2000base` | Precision under changes in prevalence with fixed conditional rates | Existing verified primary source; Equation (7) inspected |
+| `sorbo2024navigating` | Timestamp versus event-based counting | Existing verified full text; the observation unit must be specified |
+| `carlini2019evaluating`, `sparta2022d76` | Threat-conditioned performance, task-specific accuracy and accuracy loss | Existing verified full texts; distinguish analytical ASR definitions from reported contest outcomes |
+
+The author-provided colleague screenshot is a structural reference, not a bibliographic source.
+Definitions in the background do not establish missing aggregation conventions or generate
+new scores for any contribution chapter.
 
 ## Coverage at a glance
 

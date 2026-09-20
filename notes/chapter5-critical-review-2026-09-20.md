@@ -1,8 +1,20 @@
 # Chapter 5: scientific and editorial revision proposal
 
-Date: 20 September 2026. Ticket: T-020. Status: proposal only, awaiting the author's decision.
-The review changes no dissertation LaTeX, bibliography or PDF. Locations refer to the current
+Date: 20 September 2026. Review ticket: T-020.
+The author subsequently approved priorities 1, 4 and 5 from the five-row conversational
+proposal. Their implementation is recorded under T-022. The author later approved the priority-3
+interpretation passages; T-024 records their insertion and the related consistency corrections.
+Priority 2 (method specification) remains outside the requested revisions. The shared metric
+definitions were added to Chapter 2 under T-023; further Chapter 5 mathematics was not requested.
+The review itself changed no dissertation
+LaTeX, bibliography or PDF; the findings and line locations below describe the pre-revision
 `content/hgann-mal.tex`.
+
+T-022 retains the published table and figure values and identifies the matrix-derived Drebin
+F1 of 97.7% separately. It reduces main prose from 9,892 to 8,285 words, scopes the literature
+claims and removes the obsolete example references. All 23 numbered equations, the algorithm,
+and the table bodies remain unchanged. The rebuilt thesis has 149 pages, with Chapter 5 on
+printed pages 61-87 and a recto-opening blank on page 88. No visual review was performed.
 
 ## Assessment
 
