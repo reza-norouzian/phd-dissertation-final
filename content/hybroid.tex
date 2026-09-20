@@ -27,12 +27,12 @@ Two tasks are evaluated separately: binary malware detection and five-class clas
 Benign or one of four malware categories. Figure~\ref{fig:hybroid:architecture} presents the
 pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
 
-\begin{figure}
+\begin{sidewaysfigure}
   \centering
-  \includegraphics[width=\linewidth]{hybroid-architecture.pdf}
+  \includegraphics[width=\textheight]{hybroid-architecture.pdf}
   \caption{The \hybroid{} architecture, redrawn by the candidate from \cite{norouzian2021hybroid}.}
   \label{fig:hybroid:architecture}
-\end{figure}
+\end{sidewaysfigure}
 
 The contribution comprises the multimodal pipeline and its within-system evaluation. The network
 branch aggregates bidirectional flow records into \netfeatures{} features per application. The
@@ -260,11 +260,8 @@ encoder; the application-level composition is discussed separately.
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{hybroid-code2vec.pdf}
-  \caption{Published design of the program-code branch. The static analyser extracts control-flow graphs, opcodes
-  and basic blocks from each APK. Opcodes are embedded first, every method is represented from
-  the tagged control-flow graph of the basic blocks it contains, and a graph embedding reduces
-  the resulting function-call graph to a single 64-dimensional feature vector. Redrawn by the
-  candidate from the arrangement published in \cite{norouzian2021hybroid}.}
+  \caption{Published design of the program-code branch, redrawn by the candidate from
+  \cite{norouzian2021hybroid}.}
   \label{fig:hybroid:code2vec}
 \end{figure}
 
@@ -328,11 +325,7 @@ representation learning.
 \begin{figure}
   \centering
   \includegraphics[width=\linewidth]{hybroid-dynamic.pdf}
-  \caption{The network branch. Argus reduces a raw capture to bidirectional flow events, the
-  events belonging to one application are aggregated into a single record, every attribute is
-  normalised to a common range, and feature selection retains the \netfeatures{}~reported
-  features. Redrawn by the candidate from the arrangement published in
-  \cite{norouzian2021hybroid}.}
+  \caption{The network branch, redrawn by the candidate from \cite{norouzian2021hybroid}.}
   \label{fig:hybroid:dynamic}
 \end{figure}
 
