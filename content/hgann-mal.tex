@@ -186,14 +186,12 @@ for each method, which framework APIs it calls. That list is what allows a flagg
 located at its call sites rather than merely counted, and Section~\ref{sec:hgann:5} uses it for
 exactly that.
 
-Two properties of this object were fixed in Section~\ref{sec:background:graphs:pairwise} and are
-not restated here beyond their consequences. A statically recovered call graph
-over-approximates, so an edge in $G$ records that an invocation is possible and not that it
-occurs. And the recovered graph depends on the analyser: a different toolkit, or a different
-treatment of the component lifecycle and of callbacks registered with the framework, yields a
-different vertex and edge set for the same application. Both properties travel through every
-construction in Section~\ref{sec:hgann:7}, because each of the three hyperedge rules is defined
-over $G$ or over an artefact derived from it.
+The recovery limits in Section~\ref{sec:background:graphs:pairwise} apply to this object.
+An edge in $G$ records a possible invocation identified by the analyser. Infeasible calls may
+be included, while unresolved targets or incompletely modelled callbacks may be omitted.
+The toolkit and execution assumptions therefore affect the vertex and edge sets recovered
+from an application. These choices affect every construction in Section~\ref{sec:hgann:7},
+because each hyperedge rule uses $G$ or an artefact derived from it.
 
 \section{Security-Sensitive API Identification and Program Slicing}
 \label{sec:hgann:5}
@@ -1000,9 +998,10 @@ propagation, so that comparison has to fix a normalisation convention before its
 attributed to attention.
 
 Fang et al.\ compared GAT-based architectures with GCN, GraphSAGE and GIN on node-classification
-and link-prediction benchmarks over pairwise graphs. In those experiments, none of the
-unmodified GAT-based models outperformed all non-attentive baselines \cite{fang2025kaa}.
-Their ranking analysis also concerns pairwise attention at bounded model capacity. These
+and link-prediction benchmarks over pairwise graphs. Their reported means place GAT above
+the non-attentive baselines on some node-classification datasets and below them on others
+\cite[Table~2]{fang2025kaa}. Their ranking analysis concerns pairwise attention under explicit
+capacity assumptions. These
 results do not establish the behaviour of attention on Android hypergraphs. Brody et al.'s
 static-ranking argument for additive scoring \cite{brody2022gatv2} carries over to the score
 used here, as Equation~\ref{eq:hgann:ranking} shows; the transfer of the finite-ranking bound

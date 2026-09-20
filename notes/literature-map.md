@@ -1,8 +1,8 @@
 # Literature map
 
-Generated from `bib/references.bib` (1,368 pooled entries). The Chapter 2 source plan follows
-the current seven-section outline. The thematic candidate pools preserve the results of the
-earlier literature harvest and may serve more than one section.
+The thematic candidate pools were generated from the original 1,368-entry bibliography
+harvest. Later verified additions are recorded separately below. The Chapter 2 source plan
+follows the current seven-section outline; a pool may serve more than one section.
 
 Column `n` is the number of independent harvests that found the entry (1-10). Column `v` is
 the metadata-verification tier: `doi`, `publisher`, `dblp`, `arxiv` and similar are
@@ -16,13 +16,37 @@ cited key to the reference vault.
 
 | Section | Material to support | Candidate pools below |
 | --- | --- | --- |
-| 2.1 Android Applications and Their Analysis | APK and Dalvik artefacts, manifests and permissions, analysis modes, obfuscation, packing, and repackaging | Android Applications and Malware Analysis; Static, Dynamic, and Hybrid Observation |
-| 2.2 Graph Representations of Programs | control-flow graphs, function-call graphs, hypergraphs, and the information lost by pairwise projection | Network Flows, Program Graphs, and Hypergraphs; Android Applications and Malware Analysis |
-| 2.3 Learning over Graphs | message passing, graph attention, hypergraph convolution, and their limits | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
-| 2.4 Detection in Networked and Cyber-Physical Systems | flow representation, anomaly-detection families, industrial and IoT settings, datasets, and measurement limits | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
-| 2.5 Adversarial Machine Learning | attack and defence classes, threat models, adaptive attacks, and failure modes | Adversarial Machine Learning; Ch.6 Threat-Guided Evaluation |
-| 2.6 Performance Measures and Evaluation Methodology | confusion counts; binary and class-averaged metrics; ROC AUC; prevalence sensitivity; adversarial and operational measures; temporal/spatial bias, leakage and evaluation protocols | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Threat-Guided Evaluation |
+| 2.1 Android Applications and Their Analysis | APK/DEX artefacts, component lifecycles, permission grants and mapping; analysis modes, obfuscation and packaging | Android Applications and Malware Analysis; Static, Dynamic, and Hybrid Observation |
+| 2.2 Graph Representations of Programs | CFGs and FCGs; dependence and backward slicing; hypergraph incidence, clique projection and operator-specific equivalence | Verified foundation sources below; Network Flows, Program Graphs, and Hypergraphs; Android Applications and Malware Analysis |
+| 2.3 Learning over Graphs | message passing, graph-level readout and permutation properties; attention and hypergraph propagation under stated assumptions | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
+| 2.4 Detection in Networked and Cyber-Physical Systems | observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
+| 2.5 Adversarial Machine Learning | goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Threat-Guided Evaluation |
+| 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Threat-Guided Evaluation |
 | 2.7 Summary and Research Gaps | a short synthesis followed by G1-G4, using sources already cited in Sections 2.1-2.6 | no new source pool |
+
+### Verified foundation additions and corrections (T-025, 20 September 2026)
+
+The [Chapter 2 source-record index](chapter2-source-records/README.md) links the complete
+pre-drafting claim-to-source table in T-025. The review is claim-focused; a successful
+inventory audit does not certify every statement made by a cited paper.
+
+| Key | Role or correction | Verification and scope |
+| --- | --- | --- |
+| `aosp2026appfundamentals` | Application sandbox, component entry points and lifecycles | New web reference; live Android Developers article inspected and registered |
+| `horwitz1990interprocedural` | Dependence graphs, backward slicing and interprocedural calling context | New reference; DOI metadata and University of Wisconsin author full text inspected and vaulted |
+| `gilmer2017neural`, `xu2019powerful` | Graph-level readout and permutation properties | Existing primary full texts inspected; the 1-WL bound is scoped to the stated architecture class |
+| `zhang2023android` | Prior Android hypergraph construction and classification | Existing publisher paper inspected; added to Chapter 2 to ground G3 without a first-use claim |
+| `rauber2017foolbox`, `kurakin2018competition` | Existing attack libraries and independent competitions | Existing full texts and primary records inspected; added before G4 to avoid an infrastructure-absence claim |
+| `felt2011android`, `au2012pscout` | Protection levels and versioned API-permission mappings | Dangerous permissions are not the only powerful capabilities; PScout's over-75 figure is not an undocumented-mapping count |
+| `fang2025kaa` | Task-dependent reported attention performance | Table 2 contradicts the paper's blanket prose about unmodified attentive models; no significance claim is inferred |
+| `chitra2019randomwalks`, `wang2024graphs` | Specified random walks and unweighted clique projection | Do not generalise their results to all hypergraph operators or typed incidence encodings |
+| `wolsing2022simple`, `maali2025evaluating` | Scoped network/industrial evidence | Distinguish the 70-publication review from the empirical comparison, and device identification from anomaly detection |
+| `pierazzi2020intriguing` | Problem-space constraints | Vault now holds the four-author March 2020 manuscript, arXiv v2, matching the cited S&P paper; the 2024 extension is a separate version |
+
+The Wang/Kleinberg title is **Hypergraph Projection and Its Remediation**, as printed in the
+paper and primary arXiv record. G1 now concerns representation and maintenance, while G3-G4
+retain the empirical and measurement questions that the contribution chapters can address.
+Unreported experimental settings remain unresolved.
 
 ### Verified performance-measures sources (T-023, 20 September 2026)
 
@@ -61,7 +85,19 @@ new scores for any contribution chapter.
 
 ## 1.1 Research Context
 
-**Must support:** Learning-based security analysis is now standard practice, and its published results are systematically optimistic. Sets up the whole thesis.
+**Must support:** Android observation and representation choices; context across evidence
+sources and within program structure; scoped evidence about predictive evaluation and
+adversarial measurement. Research examples do not establish universal operational adoption
+or a uniform protocol across the field.
+
+The approved T-026 revision records the Introduction's claim-to-source mapping in
+[its writing ticket](workflow/tickets/T-026-apply-the-approved-chapter-1-scientific-and-readabil.md).
+Section 1.2 acknowledges prior hybrid comparison and Android hypergraph construction, together
+with existing attention and attack-library/competition infrastructure. Chapter 2 retains the
+detailed foundations and G1-G4. The Introduction distinguishes the Android predictive studies
+from the industrial and image-based evaluations; it makes no attention-only attribution or
+Android adversarial-robustness claim. The public contest-toolkit revision is documented in
+`references/source-records/chapter1-software.md`.
 
 | n | v | year | key | title |
 | ---: | --- | ---: | --- | --- |

@@ -12159,16 +12159,21 @@
   keywords  = {analysis-hybrid, android, graph-prog, malware, net-traffic}
 }
 % harvest: 05
-% verified: no
-% [05] src: sparta-d7.6; cited-in-deliverable: yes (D7.6 [16], a bare URL with
-%   no author or year);  authorship inferred from the repository path, not
-%   from the deliverable text
-@misc{norouzian2021safairtoolkit,
+% verified: publisher
+% [05] src: sparta-d7.6; cited-in-deliverable: yes (D7.6 [16], a bare URL).
+% [T-026] Primary GitHub commit metadata confirms author and 2021-11-08 date;
+%   the full development guide and pinned directory were inspected on 2026-09-20.
+%   Public version replaces the university-login GitLab path. See the software
+%   provenance record in references/source-records/chapter1-software.md.
+@online{norouzian2021safairtoolkit,
   author       = {Norouzian, Mohammad Reza},
   title        = {{SAFAIR} {AI} Contest Development Toolkit},
   year         = {2021},
-  howpublished = {\url{https://git.sec.in.tum.de/Norouzian/safair-ai-contest/-/tree/master/dev_toolkit}},
-  keywords     = {advml-eval}
+  organization = {GitHub},
+  url          = {https://github.com/reza-norouzian/SPARTA-Adversarial-AI-Contest/tree/f44ba8c4ea13/dev_toolkit},
+  urldate      = {2026-09-20},
+  note         = {Source code, revision f44ba8c (8 November 2021)},
+  keywords     = {advml-eval, tooling, own}
 }
 
 % harvest: T-003
@@ -13170,6 +13175,8 @@
 % verified: doi
 % [07] src: search; band: A
 % [09] src: search; band: A
+% T-025: the vault now holds the four-author March 2020 manuscript (arXiv v2),
+% matching this S&P publication; the six-author 2024 extension is a different version.
 @inproceedings{pierazzi2020intriguing,
   author    = {Pierazzi, Fabio and Pendlebury, Feargus and Cortellazzi, Jacopo and Cavallaro, Lorenzo},
   title     = {Intriguing Properties of Adversarial ML Attacks in the Problem Space},
@@ -13177,6 +13184,7 @@
   pages     = {1332--1349},
   year      = {2020},
   doi       = {10.1109/SP40000.2020.00073},
+  url       = {https://arxiv.org/abs/1911.02142v2},
   keywords  = {advml-attack, android, eval-method, malware}
 }
 % harvest: 08
@@ -17119,16 +17127,17 @@
   keywords = {analysis-static, android, graph-learn, graph-prog, malware}
 }
 % harvest: 12
-% verified: dblp
+% verified: arxiv
 % [12] src: search; band: C;  formal study of what hypergraph projection
 %   (clique expansion) destroys and how far the hypergraph can be recovered
 %   from it
+% T-025: title and author spelling checked against the paper and primary arXiv record.
 @inproceedings{wang2024graphs,
-  author    = {Wang, Yanbang and Kleinberg, Jon M.},
-  title     = {From Graphs to Hypergraphs: Hypergraph Projection and Its Reconstruction},
+  author    = {Wang, Yanbang and Kleinberg, Jon},
+  title     = {From Graphs to Hypergraphs: Hypergraph Projection and Its Remediation},
   booktitle = {International Conference on Learning Representations ({ICLR})},
   year      = {2024},
-  url       = {https://openreview.net/forum?id=qwYKE3VB2h},
+  url       = {https://arxiv.org/abs/2401.08519},
   keywords  = {graph-learn, hypergraph, ml-general}
 }
 % harvest: 13
@@ -19334,7 +19343,7 @@
   title        = {Dalvik Executable Format},
   organization = {Android Open Source Project},
   url          = {https://source.android.com/docs/core/runtime/dex-format},
-  urldate      = {2026-08-13},
+  urldate      = {2026-09-20},
   year         = {2026},
   keywords     = {android}
 }
@@ -19348,7 +19357,7 @@
   title        = {Dalvik Bytecode},
   organization = {Android Open Source Project},
   url          = {https://source.android.com/docs/core/runtime/dalvik-bytecode},
-  urldate      = {2026-08-13},
+  urldate      = {2026-09-20},
   year         = {2026},
   keywords     = {android}
 }
@@ -19356,14 +19365,14 @@
 % harvest: T-018
 % verified: publisher
 % [T-018] src: source.android.com, retrieved 2026-08-13 under D-012. The source
-%   for ART superseding Dalvik, which Chapter 4 needs because Hybroid justifies
-%   opcode-only embedding by operand values depending on the runtime.
+%   for the runtime that executes DEX bytecode. Opcode and operand fields are
+%   documented separately in aosp2026dalvikbytecode.
 @online{aosp2026art,
   author       = {{Android Open Source Project}},
   title        = {{Android} Runtime ({ART}) and {Dalvik}},
   organization = {Android Open Source Project},
   url          = {https://source.android.com/docs/core/runtime},
-  urldate      = {2026-08-13},
+  urldate      = {2026-09-20},
   year         = {2026},
   keywords     = {android}
 }
@@ -19378,7 +19387,7 @@
   title        = {Permissions on {Android}},
   organization = {Android Open Source Project},
   url          = {https://developer.android.com/guide/topics/permissions/overview},
-  urldate      = {2026-08-13},
+  urldate      = {2026-09-20},
   year         = {2026},
   keywords     = {android}
 }
@@ -19614,4 +19623,33 @@
   doi           = {10.48550/arXiv.1911.03347},
   note          = {Version 3, revised 8 February 2021},
   keywords      = {eval-method}
+}
+
+
+% T-025, 20 September 2026; verified: publisher
+% Application components, lifecycle entry points and the application sandbox.
+% Live Android Developers article inspected; full source record in the T-025 ticket.
+@online{aosp2026appfundamentals,
+  author       = {{Android Developers}},
+  title        = {Application Fundamentals},
+  organization = {Google},
+  year         = {2026},
+  url          = {https://developer.android.com/guide/components/fundamentals},
+  urldate      = {2026-09-20},
+  keywords     = {android, analysis-static}
+}
+
+% T-025, 20 September 2026; verified: doi
+% DOI-registry metadata and the authors' University of Wisconsin full text inspected.
+% Sections 1-2 define dependence and slicing; Sections 3-4 address calling contexts.
+@article{horwitz1990interprocedural,
+  author   = {Horwitz, Susan and Reps, Thomas and Binkley, David},
+  title    = {Interprocedural Slicing Using Dependence Graphs},
+  journal  = {ACM Transactions on Programming Languages and Systems},
+  volume   = {12},
+  number   = {1},
+  pages    = {26--60},
+  year     = {1990},
+  doi      = {10.1145/77606.77608},
+  keywords = {analysis-static, graph-prog}
 }

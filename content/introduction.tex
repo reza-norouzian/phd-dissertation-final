@@ -1,265 +1,252 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
+% Revised under T-026 and D-006, 20 September 2026.
+% Claim-to-source evidence is recorded in the writing ticket before drafting.
+% Retain the six sections, question macros and existing labels. The Android
+% comparisons are predictive evaluations; the SAFAIR evidence concerns other tasks.
+% Individual roles follow the author-confirmed accounts in Chapters 3 to 6.
+
 \section{Research Context}
 \label{sec:intro:context}
 
-Detection systems built on machine learning are ordinary practice in security engineering.
-Drebin classified Android applications from statically extracted feature sets in 2014
-\cite{arp2014drebin}, MaMaDroid modelled sequences of abstracted API calls as Markov chains
-soon afterwards \cite{onwuzurike2019mamadroid}, and a systematic review published in 2023
-identified 132 studies applying deep learning to Android malware defence between 2014 and
-2021 \cite{liu2023deeplearning}. The same shift took place in network defence, where anomaly
-detection moved from statistical baselining \cite{chandola2009anomaly} towards deep
-architectures trained directly on traffic \cite{pang2021deep}, and in program analysis, where
-graph neural networks are now applied to code structure \cite{kipf2017semi,
-velickovic2018graph, bilot2024survey}. Android alone reports more than three billion active
-devices \cite{google2025android}, and the number of applications submitted for analysis each
-year is far larger than any team of analysts can inspect by hand. That imbalance is what
-makes automated classification attractive.
+Learning-based Android malware analysis depends on the observations available to the
+classifier. DREBIN uses features from an application's manifest and bytecode
+\cite{arp2014drebin}, while MaMaDroid models sequences of abstracted application programming
+interface (API) calls recovered through static analysis \cite{onwuzurike2019mamadroid}.
+In graph-based detectors, program structure forms part of the input to representation
+learning \cite{bilot2024survey}. A systematic review identified 132 studies of deep-learning
+approaches to Android malware defence published between 2014 and 2021
+\cite{liu2023deeplearning}.
 
-Industrial and Internet of Things (IoT) networks reached the same point by a different route. Their traffic is
-comparatively regular, since the devices are few and their interactions are prescribed by the
-process they control, which is what makes learned models of normal behaviour plausible there
-at all. Testbeds built for the purpose supply the labelled attack data that operational plants
-cannot \cite{mathur2016swat}. The difficulty is that a model of normal behaviour has to be
-kept current as the deployment changes, and in a service-oriented architecture it changes
-often.
+This dissertation examines contextual representation and adversarial evaluation, with Android
+malware analysis at the centre. The term \emph{context} covers two sources of information:
+relations among program or system elements, and complementary observations combined for one
+prediction. \hybroid{} studies
+context across static code and recorded network traffic; \hgann{} studies context within
+the application package through groups of related methods. Supporting work examines service
+relationships in the Internet of Things (IoT). The industrial control studies use
+protocol-specific records and multivariate process windows.
 
-The methods were developed for settings that differ from security in two ways that matter.
-A classifier trained on one sample of data and deployed on another assumes that both come
-from the same distribution. Malware violates the assumption by construction: families rise
-and fall, developers repackage applications specifically to defeat the detectors of the
-previous year, and the label an antivirus engine assigns to a file may change as engines are
-updated. Jordaney et al.\ measured this drift directly and showed that a classifier's
-confidence gives little warning of it \cite{jordaney2017transcend}. The second difference is
-that the data are chosen by someone who benefits when classification fails.
+Predictive evaluation must account for the population on which a model is tested.
+Jordaney et al.\ document changes in malware that make previously trained classifiers
+unreliable \cite{jordaney2017transcend}. Pendlebury et al.\ show how temporally inconsistent
+partitions and unrepresentative class distributions can inflate reported performance
+\cite{pendlebury2019tesseract}. In an assessment of thirty selected security papers,
+Arp et al.\ found at least three of ten methodological pitfalls in each paper
+\cite{arp2022dos}. These findings motivate explicit sampling and evaluation assumptions.
 
-How much reported performance survives a stricter protocol has been measured. Published F1
-scores for Android malware classification reach 0.99, which leaves little room for
-improvement and invites the question of what the number means. Pendlebury et al.\ traced the
-figure to two forms of experimental bias: training and test data whose composition does not
-match a real deployment, and time splits that let a classifier learn from samples that
-appeared after the ones it is tested on \cite{pendlebury2019tesseract}. Arp et al.\ then
-examined thirty papers from the four leading security conferences against a list of ten
-methodological pitfalls. Every paper exhibited at least three of them \cite{arp2022dos}.
-Artefacts in the datasets add to the effect. Drebin, the most widely used Android corpus,
-carries duplicate samples produced by repackaging \cite{irolla2018duplication}, although the
-systematic study of what those duplicates cost found the effect limited for supervised
-classification and considerably larger for unsupervised family clustering
-\cite{zhao2021impact}. None of these findings concerns a single weak paper. They concern the
-standard protocol.
+Related applications also affect the independence of training and test samples. Drebin
+contains repackaged applications with duplicated opcode sequences
+\cite{irolla2018duplication}. Zhao et al.\ found limited duplication effects for the
+supervised binary detectors they tested, but larger effects for unsupervised malware-family
+clustering \cite{zhao2021impact}.
 
-A second body of evidence concerns what happens once the adversary is treated as active.
-Small, deliberately chosen perturbations flip the output of trained models
-\cite{szegedy2014intriguing}, and the observation predates deep learning: Biggio et al.\
-demonstrated gradient-based evasion against detectors at test time in 2013
-\cite{biggio2013evasion}, with a line of work on adversarial classification running back
-further still \cite{biggio2018wildpatterns}. The defensive response has not held up well.
-Athalye et al.\ re-examined the nine non-certified defences accepted at ICLR 2018 and found
-that seven owed their apparent robustness to obfuscated gradients, of which six were then
-circumvented completely \cite{athalye2018obfuscated}. Tramèr et al.\ broke a further thirteen
-defences published at leading machine-learning venues, all of which had already been
-evaluated against adaptive attacks by their own authors \cite{tramer2020adaptive}. Carlini et
-al.\ responded by writing down what an adequate robustness evaluation requires
-\cite{carlini2019evaluating}. In the malware setting
-the constraint is tighter than in image classification, because an adversarial example must
-be a file that still installs and still runs \cite{pierazzi2020intriguing}.
+Adversarial evaluation concerns deliberate changes to the input of a defended system.
+Athalye et al.\ identified obfuscated gradients in seven of nine non-certified white-box
+defences accepted at ICLR 2018; their attacks circumvented six completely and one partially
+\cite{athalye2018obfuscated}. Carlini et al.\ specified threat-model and evaluation
+requirements in 2019 \cite{carlini2019evaluating}. Tramèr et al.\ subsequently circumvented
+thirteen defences, almost all of which had attempted adaptive evaluation
+\cite{tramer2020adaptive}. The quality of that evaluation depends on how the attack addresses
+the particular defence.
 
-Two questions follow from this, and they organise the present work. The first is a question
-about representation: what should be observed about a program or a network, and how should
-those observations be structured, so that a model is given the evidence that separates
-malicious from benign behaviour? The second is a question about evaluation: how should a
-defence be measured when the party generating the test data is trying to defeat it? The two
-are usually pursued by different communities. This dissertation treats them together,
-because a representation that is never tested against an adaptive opponent and a benchmark
-that never varies the representation are weak in complementary ways.
+For Android, a problem-space attack must produce a valid modified package that retains its
+malicious functionality \cite{pierazzi2020intriguing}. The permitted transformations and
+their effect on extracted features therefore belong in the evaluation specification.
+Predictive comparison of representations and adversarial assessment of a complete system
+are the two research themes developed in this dissertation.
 
 \section{Problem Statement and Scope}
 \label{sec:intro:problem}
 
 \subsection*{The representation problem}
 
-An analysis system sees only what its observation model admits. Static analysis reads the
-application package and reasons about code that may never execute, which gives broad
-coverage at the cost of accuracy against obfuscation and dynamic loading; the limits are
-well understood and were formalised early \cite{moser2007limits}. Dynamic analysis observes
-what a sample actually does, using instrumentation such as taint tracking
-\cite{enck2014taintdroid}, which resists obfuscation but reaches only the paths that the
-harness triggers \cite{onwuzurike2018family}. Neither observation model dominates the other,
-so systems that combine them should be able to describe behaviour that neither describes
-alone. What such a combination buys, measured on the same samples under one protocol, is the
-first open question this dissertation addresses.
+Static analysis examines an application without executing it and can inspect code outside
+the paths exercised by a test harness. Its coverage depends on the available code and the
+analysis approximations; obfuscation can hinder recovery \cite{moser2007limits}.
+Dynamic analysis records triggered behaviour through instrumentation, as in taint tracking
+\cite{enck2014taintdroid}, but depends on the execution paths reached. Within-system studies
+have reported benefits from combining static and dynamic observations
+\cite{onwuzurike2018family}. Binary and category classification impose different distinctions
+on the observations: a feature that separates malware from benign applications need not
+separate malicious categories. RQ2 concerns the additional value of fusing program-graph
+representations with network-flow features for the same applications, separately for binary
+detection and malware-category classification.
 
-Structure raises a second problem. Program behaviour is commonly encoded as a graph, with
-functions or basic blocks as nodes and calls or transfers as edges, and graph neural networks
-then learn over that structure. An edge relates exactly two elements. Behaviour that is
-security-relevant frequently involves more: a permission request, a sequence of API calls,
-and a network write may be innocuous separately and malicious in combination. Encoding such a
-group as a set of pairwise edges loses the fact that the members belong to one group.
-Hypergraphs remove that restriction by allowing an edge to join any number of nodes
-\cite{zhou2006learning}, and hypergraph neural networks provide the learning machinery
-\cite{feng2019hypergraph, gao2023hgnn}. Whether the higher-order encoding
-pays for itself on Android program structure, and whether weighting hyperedges by attention
-adds anything beyond the encoding itself, is the second open question. The question is worth
-asking sceptically, since attention mechanisms in graph learning have been shown to be less
-expressive than their formulation suggests \cite{brody2022gatv2}.
+A function-call graph relates methods through recovered call sites. A hypergraph can record
+a chosen group of methods as one hyperedge \cite{zhou2006learning}. Replacing each group by
+pairwise links can lose its identity; a bipartite graph with distinct method and group
+vertices preserves the memberships \cite{agarwal2006higherorder}. Prior Android work
+constructs hyperedges from call neighbourhoods and shared permissions
+\cite{zhang2023android}, and hypergraph attention already provides a mechanism for learned
+membership weighting \cite{bai2021hypergraphattention}. Group construction determines which
+methods can exchange information through a hyperedge; membership weights then control their
+influence within that structure. RQ3 examines alternative
+program-related groups and attention-weighted aggregation against pairwise graph and
+non-attentive hypergraph configurations. The distinction between the information retained
+by a representation and the operations applied to it is developed in
+Section~\ref{sec:background:graphs:hypergraphs}.
+
+Networked and industrial systems require representations suited to other observation units.
+A service-communication model must accommodate new legitimate partners as services are added
+or removed \cite{aubet2018graph}. Sensor and actuator series instead describe the physical
+process \cite{mathur2016swat}. Network records and process time series require different
+feature preparation, while a modular learning interface permits estimators to be exchanged
+\cite{iuno_ap4}. RQ1 concerns how these observations can support anomaly
+detection and how monitored relations or learning components can be revised. Its separate
+studies examine communication graphs and a modular framework for network and process features.
 
 \subsection*{The evaluation problem}
 
-Robustness claims are only as good as the attacks used to test them, and the record shows
-that attacks chosen by the defender's own authors are too weak
-\cite{athalye2018obfuscated, carlini2019evaluating}. An evaluation that is credible has to
-begin from an explicit statement of what the adversary knows and what the adversary may
-change, and it has to be reproducible by a third party. Building such an evaluation as a
-piece of infrastructure, rather than as a section of a paper, is the third open question
-treated here.
+Attack libraries such as Foolbox and earlier attack/defence competitions provide established
+evaluation infrastructure \cite{rauber2017foolbox,kurakin2018competition}. Reuse across
+prediction tasks requires explicit attacker access and valid perturbation constraints,
+together with scoring rules that match the prediction objective \cite{carlini2019evaluating}.
+RQ4 examines these requirements through the SAFAIR contest and benchmark. Reusable interfaces
+support a common execution procedure. Reproducing a historical result also requires the
+evaluated data and trained models, with the complete experimental configuration.
 
 \subsection*{Scope}
 
-The empirical work concerns Android. Applications are analysed from the package as
-distributed, using Dalvik bytecode and, where the design calls for it, traffic recorded while
-the application runs. Native code, kernel-level instrumentation, and iOS lie outside the
-scope. The industrial and IoT material concerns communication behaviour observed at the
-network level and, in the SWaT study, sensor and actuator values of the physical process. It was
-recorded in testbeds and project deployments, not at operator scale.
+The principal empirical studies analyse Dalvik bytecode recovered from Android application
+packages; \hybroid{} also uses network traffic recorded during execution. The industrial
+studies use observations from an \iuno{} project deployment and the Secure Water Treatment
+(SWaT) testbed. These studies observe communication records or process measurements under
+their respective collection conditions.
 
-Three limits on the claims should be stated here rather than discovered later. First, the
-work on communication graphs for IoT services was disseminated as a two-page contribution to
-PAM 2018 on which the candidate is the fourth of four authors. The full paper that reports anomaly detection on
-that system was written by two of his co-authors without him \cite{pahl2018all}, as was the
-companion short paper on graph-based access control \cite{pahl2018graphbased}.
-Chapter~\ref{chap:anomaly} identifies both and scopes the claim accordingly. Second, the
-graph work on IoT services did not lead
-to the Android work. The two are compared as representations in
-Chapter~\ref{chap:discussion}, and no developmental sequence between them is claimed. Third,
-the adversarial material is a contribution to evaluation methodology and to benchmark
-construction. No new attack algorithm and no certified defence is proposed.
+The adversarial-evaluation work concerns facial-image tasks and a partner histopathology
+benchmark \cite{sparta2020d72,sparta2022d76}. A short, attributed PDF-malware comparison
+illustrates constraints on another input domain \cite{sparta2021d75}. The contribution is
+evaluation design and measurement analysis; the evaluated defence algorithms remain the
+work of project partners.
+
+The studies are related through their observation and evaluation choices, with separate
+datasets and protocols. The IoT work did not motivate \hybroid{}. The Android systems have
+not been compared on a common corpus or evaluated here against adaptive attackers.
+Chapter~\ref{chap:discussion} makes the conceptual comparison and identifies requirements
+for those subsequent experiments.
 
 \section{Research Questions}
 \label{sec:intro:rqs}
 
-Four questions organise the dissertation. The first concerns the representation of behaviour
-in networked and industrial systems and is divided into two subquestions. The second and third
-concern the representation of Android program behaviour. The
-fourth concerns evaluation. Each question takes up one of the four gaps stated in
-Section~\ref{sec:background:summary}, and Chapter~\ref{chap:conclusion} answers each of them
-in the same words in which they are asked here.
+Four research questions specify the two themes. The first has two subquestions for
+networked and industrial settings. The Android questions concern cross-modal and
+higher-order representations; the fourth concerns adversarial evaluation.
+Section~\ref{sec:background:summary} develops their literature-based motivation as gaps
+G1 to G4.
 
 \researchquestion[1]{RQ1}{Behaviour in networked and industrial systems}{\rqOneText}
 
-RQ1 takes up gap~\gapref{1}. Its two subquestions organise three empirical strands over service
-relations, network records, and industrial process data. The strands are complementary rather
-than cumulative, and no experiment compares all of them.
+RQ1 addresses gap~\gapref{1} through service relations and industrial observations.
+The two subquestions concern distinct mechanisms and experimental settings.
 
 \researchquestion[1.1]{RQ1.1}{Communication graphs}{\rqOneOneText}
 
-Chapter~\ref{chap:anomaly} answers RQ1.1 through a relation model for service-to-service
-communication, a procedure for keeping the graph current as services change, and measurements
-of the overhead this imposes. Detection accuracy against a labelled attack set is not
-reported, and the chapter states why.
+The answer covers node-local relations and operator-approved updates, supported by memory
+and latency measurements. Detection accuracy against a labelled attack set was not measured.
 
 \researchquestion[1.2]{RQ1.2}{Modular industrial anomaly detection}{\rqOneTwoText}
 
-Chapter~\ref{chap:anomaly} answers RQ1.2 through \nadics{}, a modular framework for network
-and process features with interchangeable preprocessing and learning components. The chapter
-reports its IUNO integration and a multivariate reconstruction detector on SWaT.
-Here, reconstruction means that the model reproduces its input readings and uses the
-discrepancies to help detect anomalies.
+The answer concerns a modular interface for network and process features. Supervised
+classification on S7-300 records and a multivariate detector on SWaT provide separate
+empirical cases.
 
 \researchquestion[2]{RQ2}{Multimodal Android malware analysis}{\rqTwoText}
 
-RQ2 takes up gap~\gapref{2}. Chapter~\ref{chap:hybroid} answers it through \hybroid{}, which
-extracts features from program structure and from recorded traffic and classifies their
-combination. The chapter
-reports binary detection and \categoryclassification{}, and it compares each modality against
-the fusion under one protocol.
+Gap~\gapref{2} is examined on a common retained cohort of CICAndMal2017 applications.
+The contrast is between each modality and their fusion, separately for each learner and
+prediction task. The category task includes Benign as one of five classes.
 
 \researchquestion[3]{RQ3}{Higher-order Android malware analysis}{\rqThreeText}
 
-RQ3 takes up gap~\gapref{3}. Chapter~\ref{chap:hgann} answers it through \hgann{}, which
-represents an application as a hypergraph over its call structure and applies attention across
-hyperedges. Two
-classification tasks are distinguished throughout and are not interchangeable:
-\familyclassification{} on Drebin, and \categoryclassification{} on CICMalDroid, in which
-benign applications form one of the categories. Binary detection is a third, separate task.
+For gap~\gapref{3}, the empirical answer concerns complete configurations: construction and
+weighting change together, so an attention-only effect remains unresolved. The tasks are
+binary detection and dataset-specific classification: \familyclassification{} on Drebin,
+and \categoryclassification{} on CICMalDroid, with Benign as one category.
 
 \researchquestion[4]{RQ4}{Adversarial robustness evaluation}{\rqFourText}
 
-RQ4 takes up gap~\gapref{4}. Chapter~\ref{chap:advml} answers it through a threat analysis of
-machine-learning systems, a public contest run on a hidden test set, and a modular benchmark
-in which attacks and defences are combined by configuration. It examines how task definitions,
-scoring and attack validity affect the interpretation of the reported results, and identifies
-the experimental records needed for reproduction.
+Gap~\gapref{4} is addressed through benchmark design and analysis of the resulting
+measurements. The available aggregates support conclusions about scoring and evaluation
+requirements, but do not establish a general relation between clean performance and
+adversarial robustness.
 
 \section{Contributions}
 \label{sec:intro:contributions}
 
-\paragraph{A communication-graph model for IoT service interaction.}
-Service-to-service relations are represented as a graph that is built from observed traffic
-and updated as the deployment changes, together with a measurement of the cost of maintaining
-it. The contribution answers RQ1.1 and is reported in Chapter~\ref{chap:anomaly}. Its scope
-is limited by the evidence available: the disseminated artefact runs to two pages, and the
-chapter states what the candidate contributed to it.
-
-\paragraph{A modular framework for anomaly detection in industrial networks.}
-\nadics{} decomposes packet parsing, feature construction, and classification into
-interchangeable components, so that learning methods can be exchanged without rebuilding the
-pipeline, and it fed the visual security control room built by the \iuno{} project. The later
-work adds a GAN-based detector for multivariate SWaT process data. The contribution answers
-RQ1.2 and is reported in Chapter~\ref{chap:anomaly}.
-
 \paragraph{Multimodal Android malware analysis.}
-\hybroid{} combines a static representation of program structure with features derived from
-observed network flows, and evaluates the combination against each modality alone on the same
-samples. The contribution answers RQ2 and is reported in Chapter~\ref{chap:hybroid}.
+\hybroid{} combines a representation of static program structure with features of recorded
+network flows. Its within-system comparison measures the value of fusion on applications
+for which both observations are available \cite{norouzian2021hybroid}. Fusion has the
+highest reported detection $F_1$ for each evaluated learner. For category classification,
+fusion improves $F_1$ for the ensemble classifiers, while the decision tree favours static features.
+These are descriptive comparisons of the published fold means
+(Section~\ref{sec:hybroid:11}).
 
 \paragraph{Higher-order Android malware analysis.}
-\hgann{} encodes groups of related program elements as hyperedges rather than as sets of
-pairwise edges, and weights those hyperedges by attention. The contribution answers RQ3 and
-is reported in Chapter~\ref{chap:hgann}, which compares the result against pairwise graph
-models and against non-attentive hypergraph models. Because the encoding and the weighting
-were changed together, the chapter does not attribute the gain to attention alone.
-% T-012 answered by the author on 14 August 2026 and recorded as D-028: the ablation does not
-% run. The isolation claim is withdrawn here and section 5.14 carries the confound as a
-% declared limitation. Section 1.3 needs no change, because RQ3 compares systems rather than
-% mechanisms.
+\hgann{} groups methods by call neighbourhood and semantic similarity. Slice-aware
+hyperedges add relations around security-sensitive API calls, and learned membership
+weights control aggregation over the groups \cite{norouzian2025hgannmal}.
+The evaluated hypergraph configurations have higher reported accuracy than the pairwise
+baselines; \hgann{} exceeds the strongest non-attentive baseline in three of four
+task--corpus combinations. The operator analysis in Section~\ref{sec:hgann:8} also shows
+how attentive propagation can distinguish groupings with the same fixed propagation
+matrix. This representational capacity is separate from an empirical explanation of the
+accuracy differences.
+
+\paragraph{Communication-graph modelling for IoT services.}
+The service-graph study represents observed communication partners as node-local
+relations and permits updates approved by the site owner \cite{aubet2018graph}.
+Graph traces and resource measurements document the maintenance of these relations as
+services change. The contribution addresses representation and update procedures under
+the observation conditions of the middleware.
+
+\paragraph{Modular industrial anomaly detection.}
+\nadics{}, Network Anomaly Detection for Industrial Control Systems, separates feature
+preparation from interchangeable learners. Its protocol-specific extractor and model
+interface support the \iuno{} integration \cite{iuno_ap4,iuno_ap7}. Separate S7-300
+evaluations report attack classification and false-alarm episodes during benign operation.
+A generative adversarial network (GAN) extension compares representations of multivariate
+SWaT process data. Their different recall and false-positive profiles relate the
+representation choice to the operating objective (Section~\ref{sec:anomaly:gan}).
 
 \paragraph{Threat-guided evaluation of adversarial defences.}
-An adversary model for machine-learning systems is translated into an evaluation protocol,
-realised first as a contest with a hidden test set and then as a modular benchmark in which
-attacks and defences are composed by configuration. The chapter derives the behaviour of
-accuracy-loss scoring under constant predictions and distinguishes gradient masking from
-prediction collapse. It analyses the response policy of binary adversarial detectors and
-compares the published clean and attacked accuracies, with unresolved experimental mechanisms
-identified as such.
-The contribution answers RQ4 and is reported in Chapter~\ref{chap:advml}. Where the underlying
-project deliverables were written collectively, the chapter states what the candidate
-designed and implemented and what he synthesised from the work of partners.
+SAFAIR translates attacker assumptions into a contest protocol and a reusable benchmark
+with task-specific interfaces \cite{sparta2021d73,sparta2022d76}. The partner
+histopathology application documents reuse outside the contest's facial-image tasks.
+Chapter~\ref{chap:advml} derives the zero accuracy loss of constant predictions under
+label-preserving attacks and analyses the effect of reversing a binary prediction after
+an alarm. These results identify limitations of accuracy-loss ranking and specify the
+joint outcomes needed to assess a defended classifier. The contest received no independent
+attack submissions, so its delivered results remain distinct from the planned adaptive
+competition.
 
 \paragraph{A comparison across the contributions.}
-Chapter~\ref{chap:discussion} relates the representations to one another along the axes of
-observability, data-acquisition cost, and validity of evaluation. The comparison is
-conceptual. Numerical results from the individual studies are not pooled, because their
-datasets and validation protocols differ.
+Chapter~\ref{chap:discussion} distinguishes the acquisition of additional observations
+from the computational cost of structuring available evidence. Runtime capture supplies
+an additional observation to \hybroid{}, whereas \hgann{} constructs its groups from
+static information. The discussion relates these choices to the conditions required for
+predictive comparison and complete-system adversarial testing, which informs the common-cohort
+evaluation proposed as future work.
 
 \section{Publications, Projects, and Individual Contributions}
 \label{sec:intro:publications}
 
-Parts of this dissertation have been disseminated previously, in accordance with the doctoral
-regulations of the Technical University of Munich. Table~\ref{tab:intro:publications} lists
-every such item, with the candidate's position in the author list and the chapter that draws
-on it. Where a chapter reuses previously published material, it rewrites it rather than
-reprinting it, and the corresponding results are restated from the original experimental
-records.
+Table~\ref{tab:intro:publications} identifies disseminated publications and project
+artefacts that support this dissertation, together with author-list positions and project
+roles. The prose is revised for the monograph; reproduced or adapted figures and tables
+retain their source citations. Results are traced to published tables and figures or to
+surviving internal research records, as specified in each contribution chapter.
+Missing predictions or configuration records limit independent reproduction.
 
 \begin{table}[htbp]
-  \caption{Previously disseminated parts of this dissertation.}
+  \caption{Previously disseminated work and project artefacts used in this dissertation.}
   \label{tab:intro:publications}
   \small
-  \begin{tabularx}{\textwidth}{@{}Xlccc@{}}
+  \begin{tabularx}{\textwidth}{@{}Xlclc@{}}
     \toprule
-    Item & Venue or type & Year & Position & Chapter \\
+    Item & Venue or type & Year & Position / role & Chapter \\
     \midrule
     Graph-based Anomaly Detection for IoT Microservices \cite{aubet2018graph}
       & PAM, two pages         & 2018 & 4 of 4      & \ref{chap:anomaly} \\
@@ -273,116 +260,100 @@ records.
       & ISC, Springer LNCS     & 2025 & 1 of 2      & \ref{chap:hgann} \\
     SPARTA D7.1, AI systems threat analysis \cite{sparta2021d71}
       & Public deliverable     & 2021 & contributor & \ref{chap:advml} \\
+    SPARTA D7.2, preliminary security mechanisms \cite{sparta2020d72}
+      & Public deliverable     & 2020 & contributor & \ref{chap:advml} \\
+    SPARTA D7.3, validation and evaluation plan \cite{sparta2021d73}
+      & Public deliverable     & 2021 & editor      & \ref{chap:advml} \\
     SPARTA D7.5, AI systems security mechanisms \cite{sparta2021d75}
       & Public deliverable     & 2021 & contributor & \ref{chap:advml} \\
-    SPARTA D7.6, Validation and evaluation report \cite{sparta2022d76}
+    SPARTA D7.6, validation and evaluation report \cite{sparta2022d76}
       & Public deliverable     & 2022 & editor      & \ref{chap:advml} \\
     SAFAIR AI Contest development toolkit \cite{norouzian2021safairtoolkit}
       & Software repository    & 2021 & sole author & \ref{chap:advml} \\
+    Adversarial Machine Learning Benchmark Tool \cite{norouzian2021adversarialbenchmark}
+      & Software repository    & 2021 & developer   & \ref{chap:advml} \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-% SETTLED 2026-08-14, T-007 and D-013. The two IUNO final deliverables are listed above and
-% D4.2-1 is not. Reason: the text of AP4 and AP7 was published in the consortium results
-% brochure, whereas D4.2-1 carries an internal copyright notice and no evidence of release.
-% D4.2-1 is named in the individual-contribution prose below instead. Do not promote it into
-% the table without evidence that it was disseminated, because this table is sworn to.
+% D-013: AP4/AP7 were disseminated through the consortium results brochure.
+% Internal IUNO D4.2-1 remains outside the dissemination table. D7.4 is confidential.
+% D-025/D-029: preserve shared first authorship and partial Hybroid graph work.
+% Chapter 6.10 records the author-confirmed section-level SPARTA contributions.
 
 \subsection*{Individual contribution}
 
-The two-page PAM 2018 contribution on graph-based anomaly detection for IoT microservices
-\cite{aubet2018graph} arose from a collaboration in which the candidate is the last of
-four authors. The peer-reviewed full paper on anomaly detection in that system was published
-by two of those co-authors without him \cite{pahl2018all}, and so was the short paper on
-graph-based access control in the same architecture \cite{pahl2018graphbased}.
-Chapter~\ref{chap:anomaly} therefore presents the communication-graph material with its
-authorship stated explicitly, and it limits the originality claim to the parts the candidate
-designed and implemented.
+The roles below combine the source author lists with the candidate's account of the work.
+He contributed the service-graph concept and measurement design to the PAM study
+\cite{aubet2018graph}. The related full paper by Pahl and Aubet describes clustering-based
+anomaly detection \cite{pahl2018all}; Pahl, Aubet and Liebald report graph-based access
+control \cite{pahl2018graphbased}. The candidate is not an author of either companion
+paper, which Chapter~\ref{chap:anomaly} cites as related work.
 
-Two final deliverables of the \iuno{} project \cite{iuno_ap4, iuno_ap7} report work the
-candidate carried out at the chair. Both are consortium documents whose author lists sit at
-the level of the document, so neither assigns any individual passage to one contributor.
-Within the project the candidate designed and implemented \nadics{}, together with the
-extractor that derives connection features from S7 and PROFINET traffic. He also produced the
-labelled attack corpus the deliverables describe, recorded between Siemens S7-300 controllers
-and their control server and labelled for binary detection as well as for five classes of
-attack. An earlier internal deliverable of June 2017 \cite{iuno2017d42} documents the first
-version of that tool and names him among its authors. That document was not published, which
-is why it is absent from Table~\ref{tab:intro:publications}.
-Chapter~\ref{chap:anomaly} states which components are his, and it records the passages in
-which the deliverable text credits the implementation with functionality it did not yet have.
+Within \iuno{}, the candidate designed and implemented \nadics{} and its S7 and PROFINET
+extractor. He produced the labelled S7-300 attack corpus, with binary labels and five attack
+classes, documented in the consortium deliverables \cite{iuno_ap4,iuno_ap7}.
+An internal deliverable of June 2017 names him among its authors and records the first
+version of the tool \cite{iuno2017d42}. For SWaT, he designed and implemented the
+multivariate GAN pipeline and its preprocessing and scoring procedures, performed the
+experiments and wrote the internal research report.
 
-The candidate also designed, implemented, evaluated, and documented an unpublished extension
-reported in Chapter~\ref{chap:anomaly}. It combines a multivariate GAN architecture with
-reconstruction and critic scoring for SWaT process data. He carried out all of its experiments
-and wrote the internal research report, which was not disseminated and is therefore absent from
-Table~\ref{tab:intro:publications}.
+For \hybroid{}, the candidate shares first authorship with Peng Xu
+\cite{norouzian2021hybroid}. He designed the overall pipeline and traffic analysis, together
+with the preprocessing and evaluation framework, conducted the experiments and wrote the
+paper. His contribution to graph processing was partial.
+\hgann{} is a joint publication with his supervisor; the candidate designed and
+implemented the method, conducted the experiments and wrote the paper
+\cite{norouzian2025hgannmal}.
 
-% CONFIRM (T-007): the two sentences below describe individual contribution and will be
-% sworn to in the Affidavit. Author position is verifiable from the papers; the division of
-% design, implementation and experimentation is not.
-% The \hybroid{} sentences are settled by D-025, answered by the author on 14 August 2026
-% under Q1 and Q8 of T-032. Keep the partial qualification on the graph work: he made it
-% himself and removing it would widen the claim. The \hgann{} sentence is settled by D-029,
-% answered by the author on 14 August 2026 under Q11 of T-033.
-For \hybroid{} \cite{norouzian2021hybroid} the candidate is the first of four authors, and
-the paper records that the first two share first authorship. He designed the pipeline as a
-whole and the network-traffic analysis within it, together with the framework through which
-the dataset was analysed, from preprocessing through learning to the reported results. He
-carried out the experiments and wrote the paper, and he contributed in part to the treatment
-of the graph data. \hgann{} \cite{norouzian2025hgannmal} is the work of the candidate with
-his supervisor. The candidate designed the method, implemented it, carried out the
-experiments and wrote the paper.
+Within SPARTA, the candidate contributed to the threat analysis and organisation of the
+SAFAIR contest, and developed the evaluation software. He wrote Chapter~5 of D7.5 and the
+whole of D7.6 \cite{sparta2021d75,sparta2022d76}. His section-level contributions to the other
+deliverables, and his editing of partner text in D7.3, are specified in
+Section~\ref{sec:advml:10}. The contest toolkit and the modular benchmark are separate public
+software artefacts \cite{norouzian2021safairtoolkit,norouzian2021adversarialbenchmark}.
+The partner defence algorithms and their experiments retain their attribution; the
+dissertation adds the mathematical scoring and response-policy analysis.
 
-Within the SPARTA project, the candidate contributed to the threat analysis of
-machine-learning systems reported in \cite{sparta2021d71} and to the contest concept in
-\cite{sparta2021d75}, and he is the editor of \cite{sparta2022d76}, in which the benchmark
-and the contest results are reported. The first two deliverables were written by a
-consortium and attribute contributors at the level of the document rather than the chapter.
-Chapter~\ref{chap:advml} is therefore written afresh, cites each taxonomy it draws on in
-place, and confines its contribution claim to the evaluation design and to the benchmark
-implementation, which are the candidate's own.
-
+The internal \iuno{} deliverable and SWaT report were not disseminated.
+Confidential SPARTA D7.4 is also excluded from Table~\ref{tab:intro:publications}.
+The contribution chapters distinguish these research records from the public sources.
 
 \section{Dissertation Structure}
 \label{sec:intro:structure}
 
-Chapter~\ref{chap:background} sets out the foundations shared by the later chapters: Android
-applications and their analysis, graph and hypergraph representations of programs, learning
-over graphs, detection in networked and cyber-physical systems, adversarial machine learning,
-and evaluation methodology. It closes with a statement of the gaps that the four research
-questions address. The work against which each contribution is positioned is treated in the
-chapter that reports it. Chapter~\ref{chap:anomaly} reports communication-graph, network-flow,
-and industrial process-anomaly studies and answers RQ1.
-Chapter~\ref{chap:hybroid} presents \hybroid{} and answers RQ2. Chapter~\ref{chap:hgann}
-presents \hgann{} and answers RQ3. These two chapters carry the main Android empirical weight
-of the dissertation. Chapter~\ref{chap:advml} presents the threat-guided evaluation work and answers
-RQ4. Chapter~\ref{chap:discussion} sets the contributions against one another, and
-Chapter~\ref{chap:conclusion} answers each research question in turn and states what remains
-open.
+Chapter~\ref{chap:background} defines the shared foundations for Android analysis and
+relational learning, with the network and process concepts needed for
+Chapter~\ref{chap:anomaly}. It also establishes adversarial terminology and common
+performance measures, and closes with gaps G1 to G4. Study-specific methods and comparisons
+with competing systems remain in the contribution chapters.
 
-Every contribution chapter carries its own account of the work specific to its method, its
-own evaluation, and its own statement of limitations. There is no shared methodology chapter,
-because the studies have no common experimental method to share.
-
-Table~\ref{tab:intro:map} maps each research question to the chapter that answers it, to the
-material that supports the answer, and to the candidate's role in producing that material.
-The reader who wants to know what any particular claim rests on should start there.
+Table~\ref{tab:intro:map} maps the research questions to the evidence in
+Chapters~\ref{chap:anomaly} to~\ref{chap:advml}. The two Android chapters carry the main
+empirical contribution. Chapter~\ref{chap:discussion} relates the studies through their
+observation requirements and evaluation principles. Chapter~\ref{chap:conclusion} answers
+the research questions within the available evidence and specifies future work.
+Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-importance ranking.
 
 \begin{table}[htbp]
-  \caption{Research questions, chapters, and the material each answer rests on.}
+  \caption{Research questions and the evidence supporting their answers.
+  Each contribution chapter states its experimental scope and limitations.}
   \label{tab:intro:map}
   \small
-  \begin{tabularx}{\textwidth}{@{}llXl@{}}
+  \begin{tabularx}{\textwidth}{@{}llX@{}}
     \toprule
-    Question & Chapter & Supporting material & Role \\
+    Question & Chapter & Evidence \\
     \midrule
-    RQ1.1 & \ref{chap:anomaly}  & PAM 2018, 2~pp. \cite{aubet2018graph}, project artefacts & contributor \\
-    RQ1.2 & \ref{chap:anomaly}  & \nadics{}, internal experimental records, \iuno{} deliverables \cite{iuno_ap4, iuno_ap7} & design, implementation, evaluation \\
-    RQ2   & \ref{chap:hybroid}  & ISC 2021 \cite{norouzian2021hybroid}                            & first author \\
-    RQ3   & \ref{chap:hgann}    & ISC 2025 \cite{norouzian2025hgannmal}                           & first author \\
-    RQ4   & \ref{chap:advml}    & SPARTA D7.1, D7.5, D7.6 \cite{sparta2021d71, sparta2021d75, sparta2022d76} & contributor, editor \\
+    RQ1.1 & \ref{chap:anomaly}
+      & Service-graph updates and resource measurements; detection accuracy unmeasured. \\
+    RQ1.2 & \ref{chap:anomaly}
+      & Session-disjoint S7-300 classification and benign monitoring; SWaT input-representation comparison at timestamp level. \\
+    RQ2 & \ref{chap:hybroid}
+      & Within-system modality comparisons on a common retained CICAndMal2017 cohort. \\
+    RQ3 & \ref{chap:hgann}
+      & Common-input configuration comparisons on Drebin and CICMalDroid; separate operator analysis. \\
+    RQ4 & \ref{chap:advml}
+      & Contest and partner-benchmark records; mathematical analysis of scoring and detector responses. \\
     \bottomrule
   \end{tabularx}
 \end{table}

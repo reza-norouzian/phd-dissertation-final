@@ -1,235 +1,205 @@
 \chapter{Background}
 \label{chap:background}
 
-% Drafted under T-018, 13 August 2026. Section source records, one per section, are in
-% notes/chapter2-source-records/ and name the claim each citation supports.
-% Section list is fixed by notes/dissertation-structure-v0.3.md (revision of 13 August 2026).
-% OPEN, tracked as T-028: G1-G4 in 2.7 carry no \label. Chapter 1 section 1.3 does not yet
-% point at them and Chapter 8 does not yet close them. Whether they become macros in
-% dissertationmacros.tex, as the research questions did under D-002, or a \label/\ref pair,
-% is the author's decision and is still open.
-% Page budget under D-007, ceiling 14 pages:
-%   2.1 3.0, 2.2 2.5, 2.3 2.0, 2.4 1.75, 2.5 1.25, 2.6 1.25, 2.7 1.5.
-% D-008 fixes the formalism split. The incidence matrix and the vertex and hyperedge degree
-% matrices are defined in 2.2. Section 2.3 carries no equations. The hypergraph Laplacian,
-% the convolution operator and both attention equations belong to Chapter 5.
-% Two figures, each about a third of a page and already inside the budget above: an APK
-% artefacts and analysis modes figure in 2.1, and a pairwise graph against hypergraph lifting
-% figure in 2.2 marking the clique-expansion collapse.
-% Section 2.3 is written neutrally on attention and commits to no causal claim, so that it
-% stands whichever way T-012 is decided.
-% T-023 / D-004, 20 September 2026: shared performance measures added within Section 2.6.
-% The seven main sections and the evaluation label are retained. Claim-to-source records
-% and the inventory of reported versus proposed metrics are in the T-023 writing ticket.
+% Revised under T-025 and D-005, 20 September 2026.
+% Claim-to-source records: notes/chapter2-source-records/README.md and the T-025 ticket.
+% Retain seven main sections, Android-first ordering and the two approved figure assets.
+% D-004 / T-023 supplies the 18 shared metric equations in Section 2.6.
+% The incidence and degree notation is introduced here; operator-specific derivations stay
+% in Chapter 5. G1-G4 have stable labels used by Chapters 1 and 8.
+% The original 15-page allocation predates the approved D-004 metric expansion.
 
-This chapter sets out the material the later chapters share: the artefacts an Android
-application exposes to analysis, the graph and hypergraph representations used to describe
-programs, the learning operators defined over those representations, detection in networked and
-cyber-physical systems, adversarial machine learning, and the methodology by which any of it is
-assessed. Positioning against competing systems is not attempted here. Every contribution
-chapter carries its own account of the work specific to its method, and that is where published
-systems are compared.
-
-Learning-based security analysis has a common shape. Samples are collected and labelled, a
-representation is derived from each sample, a model is fitted, its output is thresholded, and
-the result is measured on data held back from training. A methodological defect can enter at any
-of these stages, and the defects that recur have been catalogued stage by stage
-\cite{arp2022dos}. Four assumptions carried over from other application domains do not hold in
-this setting. Training and test data are taken to come from one stationary distribution, which
-the evolution of malware denies. The available sample is taken to represent the deployment,
-which its composition and its timeline usually deny. Errors are treated as symmetric and the
-classes as roughly balanced, whereas operational traffic is neither \cite{sommer2010outside,
-axelsson2000base}.
-The data are assumed not to be chosen by an opponent. Section~\ref{sec:background:evaluation}
-takes up the first three and Section~\ref{sec:background:adversarial} the fourth.
-
-The Android sections open the chapter, because Android malware analysis is the centre of the
-dissertation and because a hyperedge is easier to read once function-call graphs have been
-defined. One consequence of that ordering should be signalled here.
-Section~\ref{sec:background:networks} supports Chapter~\ref{chap:anomaly} although it appears
-after the Android material, so a reader following chapter order meets the foundations later than
-the chapter that draws on them. Section~\ref{sec:anomaly:1} repeats the pointer.
+Learning-based security analysis converts observations into representations and evaluates a
+fitted decision rule on a stated population. Its interpretation depends on the evidence
+available to the analyser and on the experimental protocol \cite{arp2022dos}. This chapter
+defines the foundations shared by the contribution chapters. Android applications and program
+representations appear first because they support the dissertation's main studies.
+Section~\ref{sec:background:networks} supplies the network and process foundations for
+Chapter~\ref{chap:anomaly}. Comparisons with specific competing systems remain in the
+contribution chapters.
 
 \section{Android Applications and Their Analysis}
 \label{sec:background:android}
 
-Chapters~\ref{chap:hybroid} and~\ref{chap:hgann} both take an Android application package as
-input and derive features from it. This section fixes what that package contains, what each mode
-of analysis is able to observe in it, and the two mechanisms that most often prevent observation
-altogether. Network-flow representation is deferred to
-Section~\ref{sec:background:networks}, and the graph objects the two chapters build are defined
-in Section~\ref{sec:background:graphs}.
+The Android studies analyse distributed application packages (APKs).
+Chapter~\ref{chap:hybroid} also uses recorded network traffic, whereas
+Chapter~\ref{chap:hgann} derives its input from the package alone.
 
 \subsection{Dalvik Bytecode, Manifest, and Permissions}
 \label{sec:background:android:artefacts}
 
-An Android application is distributed as an application package, a ZIP archive whose
-security-relevant members are a manifest and one or more files of compiled bytecode
-\cite{liu2023deeplearning}. Source written in Java or Kotlin is compiled to bytecode for the
-Dalvik virtual machine \cite{arp2014drebin} and stored in \texttt{classes.dex}, with further
-numbered files such as \texttt{classes2.dex} for larger applications. The container is specified by the
-platform \cite{aosp2026dexformat}, as is the instruction set \cite{aosp2026dalvikbytecode}.
-The Android Runtime (ART) replaced Dalvik as the default runtime from Android~5 and executes
-DEX bytecode \cite{aosp2026art}. Its instructions encode both opcodes and operands. Operand
-fields can contain register indices or literal values and can reference other DEX items,
-such as methods and strings \cite{aosp2026dalvikbytecode}. Section~\ref{sec:hybroid:5}
-describes an embedding that retains the opcode while omitting this operand information.
+An APK is an installation archive containing compiled code and application resources
+\cite{aosp2026appfundamentals}. Java and Kotlin compilation produces Dalvik Executable (DEX)
+files. These are packaged as \texttt{classes.dex} and, for multidex applications, additional
+numbered files \cite{aosp2026dexformat}. Android Runtime (ART) executes the DEX bytecode format also
+used by its predecessor, Dalvik \cite{aosp2026art}. Instructions contain an opcode and
+operand fields, which may identify registers or constants and refer to methods or strings
+\cite{aosp2026dalvikbytecode}. The opcode embedding in Section~\ref{sec:hybroid:5} omits
+these operands; call-graph extraction can still use their method references.
 
-The manifest declares the components an application provides, the permissions it requests, the
-intents its components filter, and the hardware features it expects. It is recoverable without
-any reasoning about code, which is what makes it the cheapest security-relevant metadata
-available: four of Drebin's eight feature sets are taken from the manifest and the remaining
-four from the disassembled bytecode \cite{arp2014drebin}.
+Android normally isolates applications through separate Linux user identities and processes
+\cite{aosp2026appfundamentals}. Within an application, activities provide user interfaces and
+services support work without an activity interface. Broadcast receivers respond to events,
+while content providers expose data through controlled interfaces. These components have
+distinct lifecycles, with callbacks invoked by the framework. Static analysis must model those
+entry points and callback relations to recover the corresponding behaviour
+\cite{arzt2014flowdroid}.
 
-Access to sensitive functionality is mediated by permissions, each carrying a protection level,
-of which only the level marked \emph{dangerous} guards capability able to cause real harm
-\cite{felt2011android, aosp2026permissions}. Two properties of this system bear on the later
-chapters. The mapping from a permission to the API calls it guards is documented incompletely
-and has to be recovered by analysing the platform: PScout extracted it from roughly 3.4 million
-lines of Android source across four releases and found more than 75 permissions whose guarded
-API the documentation did not describe \cite{au2012pscout}. The specification is also unstable,
-since fine-grained least privilege trades against stability across releases
-\cite{au2012pscout}, and deprecation on the platform side has been measured as one source of the
-drift reported for permission-based detection \cite{sabbah2026understanding}.
-Section~\ref{sec:hgann:5} relies on both properties, because it selects permissions by
-protection level and maps flagged API calls back to their call sites.
+The manifest declares application components and requested permissions, together with intent
+filters and device requirements. Its metadata can be parsed without reconstructing control
+flow. DREBIN obtains four of its eight feature groups from the manifest and the remainder from
+disassembled bytecode \cite{arp2014drebin}.
+
+Permissions mediate access to protected data and operations. A request in the manifest records
+a declared requirement; the actual grant depends on the permission and the platform.
+In the current runtime-permission model, \emph{dangerous} permissions require a grant before
+protected functionality can be used. \emph{Signature} permissions instead depend on the application's
+signing relationship to the permission's defining application or operating system, and can
+protect privileged operations \cite{felt2011android,aosp2026permissions}. Selecting dangerous
+permissions therefore selects one class of protected capabilities.
+
+Permission-to-API mappings also depend on platform version. PScout recovered these mappings
+from framework source across Android 2.2 to 4.0 and documented gaps in the available API
+specification \cite{au2012pscout}. More recent work examines permission deprecation as a
+source of change in permission-based detection \cite{sabbah2026understanding}. These findings
+motivate explicit platform assumptions when sensitive APIs are selected, as in
+Section~\ref{sec:hgann:5}.
 
 \subsection{Static, Dynamic, and Hybrid Analysis}
 \label{sec:background:android:analysis}
 
-An application may be analysed without running it, by running it, or by combining the two.
-Figure~\ref{fig:background:apk} sets the three modes against the artefacts of the previous
-subsection. The static mode dominates practice: across the studies of deep learning for Android
-malware defence reviewed by Liu et al., 73 per cent worked statically, 17 per cent dynamically,
-and 10 per cent combined both \cite{liu2023deeplearning}.
+Static analysis examines an application without executing it. It can inspect code outside the
+paths exercised by a test harness, subject to the code available and the analyser's
+approximations. Static methods accounted for 73 per cent of the deep-learning studies reviewed
+by Liu et al.\ for 2014--2021 \cite{liu2023deeplearning}.
+Figure~\ref{fig:background:apk} distinguishes package artefacts from execution observations.
 
 \begin{figure}[tbp]
   \centering
   % Approved imagegen variant; trim removes only the temporary preview label.
   \includegraphics[width=\linewidth,trim=0 0 0 115bp,clip]
     {background-apk-analysis.png}
-  \caption[Android package contents and analysis modes]{What an application package holds and
-  what each mode of analysis reaches. Static observation covers all shipped code and not what
-  the code does; dynamic observation covers what the code did, but only along the paths the
-  harness triggered, and it alone reaches network traffic, which is the channel
-  Chapter~\ref{chap:hybroid} uses. The graph objects built from the bytecode are named in
-  Section~\ref{sec:background:graphs}.}
+  \caption[Android package contents and analysis modes]{Package artefacts and analysis modes.
+  Static analysis reads available code and metadata and infers possible behaviour.
+  Dynamic analysis records behaviour along the execution paths exercised by the harness;
+  network traffic from those executions supplies the additional observation used in
+  Chapter~\ref{chap:hybroid}. Coverage depends on the artefacts and instrumentation available.}
   \label{fig:background:apk}
 \end{figure}
 
-Static analysis reads the package and reasons about code that may never execute, which yields
-coverage of everything shipped at modest computational cost. The engineering is mature.
-Disassembly and call-graph construction are supplied by standard toolkits
-\cite{desnos2012android, valleerai2010soot}, and taint analysis that models Android's component
-lifecycle is available \cite{arzt2014flowdroid}. What no amount of engineering removes is a
-ceiling on what static reasoning can decide. An adversary is able to construct obfuscation whose
-analysis reduces to an NP-hard problem, which defeats semantics-aware static detection
-\cite{moser2007limits}. That construction was demonstrated on x86 binaries, and the argument
-carries to Dalvik by the same reasoning rather than having been shown there directly.
+Standard toolkits provide disassembly and call-graph construction
+\cite{desnos2012android,valleerai2010soot}; FlowDroid adds lifecycle-aware taint analysis
+\cite{arzt2014flowdroid}. An analysis restricted to recovered DEX code can omit native
+functionality or runtime-loaded code. More precise reasoning also has computational limits:
+Moser et al.\ construct x86 obfuscations whose opaque constants encode instances of the
+NP-hard 3SAT problem \cite{moser2007limits}.
 
-Dynamic analysis observes the application while it runs. Instrumentation ranges from taint
-tracking on the device \cite{enck2014taintdroid} to whole-system emulation that reconstructs the
-operating-system and Dalvik views together \cite{yan2012droidscope}. Traffic recorded during
-execution is a further channel, and it is the one Chapter~\ref{chap:hybroid} uses. Two limits
-apply throughout. Only the paths the harness triggers are observed, and an application may
-detect the analysis environment and withhold the behaviour under investigation
-\cite{petsas2014rage, vidas2014evading}.
+Dynamic analysis observes an execution through instrumentation. Examples include on-device
+taint tracking \cite{enck2014taintdroid} and emulation that reconstructs operating-system and
+Dalvik-level events \cite{yan2012droidscope}. Recorded traffic supplies a further observation
+channel. Coverage is limited to the paths triggered during the observation period, and
+applications may recognise an analysis environment and alter their behaviour
+\cite{petsas2014rage,vidas2014evading}.
 
-Neither mode dominates the other. Measured under one protocol, static analysis proved at least
-as effective as dynamic analysis, depending on how the applications were stimulated during
-execution, while the combination of the two measured best \cite{onwuzurike2018family}. Hybrid
-pipelines are consequently an established design \cite{lindorfer2015marvin}, and the question
-Chapter~\ref{chap:hybroid} takes up is what such a combination buys on one set of samples under
-a single protocol.
+Hybrid analysis combines static and dynamic observations. Within-system studies have reported
+benefits from their combination, with outcomes dependent on the observation types and the
+stimulation used during execution \cite{lindorfer2015marvin,onwuzurike2018family}.
+Feature-level fusion supplies the derived features together to a classifier. Its additional
+value is assessed against each modality alone for the same application cohort and prediction
+task, as in Chapter~\ref{chap:hybroid}.
 
 \subsection{Obfuscation, Packing, and Repackaging}
 \label{sec:background:android:obfuscation}
 
-Obfuscation is ordinary developer practice as much as attacker practice. Of 1.7 million free
-applications on Google Play, 24.92 per cent had been obfuscated by their developers
-\cite{wermke2018large}, and a measurement across 114,560 applications drawn from Google Play,
-third-party markets and malware corpora found string encryption more frequent in malware and
-packing more frequent outside Google Play \cite{dong2018understanding}. The effect on detection
-is measurable. Three thousand benign and three thousand malicious applications, expanded into
-73,362 obfuscated variants by 29 strategies, left most commercial anti-malware products severely
-affected, and trivial transformations sufficed \cite{hammad2018large}. A later study of twelve
-detectors found that none held its ideal-setting performance once obfuscation, concept drift and
-adversarial examples were introduced \cite{gao2024comprehensive}.
+Obfuscation transforms code to impede analysis while aiming to preserve its functionality.
+Legitimate developers use it to protect software: Wermke et al.\ found developer-applied
+obfuscation in 24.92 per cent of 1.7 million free Google Play applications
+\cite{wermke2018large}. Its use differs across application sources and techniques
+\cite{dong2018understanding}. Hammad et al.\ evaluated 29 obfuscation strategies and documented
+losses in commercial anti-malware detection \cite{hammad2018large}. A later evaluation of
+twelve learning-based detectors also found performance losses under obfuscation, temporal
+change and adversarial perturbations \cite{gao2024comprehensive}.
 
-Packing is a distinct mechanism and is kept separate here. A packed application ships an
-encrypted original together with a wrapper that decrypts and loads it at runtime, so static
-extraction fails outright instead of degrading. Commercial packers are used by malware authors,
-and custom packers are written specifically to defeat the available unpackers
-\cite{duan2018things}.
+Packing conceals a payload behind a loader that recovers it during execution. The loader and
+metadata may remain accessible to static analysis while the original payload requires
+unpacking. Commercial and custom Android packers use different mechanisms, which limits the
+coverage of individual unpacking tools \cite{duan2018things}.
 
-The packaging model also allows an attacker to graft a malicious rider onto a benign carrier
-\cite{li2017understanding}. Applications produced this way are near-identical outside the
-injected payload, and corpora assembled from them therefore contain duplicates. What those
-duplicates cost depends on the task: the measured effect is limited for supervised
-classification and substantially larger for unsupervised family clustering
-\cite{zhao2021impact}. Section~\ref{sec:background:evaluation} returns to this as a problem of
-evaluation rather than of extraction.
+Repackaging reuses an application with modifications; malicious piggybacking inserts additional
+code into a benign carrier \cite{li2017understanding}. Such reuse creates code-related
+samples whose placement across training and test partitions requires attention.
+Section~\ref{sec:background:evaluation:bias} addresses the resulting evaluation bias.
 
 \section{Graph Representations of Programs}
 \label{sec:background:graphs}
 
-Representations are defined here, before the operators that learn over them. Two families are
-needed. Chapters~\ref{chap:hybroid} and~\ref{chap:hgann} both derive a graph from program
-structure, and Chapter~\ref{chap:hgann} then lifts that graph to a hypergraph. The notation
-introduced in this section is the notation those chapters use, and neither redefines it.
+A program representation specifies both the entities modelled and the relations between them.
+The Android chapters use basic blocks and methods at different stages; their graph edges
+therefore have different meanings.
 
 \subsection{Control-Flow and Function-Call Graphs}
 \label{sec:background:graphs:pairwise}
 
-A \emph{control-flow graph} is a directed graph over the basic blocks of a single procedure. Its
-vertices are maximal instruction sequences that contain no branch except possibly at the end,
-and a directed edge records that control may pass from one block to the next. The object is
-intra-procedural by definition \cite{bilot2024survey}. A \emph{call graph} takes the procedures
-of a program as its vertices, with an edge from $f$ to $g$ recording that a call site in $f$ may
-invoke $g$. It is inter-procedural, and a statically recovered call graph over-approximates,
-since the analysis admits edges that no execution takes. For Android the call graph is taken at
-method granularity over the recovered bytecode, and this dissertation calls that object a
-\emph{function-call graph}: vertices are methods, and directed edges are method invocations
-\cite{gascon2013structural, norouzian2025hgannmal}. The two objects are kept distinct throughout,
-because their vertex sets and their edge semantics differ.
+The intra-procedural \emph{control-flow graph} (CFG) used here is a directed graph over the
+basic blocks of one method. A basic block is a maximal instruction sequence with one entry
+and no branch except possibly at its end. An edge records a possible transfer of control
+between blocks \cite{bilot2024survey}. A \emph{call graph} instead has procedures as vertices,
+with an edge from $f$ to $g$ when a call site in $f$ may invoke $g$. For Android, this
+dissertation uses \emph{function-call graph} (FCG) for the method-level object recovered from
+bytecode \cite{gascon2013structural,norouzian2025hgannmal}.
 
-The two compose. Embeddings computed on per-method control-flow graphs may be attached to the
-vertices of a function-call graph, which makes intra-procedural and inter-procedural structure
-available together \cite{bilot2024survey}. Dropping the call edges from that composition leaves
-a third object: a set of independently embedded control-flow graphs, pooled to application
-level, with no invocation structure at all. The three are named here so that each contribution
-chapter can state which of them it builds without introducing new machinery, and so that a
-claim made about one is not read as a claim about another.
+A sound call-graph analysis over-approximates possible calls under its execution model.
+Practical recovery can introduce infeasible edges and omit unresolved targets, for example
+through reflection or incompletely modelled callbacks \cite{arzt2014flowdroid}.
+The recovered graph thus expresses the analyser's approximation of program structure.
+Its coverage depends on the toolkit and execution assumptions
+\cite{desnos2012android,valleerai2010soot}.
 
-Whichever object is chosen, it is an artefact of the analyser rather than a property of the
-program. Recovery depends on the toolkit and on how the component lifecycle is modelled
-\cite{valleerai2010soot, arzt2014flowdroid, desnos2012android}, and abstracting call targets to
-package or family level shrinks the vertex set at the cost of the callee's identity
-\cite{onwuzurike2019mamadroid}. Vertex features may equally be learned rather than hand-built,
-from the block structure of a procedure \cite{dai2016discriminative, xu2017neural} or from the
-body of a method \cite{alon2019code2vec}.
+CFG embeddings can serve as vertex features in an FCG, so that block-level information and
+inter-method calls contribute to one representation \cite{bilot2024survey}. Pooling a set of
+independently embedded CFGs supplies method information without call edges. These constructions
+must be distinguished when an application vector is described. Other feature choices include
+abstraction of APIs to packages or families \cite{onwuzurike2019mamadroid}, learned CFG
+features \cite{dai2016discriminative,xu2017neural}, and embeddings of a method's syntax
+\cite{alon2019code2vec}.
+
+\paragraph{Program dependence and slicing.} Data dependence relates a value's definition to
+uses that it can affect. Control dependence relates execution of a statement to the outcome
+of a predicate. A program dependence graph represents these relations explicitly.
+A backward slice identifies statements and predicates that may affect selected values at a
+specified program point. Interprocedural slicing follows dependencies across procedure
+boundaries and must account for calling context \cite{horwitz1990interprocedural}.
+A call-graph neighbourhood alone does not supply these data and control dependencies.
+Section~\ref{sec:hgann:5} uses slicing around sensitive API call sites; the definition here
+does not establish the scope or precision of that implementation.
 
 \subsection{Hypergraphs and Higher-Order Relations}
 \label{sec:background:graphs:hypergraphs}
 
-A hypergraph $\mathcal{H} = (\mathcal{V}, \mathcal{E}, w)$ has a finite vertex set $\mathcal{V}$
-and a family $\mathcal{E}$ of subsets of $\mathcal{V}$, each subset a hyperedge $e$ carrying a
-weight $w(e) > 0$. Membership is recorded by the incidence matrix
-$H \in \{0,1\}^{|\mathcal{V}| \times |\mathcal{E}|}$, where $h(v,e) = 1$ exactly when $v \in e$.
-The degree of a vertex is $d(v) = \sum_{e \in \mathcal{E}} w(e)\, h(v,e)$ and the degree of a
-hyperedge is $\delta(e) = \sum_{v \in \mathcal{V}} h(v,e) = |e|$. Writing $D_v$ and $D_e$ for the
-diagonal matrices of vertex and hyperedge degrees and $W$ for the diagonal matrix of hyperedge
-weights completes the apparatus \cite{zhou2006learning}. A graph is the special case in which
-$\delta(e) = 2$ for every hyperedge, so every graph is a hypergraph and the converse fails.
+An undirected hypergraph $\mathcal{H} = (\mathcal{V}, \mathcal{E}, w)$ has a finite vertex set
+$\mathcal{V}$ and a family $\mathcal{E}$ of nonempty subsets of $\mathcal{V}$. Each hyperedge
+$e$ carries a weight $w(e)>0$. The incidence matrix
+$H\in\{0,1\}^{|\mathcal{V}|\times|\mathcal{E}|}$ has entry $h(v,e)=1$ exactly when $v\in e$.
 
-An edge relates exactly two vertices, and encoding a group of several as a set of pairwise edges
-loses the fact that its members belonged to one group. The projected graph cannot distinguish a
-single hyperedge on three vertices from three separate pairwise relations among the same
-vertices \cite{zhou2006learning}. Two projections are standard. \emph{Clique expansion} replaces
-each hyperedge by the complete graph on its members, and \emph{star expansion} introduces a new
-vertex per hyperedge joined to each member \cite{agarwal2006higherorder}.
-Figure~\ref{fig:background:hypergraph} shows the hyperedge memberships and the information
-lost in their pairwise projection.
+The vertex degree and hyperedge degree are
+\[
+  d(v)=\sum_{e\in\mathcal{E}}w(e)h(v,e),
+  \qquad
+  \delta(e)=\sum_{v\in\mathcal{V}}h(v,e)=|e|.
+\]
+The diagonal matrices $D_v$, $D_e$ and $W$
+contain vertex degrees, hyperedge degrees and hyperedge weights, respectively
+\cite{zhou2006learning}. An undirected simple graph is the special case in which
+$\delta(e)=2$. A hyperedge records group membership; it does not by itself encode call
+direction or execution order.
+
+\emph{Clique expansion} replaces each hyperedge by pairwise edges between its members.
+An unweighted projection cannot distinguish one hyperedge on three vertices from three
+separate pairwise relations on those vertices. \emph{Star expansion} introduces one vertex
+per hyperedge and links it to the member vertices \cite{agarwal2006higherorder}. If the two
+vertex types and their incidence links are retained, this bipartite representation preserves
+the hyperedge memberships. Figure~\ref{fig:background:hypergraph} illustrates the loss in the
+unweighted clique projection.
 
 \begin{figure}[tbp]
   \centering
@@ -247,248 +217,233 @@ lost in their pairwise projection.
   \label{fig:background:hypergraph}
 \end{figure}
 
-The sceptical reading of these definitions deserves stating, because it is the stronger position
-to argue from. Agarwal et al.\ show that the hypergraph learning formulations of their period
-reduce to the Laplacian of one expansion or the other, that the two coincide for uniform
-hypergraphs, and that for non-uniform ones they differ only in how hyperedges of unequal size
-are weighted; their conclusion is that graphs, not hypergraphs, lie at the heart of the problem
-\cite{agarwal2006higherorder}. Chitra and Raphael sharpen the boundary. A random walk on a
-hypergraph whose vertex weights do not vary between the hyperedges a vertex belongs to, the
-\emph{edge-independent} case, is equivalent to a walk on a weighted clique expansion, so an
-operator built on such a walk carries no higher-order information. Only \emph{edge-dependent}
-vertex weights escape the equivalence \cite{chitra2019randomwalks}.
+Retaining a hypergraph and exploiting its group structure are separate properties. Agarwal
+et al.\ reduce several spectral learning formulations to graph-expansion operators
+\cite{agarwal2006higherorder}. For the random walks studied by Chitra and Raphael,
+\emph{edge-independent} vertex weights give a transition matrix that can be realised on a
+weighted clique expansion. They also exhibit \emph{edge-dependent} cases for which this
+equivalence fails \cite{chitra2019randomwalks}. These results concern the specified walks;
+other operators require their own analysis.
 
-What the projection costs has since been measured rather than asserted. An evaluation framework
-that expands, learns and then reconstructs reports depressed performance at vertex, hyperedge
-and hypergraph level across eight datasets \cite{kang2024low}; two recurring hyperedge patterns
-have been identified as the source of the loss in every projection, together with a
-combinatorial impossibility result on recovering the discarded structure \cite{wang2024graphs};
-and an expressivity hierarchy names the invariants a clique expansion cannot represent
-\cite{jiang2026widthwall}. Section~\ref{sec:background:learning} describes the operators built on
-this apparatus, and Chapter~\ref{chap:hgann} develops the one it uses.
+Wang and Kleinberg characterise ambiguities in reconstructing hypergraphs from unweighted
+clique projections \cite{wang2024graphs}. Kang et al.\ evaluate expansion methods through
+learned embeddings and hypergraph reconstruction, with downstream comparisons
+\cite{kang2024low}; those experiments assess the expansion-and-learning procedure together.
+A recent preprint organises hypergraph architectures by the patterns they can represent
+\cite{jiang2026widthwall}. For program analysis, constructing hyperedges from an FCG adds a
+chosen grouping of recovered methods. Its value for classification remains an empirical
+question, distinct from the information retained by the representation.
 
 \section{Learning over Graphs}
 \label{sec:background:learning}
 
-The operators described here learn representations over a structure whose construction was
-fixed in Section~\ref{sec:background:graphs}. Three families are relevant: neighbourhood
-aggregation on pairwise graphs, attention-weighted aggregation, and convolution over an
-incidence structure. This section states what each does and what is known about its limits. The
-notation stays as defined above, and the operator Chapter~\ref{chap:hgann} builds on is
-developed there rather than here.
+Graph learning assigns trainable operations to the structures defined above. The distinction
+between vertex-level computation and application-level prediction is important for both
+Android studies.
 
 \subsection{Message Passing}
 \label{sec:background:learning:messagepassing}
 
-Most graph neural networks share one scheme. Each vertex holds a state, that state is updated
-from the states of its neighbours by a permutation-invariant aggregation, and the update is
-applied for a fixed number of rounds \cite{gilmer2017neural}. The convolutional instance fixes
-the aggregation coefficients in advance from the degrees of the two endpoints, so a vertex
-combines its neighbours in proportions that the graph determines and training does not alter
-\cite{kipf2017semi}.
+In a message-passing network, each vertex has a state that is updated from neighbouring
+states over a fixed number of rounds. Aggregation is invariant to the order in which
+neighbours are presented \cite{gilmer2017neural}. In the GCN formulation of Kipf and Welling,
+graph degrees determine the normalised neighbour coefficients, while feature transformations
+remain trainable \cite{kipf2017semi}.
 
-Two limits on this family are established. The first is a bound on what it can tell apart: no
-network in the family distinguishes two graphs that one-dimensional Weisfeiler-Leman colour
-refinement assigns the same colours, and an architecture reaching that bound is as
-discriminative as the scheme permits \cite{xu2019powerful}. The second concerns depth. Repeated
-propagation drives the representations within a connected component towards one another, so
-adding rounds to widen a vertex's receptive field costs discriminability between vertices
-\cite{li2018deeper}. Both bear on program graphs, where the structures compared are often large
-and locally similar.
+A graph-level \emph{readout} combines the final vertex states into a fixed-width representation.
+Sums or means are simple examples; learned invariant readouts are also possible
+\cite{gilmer2017neural,xu2019powerful}. Reordering vertices should reorder vertex outputs
+without changing the graph-level prediction. Shared local operations and an invariant
+readout allow graphs of different sizes to be processed by the same model. In the Android
+chapters, the final prediction concerns an application, even when the intermediate learning
+operates on blocks or methods.
+
+For standard neighbourhood-aggregation networks with corresponding initial node features,
+graph discrimination is bounded by one-dimensional Weisfeiler--Leman colour refinement.
+This procedure repeatedly refines a vertex's label from its current label and the multiset
+of neighbouring labels. Injective aggregation and readout can attain that bound
+\cite{xu2019powerful}. Depth introduces a separate concern: repeated normalised propagation
+can reduce distinctions between vertex representations, the effect termed
+\emph{oversmoothing} \cite{li2018deeper}.
 
 \subsection{Attention}
 \label{sec:background:learning:attention}
 
-Attention replaces fixed coefficients with learned ones. A scoring function is applied to each
-vertex and its neighbour, the scores across a neighbourhood are normalised, and the resulting
-weights determine the combination \cite{velickovic2018graph}; the mechanism was introduced for
-sequences before it was carried to graphs \cite{vaswani2017attention}. The motivation is that
-some neighbours matter more than others, and that which ones matter should be learned rather
-than read off the degree.
+Graph attention learns scores for available vertex--neighbour pairs and normalises them
+within each neighbourhood to weight the messages \cite{velickovic2018graph}.
+Content-dependent weighting is also used in sequence attention \cite{vaswani2017attention}.
+The scoring function determines which relative weightings the model can express.
 
-Three results qualify that motivation, and they should be kept apart. Brody et al.\ show that
-the ranking the standard formulation induces over a vertex's neighbours is the same for every
-query vertex, so the mechanism selects globally important neighbours rather than neighbours
-important to a particular vertex; a revised scoring function removes the restriction
-\cite{brody2022gatv2}. Fang et al.\ bound both scoring functions, the linear form used by the
-original mechanism and the multi-layer form introduced by its revision, showing that each
-realises only finitely many neighbour rankings at bounded width and depth \cite{fang2025kaa}.
-The same work reports that on node-property benchmarks over pairwise graphs, evaluated with
-GCN, GraphSAGE and GIN as non-attentive baselines, no unmodified attentive model outperformed
-all of those baselines on any dataset or task \cite{fang2025kaa}. The defensible reading of that
-last result is negative about the evidence rather than about the mechanism: an advantage for
-attention over fixed aggregation has not been demonstrated on those benchmarks, and the
-expressive power of the standard scoring functions is bounded.
+The original GAT's additive score has a static-ranking restriction: query vertices rank
+their shared candidate neighbours in the same order. GATv2 changes the scoring function to
+permit query-dependent rankings \cite{brody2022gatv2}. The restriction concerns ordering,
+not equality of the numerical coefficients. Section~\ref{sec:hgann:8} applies the same
+argument to the additive hyperedge score used by \hgann{}.
 
-Whether either finding transfers to operators defined over hyperedges is not established in the
-literature, since both analyses concern pairwise operators. Section~\ref{sec:hgann:8} shows that
-the static-ranking argument carries over to the additive hyperedge score used there. For other
-scoring functions over hyperedges, and for the finite-ranking bound, the question is open, and
-Section~\ref{sec:background:learning:hypergraphconvolution} returns to it.
-
-A methodological point follows, and it concerns how such architectures are designed rather than
-how they perform. Where a model changes its relational encoding and its aggregation weighting at
-the same time, the contribution of each change cannot be recovered from the reported totals. The
-two have to be varied separately for either to be attributed.
+Fang et al.\ analyse scoring capacity under explicit parameter and architecture assumptions
+and evaluate models on pairwise graph tasks. Their reported means show GAT above the
+non-attentive baselines on some node-classification datasets and below them on others
+\cite[Table~2]{fang2025kaa}. This supports task-dependent evaluation, rather than a universal
+ranking of attentive and non-attentive models. The findings do not establish the behaviour
+of attention over Android hypergraphs.
 
 \subsection{Hypergraph Convolution}
 \label{sec:background:learning:hypergraphconvolution}
 
-Operators over a hypergraph propagate in two stages. Signal moves from the vertices to the
-hyperedges that contain them, is combined at each hyperedge, and returns to the member vertices,
-with the incidence structure and the degree matrices of
-Section~\ref{sec:background:graphs:hypergraphs} supplying the normalisation
-\cite{feng2019hypergraph, gao2023hgnn}. Two design routes exist. One reduces the hypergraph to a
-graph and applies a pairwise operator to the result \cite{yadati2019hypergcn}, which inherits
-the losses recorded in Section~\ref{sec:background:graphs:hypergraphs}; the other treats a
-hyperedge as a multiset and learns the functions that aggregate it
-\cite{chien2022allset}. Attention has been carried across to this setting by making the
-incidence structure itself learnable, so that membership is weighted by a real value instead of
-a binary indicator \cite{bai2021hypergraphattention}.
+Hypergraph convolution aggregates vertex states within hyperedges and returns the resulting
+messages to their member vertices. HGNN and HGNN+ specify such propagation through the
+incidence structure and degree normalisation \cite{feng2019hypergraph,gao2023hgnn}.
+Other designs approximate hyperedges by graph edges \cite{yadati2019hypergcn} or learn
+multiset aggregation functions \cite{chien2022allset}. Equivariant networks and higher-order
+Transformers provide further approaches to permutation-aware hypergraph learning
+\cite{kim2022equivariant,kim2021transformers}.
 
-Three observations bound what is known. Standard hypergraph convolution averages over the
-members of a hyperedge and therefore attenuates variation between them, a low-pass bias whose
-discarded high-frequency component has been characterised \cite{li2026highpass}. The operator
-most widely used has since been superseded by a stability-oriented successor from its own
-authors \cite{gao2026hgnnv2}, which is the reference point for any claim about its limitations.
-No theoretical analysis of attention scoring in hypergraph operators has appeared since 2024;
-the nearest treatments predate that, in work on equivariant hypergraph networks and on
-generalising set transformers to hypergraphs \cite{kim2022equivariant, kim2021transformers}. The
-transfer question raised in Section~\ref{sec:background:learning:attention} therefore remains
-open on the theoretical side as well as the empirical one.
+Hypergraph attention assigns learned real-valued weights to incidences
+\cite{bai2021hypergraphattention}. In the \hgann{} operator, this changes the strength of
+existing memberships while their support remains fixed. Learning those weights therefore
+differs from changing which methods belong to a hyperedge. Earlier Android hypergraph work
+used call-neighbour and permission-based groups with non-attentive operators
+\cite{zhang2023android}.
+
+Averaging within hyperedges favours smooth signals. Li et al.\ analyse the role of
+high-frequency components in hypergraph learning \cite{li2026highpass}, while HGNNv2
+introduces a stability-oriented design based on anisotropic diffusion
+\cite{gao2026hgnnv2}. These developments address particular properties of propagation.
+To attribute an empirical difference to attention, its learned weights must be compared
+with a fixed-weight alternative on the same hyperedges, with a common normalisation
+convention. Chapter~\ref{chap:hgann} separates its operator analysis from the comparisons
+of complete configurations.
 
 \section{Detection in Networked and Cyber-Physical Systems}
 \label{sec:background:networks}
 
-This section covers the unit of observation used in network detection, the families of method
-defined over it, the particular character of industrial and IoT deployments, and the corpora on
-which results are reported. Chapter~\ref{chap:anomaly} draws on it, although the Android
-material precedes it for the reason given at the head of this chapter.
+Network and industrial detectors operate on several observation units. Traffic can be
+represented by flow records or service interactions; a process detector instead receives
+measurements of the physical system. Chapter~\ref{chap:anomaly} uses each of these forms.
 
 \subsection{Network Flows as a Unit of Observation}
 \label{sec:background:networks:flows}
 
-Detection at the flow level summarises the packets sharing a five-tuple into counts, durations
-and byte totals. Working at that level lowers processing cost and survives payload encryption,
-at the price of discarding content \cite{sperotto2010overview}. Network intrusion detection is
-conventionally divided into signature matching against descriptions of known attacks and
-anomaly detection against a learned model of normal behaviour \cite{paxson1999bro}, and the
-second is what the rest of this section concerns. Section~\ref{sec:hybroid:7} states the
-particular flow feature set Chapter~\ref{chap:hybroid} uses, rather than drawing it from here.
+A conventional IP flow groups packets by source and destination addresses and ports, together
+with the transport protocol. Exporters summarise the traffic through quantities such as
+duration, packet counts and byte totals; direction and timeout rules determine the exported
+records \cite{sperotto2010overview}. Payload-independent features remain available when
+application payloads are encrypted, provided the corresponding headers can be observed.
+Their distribution can still change with protocols or execution conditions.
+
+Flow records are an observation choice, not a universal unit of network behaviour. Service
+messages and layer-2 industrial traffic require other identifiers.
+Section~\ref{sec:hybroid:7} defines how \hybroid{} aggregates bidirectional flow records into
+an application-level vector. Chapter~\ref{chap:anomaly} separately defines its service
+relations and windowed industrial connection records.
 
 \subsection{Anomaly-Detection Method Families}
 \label{sec:background:networks:families}
 
-Anomalies are conventionally classed as point, contextual or collective, and detectors differ in
-whether labels are available for both classes, for one, or for neither
-\cite{chandola2009anomaly}. Classical methods score a point by the local density around it
-\cite{breunig2000lof} or by how few partitions are needed to isolate it
-\cite{liu2008isolation}. Deep detectors replace a hand-built feature space with a learned one,
-and the shallow and deep families admit a common formulation \cite{ruff2021unifying,
-pang2021deep}. Where the data are relational, the anomaly is a property of structure rather than
-of any single record, and the object flagged may be a vertex, an edge or a subgraph
-\cite{akoglu2015graph}. That observation is what connects this section to
-Section~\ref{sec:background:graphs}.
+Signature-based detection matches specified attack patterns, whereas anomaly detection
+identifies deviations from a reference model of expected behaviour
+\cite{paxson1999bro,chandola2009anomaly}. An unusual observation can reflect legitimate
+activity, so an anomaly score needs a security interpretation \cite{sommer2010outside}.
 
-The security setting resists the standard formulation. The cost of a false alarm is high,
-network traffic is more variable than a model of normal behaviour admits, and data adequate for
-evaluation are scarce \cite{sommer2010outside}.
+Learning regimes depend on the available labels. Supervised classification uses labelled
+examples of the target classes. Normal-only training estimates a reference from observations
+assumed benign, while unsupervised methods work with unlabelled data under assumptions about
+its composition \cite{chandola2009anomaly}. Labels used for feature selection or threshold
+choice make the development procedure partly supervised even when the model's fitting
+objective uses no class labels.
+
+Local-density methods compare a point with its neighbourhood \cite{breunig2000lof}, and
+isolation methods exploit the short partition paths of isolated observations
+\cite{liu2008isolation}. Reconstruction methods encode observations and attempt to reproduce
+them; reconstruction discrepancies provide scores relative to the fitted representation
+\cite{ruff2021unifying,pang2021deep}. Relational methods can assess vertex attributes
+together with graph structure \cite{akoglu2015graph}. The normality reference and the unit
+scored must be specified for each method.
 
 \subsection{Communication Structure in Industrial and IoT Networks}
 \label{sec:background:networks:industrial}
 
-Industrial and IoT traffic is comparatively regular, because the devices are few and their
-interactions are prescribed by the process under control. A whitelist of permitted communication
-relations is therefore a workable model of normal behaviour. Barbosa et al.\ built such
-whitelists in SCADA networks from four packet properties and reported both that the whitelists
-stabilise and that rare legitimate flows continue to raise false positives
-\cite{barbosa2013flow}; Yoon and Ciocarlie modelled communication patterns per host pair for the
-same purpose \cite{yoon2014communication}. Neither of the two ideas that follow from this
-originates with service-oriented deployments. Scoring behaviour against a graph of which host
-talks to which was established for carrier traffic \cite{iliofotou2007network,
-jin2009unveiling}, and the dependency graph between services was already being recovered
-automatically from passively observed traffic in enterprise networks \cite{bahl2007towards,
-chen2008automating, natarajan2012nsdminer}.
+Industrial communications often repeat under a fixed operating mode. Barbosa et al.\ exploit
+this regularity through SCADA flow whitelists, while also observing false alarms from rare
+legitimate activity \cite{barbosa2013flow}. Yoon and Ciocarlie model communication patterns
+between host pairs \cite{yoon2014communication}. Traffic graphs also describe host
+interactions \cite{iliofotou2007network,jin2009unveiling}, and enterprise-network studies
+infer service dependencies from passive observations
+\cite{bahl2007towards,chen2008automating,natarajan2012nsdminer}.
 
-Where the system is cyber-physical, the observation may be the process rather than the traffic,
-and detectors are then fitted to sensor and actuator series recorded from testbeds
-\cite{mathur2016swat, kravchik2018detecting}. In IoT deployments the unit modelled is often the
-individual device. Models of that kind hold under the conditions they were fitted to and lose a
-substantial part of their measured performance when the deployment changes: reproduced figures
-fall by roughly a quarter to a half beyond three months, and by a comparable margin between test
-sites \cite{maali2025evaluating}.
+Cyber-physical detection can use sensor and actuator series to assess the controlled process
+\cite{mathur2016swat,kravchik2018detecting,goh2016swatdataset}. These observations differ
+from the packets that transport them. In a related task, Maali et al.\ evaluate IoT
+\emph{device identification} across operating modes, collection periods and sites
+\cite{maali2025evaluating}. Their transfer results concern device identification;
+they motivate examining changing observation conditions without supplying a detection rate
+for industrial anomalies.
 
 \subsection{Datasets and Measurement Limits}
 \label{sec:background:networks:datasets}
 
-The corpora this field reports on are known to be defective. KDD~99 was shown to contain
-redundant records that bias measured accuracy \cite{tavallaee2009nslkdd}, and a later audit of
-CICIDS2017, UNSW-NB15 and comparable sets catalogues construction faults that allow trivial
-features to separate attack traffic from benign \cite{flood2024bad}. Two further limits bear on
-any figure reported here. Detectors reporting detection rates above 99 per cent have been shown
-to be trained and tested on the same attack type, with performance not surviving attack types
-absent from training \cite{kus2022false}. And when 70 published approaches were re-run on one
-evaluation platform, four deliberately simple tests on process values, using minima, maxima and
-rate of change, performed on par with them \cite{wolsing2022simple}.
-Section~\ref{sec:background:evaluation} treats the protocol-level causes.
+Dataset construction can introduce predictive associations unrelated to the intended threat.
+KDD~99 contains redundant records \cite{tavallaee2009nslkdd}; later audits identify
+construction artefacts in CICIDS2017, UNSW-NB15 and other intrusion datasets
+\cite{flood2024bad}. Kus et al.\ distinguish detection of attack types represented during
+training from performance on types absent from training \cite{kus2022false}.
+
+Wolsing et al.\ review 70 publications and evaluate four deliberately simple industrial
+detectors against selected comparators on industrial datasets. Their results show that
+simple process-value tests can be competitive with more complex methods
+\cite{wolsing2022simple}. The comparison supports including appropriate simple baselines
+under a stated protocol. The general evaluation criteria are developed in
+Section~\ref{sec:background:evaluation:bias}.
 
 \section{Adversarial Machine Learning}
 \label{sec:background:adversarial}
 
-Chapter~\ref{chap:introduction} has already set out what the record shows about published
-defences. This section supplies the vocabulary that account assumed, and it is the vocabulary
-Chapters~\ref{chap:hybroid}, \ref{chap:hgann} and~\ref{chap:advml} use to state what they claim
-and what they do not.
+Adversarial evaluation concerns deliberate interference with a learning system. Its
+conditions must specify the attack objective and the access available to the attacker.
 
-\paragraph{Threat models.} A threat model states four things: the attacker's goal, the
-attacker's knowledge of the system, the attacker's capability to act on it, and the constraints
-on what may be modified \cite{biggio2014security, vassilev2025adversarial}. A claim about an
-attack or about robustness cannot be interpreted without all four \cite{carlini2019evaluating}.
-Knowledge is conventionally divided into three levels. Under \emph{white box} the attacker knows
-the training data, the feature representation, the learning algorithm, the trained parameters
-and any deployed defence \cite{biggio2018wildpatterns}. Under \emph{black box} the attacker
-knows neither parameters nor architecture and interacts through the prediction interface, either
-by transferring from a substitute model trained on its outputs or by searching directly with
-queries \cite{papernot2017practical}. \emph{Grey box} lies between the two: some components of
-the white-box list are known and training cannot be influenced. Because the term is used
-inconsistently in the literature, every use in this dissertation names which components the
-attacker is assumed to know. One limit on the taxonomy should be recorded with it. A survey of
-271 practitioners found that the knowledge assumptions of academic threat models are more
-generous to the attacker than deployment conditions usually allow \cite{grosse2024towards}.
+\paragraph{Threat models.} A threat model states the attacker's goal and knowledge, together
+with the capabilities and constraints governing permitted modifications
+\cite{biggio2014security,vassilev2025adversarial}. White-box evaluation gives access to the
+model's architecture and parameters; a perfect-knowledge formulation can also include the
+training data \cite{biggio2018wildpatterns}. Black-box attacks can use prediction queries
+or transfer examples from a substitute model, with the available interface stated explicitly
+\cite{papernot2017practical,kurakin2018competition}. Grey-box access denotes partial
+knowledge. In the grey-box evasion setting of Chapter~\ref{chap:advml}, training is fixed;
+this capability constraint is distinct from knowledge of the training data.
+A survey of 271 practitioners documents mismatches between academic access assumptions and
+deployment conditions \cite{grosse2024towards}.
 
-\paragraph{Classes of attack.} \emph{Evasion} modifies an input at test time so that a trained
-model misclassifies it, leaving the model unchanged \cite{biggio2013evasion}. \emph{Poisoning}
-manipulates the training data or the training process so that the resulting model is degraded or
-carries behaviour the attacker chose \cite{biggio2012poisoning, jagielski2018manipulating}, and
-the \emph{backdoor} is its sub-case, in which the implanted behaviour is conditioned on a trigger
-\cite{gu2019badnets}. Confidentiality attacks form a third class: a functional copy of a
-deployed model can be recovered through its prediction interface \cite{tramer2016stealing}. The
-word adversarial covers all three and is not a synonym for evasion.
+\paragraph{Classes of attack.} Evasion modifies test-time inputs to change a trained model's
+decisions \cite{biggio2013evasion}. Poisoning intervenes in training data or the learning
+process \cite{biggio2012poisoning,jagielski2018manipulating}. Training-time backdoor attacks
+implant behaviour activated by a trigger \cite{gu2019badnets}. Model-extraction attacks
+instead aim to reproduce a deployed model through access to its prediction interface
+\cite{tramer2016stealing}. Chapter~\ref{chap:advml} evaluates evasion; the Android studies
+report predictive performance on historical samples.
 
-\paragraph{Feature space and problem space.} A \emph{feature-space} attack perturbs the feature
-vector directly, with no requirement that any real input maps to the result. A
-\emph{problem-space} attack modifies the artefact itself and must satisfy four constraints: the
-transformation has to be available, semantics have to be preserved, the result has to be
-plausible, and it has to survive preprocessing. Moving between the two is the inverse
-feature-mapping problem, and in the malware setting the modified sample must still install and
-still run \cite{pierazzi2020intriguing}. The distinction is load-bearing for
-Chapters~\ref{chap:hybroid} and~\ref{chap:hgann}, because attacks on static Android detectors
-operate at code level, upstream of feature extraction, so a representation derived from that
-extraction inherits the attacker's influence whatever the learning architecture
-\cite{song2026fcghunter}. Which operators reach which representation depends on what is
-extracted, and each chapter settles that where it states its threat model. Early work on
-Android established the feature-space case \cite{grosse2017adversarial}.
+\paragraph{Feature space and problem space.} A feature-space attack modifies the representation
+supplied to the learner. A problem-space attack modifies the underlying artefact.
+Pierazzi et al.\ formalise constraints on the available transformations and preservation of
+semantics, alongside plausibility and robustness to preprocessing \cite{pierazzi2020intriguing}.
+For malware, the modified package must retain its malicious functionality as well as remain
+valid. A successful feature-space perturbation need not correspond to such a package.
+Android studies illustrate both feature-space attacks \cite{grosse2017adversarial} and
+functionality-preserving changes to applications that affect their extracted call graphs
+\cite{song2026fcghunter}.
 
-\paragraph{Adaptive attacks and robustness.} An \emph{adaptive} attack is constructed in
-knowledge of the defence and tuned against that specific defence, in contrast to a fixed attack
-applied unchanged \cite{tramer2020adaptive}. The recurring reason a defence appears to hold and
-does not is gradient masking, where the defence obstructs the optimisation an attack relies on
-without reducing the attacker's reach \cite{athalye2018obfuscated}. \emph{Robustness} is
-therefore defined relative to a stated threat model and a stated attack budget. It is a property
-of the pair, never of a model alone, and a robustness figure reported without those parameters
-cannot be compared with another \cite{carlini2019evaluating}. Gradient-based attacks at fixed
-perturbation budgets \cite{goodfellow2015explaining, madry2018pgd} are the reference instruments
-against which the defences of Chapter~\ref{chap:advml} are measured.
+\paragraph{Adaptive attacks and robustness.} An adaptive attack is designed against the
+specific defended system, including its preprocessing and response policy
+\cite{tramer2020adaptive}. Gradient masking can obstruct an attack's optimisation without
+preventing adversarial errors \cite{athalye2018obfuscated}. Robustness claims therefore
+require a stated threat model and budget, together with attacks appropriate to the complete
+defence \cite{carlini2019evaluating}. FGSM and PGD provide reference gradient-based methods
+\cite{goodfellow2015explaining,madry2018pgd}.
+
+Reusable attack libraries such as Foolbox provide common model interfaces and attack criteria
+\cite{rauber2017foolbox}; the NIPS~2017 competition evaluated attacks and defences submitted
+by independent teams \cite{kurakin2018competition}. Such infrastructure supports empirical
+evaluation. Its results still depend on input validity and scoring conventions, which
+Section~\ref{sec:background:metrics:adversarial} defines for the present dissertation.
 
 \section{Performance Measures and Evaluation Methodology}
 \label{sec:background:evaluation}
@@ -509,7 +464,8 @@ predicted labels in its columns:
   \qquad a,b\in\mathcal Y.
   \label{eq:background:confusion}
 \end{equation}
-In binary detection, $1$ denotes an attack or malware and $0$ denotes normal or benign behaviour. With both axes
+In binary security detection, $1$ denotes the labelled attack or malware class and $0$ the
+normal or benign class. With both axes
 ordered as $(0,1)$,
 \begin{equation}
   \mathbf C_{\mathrm{bin}}=
@@ -520,11 +476,37 @@ ordered as $(0,1)$,
 True positives and true negatives are correct decisions. A false positive flags a negative
 observation; a false negative misses a positive observation \cite{fawcett2006roc}.
 
-The S7-300 evaluation counts network records, SWaT counts timestamps, and the Android studies
-count applications. Timestamp metrics give longer attacks more weight; episode-level assessment
-requires a separate matching rule and denominator \cite{sorbo2024navigating}. Collapsing attack
-types into one positive class turns errors between those types into correct binary detections
-(Section~\ref{sec:anomaly:iuno-results}).
+Table~\ref{tab:background:tasks} maps the decision units and targets of the contribution chapters.
+The input representation can have a different granularity: the SWaT model processes windows,
+then assigns one prediction to each timestamp. Timestamp metrics give longer attacks more
+weight; episode-level assessment requires a separate matching rule and denominator
+\cite{sorbo2024navigating}. Collapsing attack types into one positive class turns errors
+between those types into correct binary detections (Section~\ref{sec:anomaly:iuno-results}).
+
+\begin{table}[tbp]
+  \centering
+  \caption[Decision units and prediction targets]{Decision units and targets in the contribution chapters. The service-graph study
+  reports graph updates and overhead; its detection accuracy was not measured. Attribute
+  accuracy counts the individual label decisions defined in
+  Section~\ref{sec:background:metrics:aggregation}.}
+  \label{tab:background:tasks}
+  \small
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.34\textwidth}
+    >{\raggedright\arraybackslash}p{0.22\textwidth}
+    >{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Study (chapter) & Decision unit & Target \\
+    \midrule
+    Service graphs (\ref{chap:anomaly}) & Service interaction & Known or unexpected relation \\
+    S7-300 (\ref{chap:anomaly}) & Connection record & Normal or attack type \\
+    SWaT (\ref{chap:anomaly}) & Timestamp & Normal or anomalous \\
+    \hybroid{} (\ref{chap:hybroid}) & Application & Binary or category label \\
+    \hgann{} (\ref{chap:hgann}) & Application & Binary label; family or category \\
+    SAFAIR contest (\ref{chap:advml}) & Image & Identity or binary attributes \\
+    Partner benchmark (\ref{chap:advml}) & Histopathology patch & Binary tissue class \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
 
 \subsection{Binary Detection Measures and Class Prevalence}
 \label{sec:background:metrics:binary}
@@ -764,83 +746,70 @@ runtime or memory use.
 \subsection{Experimental Protocol and Bias}
 \label{sec:background:evaluation:bias}
 
-Metric definitions fix the quantities calculated from an evaluation. The following considerations
-concern how the data and protocol determine which conclusions those quantities support.
+The evaluation population and protocol determine which conclusions a metric supports.
 
-\paragraph{Sampling bias in space and time.} \emph{Temporal bias} is a split that allows a model
-to learn from samples postdating the ones it is tested on, which reports a figure no deployment
-reproduces. \emph{Spatial bias} is a test set whose composition differs from the deployment,
-which leaves precision uninterpretable. A sound evaluation constrains both: training data must
-precede test data, and the ratio between classes in the test set must reflect the setting the
-system is claimed for \cite{pendlebury2019tesseract}. Drift is the mechanism that makes a
-randomly ordered split optimistic \cite{jordaney2017transcend}. Curation of the corpus decides
-as much as the split does, and guidance published since those constraints were formalised
-revises parts of them \cite{chow2025beyond, kan2024tesseract}.
+\paragraph{Sampling bias in space and time.} Prospective evaluation requires training
+observations to precede the test period \cite{pendlebury2019tesseract}. Random splits within
+one collection answer a different question and can conceal deterioration on later applications
+\cite{jordaney2017transcend}. Test-set composition also matters: precision describes the
+evaluated population, and transfer to another class prevalence requires the assumptions of
+Equation~\ref{eq:background:prevalence}. Corpus curation introduces further differences,
+including timestamp quality and labelling criteria
+\cite{chow2025beyond,kan2024tesseract}. Chronological ordering alone does not remove these
+sources of bias.
 
-\paragraph{Leakage.} Any transformation fitted before the split moves information from the test
-set into training. Resampling, feature selection, normalisation and model selection all have
-this property when applied to the whole corpus, and the resulting figure measures the procedure
-rather than the model \cite{arp2022dos}. Duplicate and near-duplicate samples are a second
-channel, since repackaging produces applications that differ only in the injected payload and
-copies of one application may fall on both sides of the split. The measured cost is uneven:
-limited for supervised classification, and substantially larger for unsupervised family
-clustering \cite{zhao2021impact, irolla2018duplication}.
+\paragraph{Leakage and related samples.} In inductive evaluation, data-dependent
+transformations and model-selection decisions must respect the training boundary.
+Normalisation and resampling belong within the training partition of each fold; feature
+selection must also exclude test information \cite{arp2022dos}. Independently pretrained
+representations require documented provenance and checks for overlap with the evaluation
+cohort. Repackaged or otherwise related applications can create dependencies across partitions
+\cite{irolla2018duplication}. Zhao et al.\ observed limited duplication effects for the
+supervised binary detectors they tested, but larger effects for unsupervised family clustering
+\cite{zhao2021impact}. These findings do not establish that duplication is harmless for
+other models or tasks.
 
-\paragraph{Event definitions and benchmark labels.} In time-series detection,
-\emph{point adjustment} marks an entire anomalous window as detected once
-any single point inside it is flagged, which inflates F1 to the point that randomly generated
-scores outperform published detectors \cite{kim2022towards, sorbo2024navigating}. Some standard
-benchmarks also contain mislabelled or trivially separable anomalies, so a high score on them is
-weak evidence \cite{liu2024elephant}.
+\paragraph{Event definitions and benchmark labels.} Point adjustment credits an entire
+labelled anomaly interval as detected when any point within it is flagged. Under this rule,
+even random scores can receive high $F_1$ values \cite{kim2022towards,sorbo2024navigating}.
+Point-level and interval-level scoring therefore require explicit, separate conventions.
+Label errors and trivially separable anomalies can further distort benchmark comparisons
+\cite{liu2024elephant}.
 
-\paragraph{Baselines and adaptive evaluation.} A reported gain is not established until a simple
-baseline has been run under the same protocol. Where that has been done, the gap has often
-disappeared: re-implementing eight provenance-based intrusion detectors in one framework left a
-simple neural network matching the state of the art on most of the datasets tested
-\cite{bilot2025sometimes}. For a defence the corresponding rule concerns the attack. A
-robustness claim is bounded by the strongest attack applied to it, so the defence has to be
-evaluated against an attack adapted to it \cite{carlini2019evaluating}, and defences evaluated
-only by their own authors have repeatedly failed under adapted attacks
-\cite{athalye2018obfuscated, tramer2020adaptive}.
+\paragraph{Baselines and component attribution.} A common-protocol comparison with simple
+alternatives tests whether model complexity provides an empirical benefit. In provenance-based
+intrusion detection, a shared-framework evaluation found a simple neural baseline competitive
+with more elaborate systems \cite{bilot2025sometimes}. Component-specific claims additionally
+require the relevant design factors to be varied separately. For adversarial evaluation, the
+corresponding comparison fixes the threat model and adapts attacks to the complete defence,
+as described in Section~\ref{sec:background:adversarial}.
 
-\paragraph{The standard adopted here.} Every empirical chapter of this dissertation states its
-split policy and uses time-aware splits where the timestamps permit, reports the class ratio
-alongside any aggregate score, reports no point-adjusted figure, places a trivial baseline beside
-each headline result, and states preprocessing and random seeds \cite{daoudi2021lessons}. Results
-carried over from the source publications cannot be retrofitted to all of this, and each chapter
-says in its Limitations which parts were not met.
+\paragraph{Reporting criteria.} Reproducible reporting identifies the sample population and
+split policy, together with preprocessing and model-selection procedures. It also specifies
+metric aggregation and experimental settings, including random seeds
+\cite{arp2022dos,daoudi2021lessons}. Baselines and uncertainty estimates must be tied to the
+same evaluation unit. These are criteria for assessing the contribution chapters, not an
+assertion that all historical experiments satisfy them. Published results retain their stated
+protocols; unreported settings remain unresolved and limit the conclusions drawn from them.
 
 \section{Summary and Research Gaps}
 \label{sec:background:summary}
 
-Three threads run through the preceding sections. The first concerns what an analysis system is
-able to observe. An Android package exposes a manifest and bytecode to static reading, exposes
-executed behaviour and recorded traffic to dynamic instrumentation, and neither mode dominates
-the other. Network deployments expose flows, and industrial and IoT systems additionally expose
-process values and a comparatively regular pattern of who communicates with whom. The second
-thread concerns how those observations are structured. Program behaviour is encoded as
-control-flow and function-call graphs, communication as graphs over hosts or services, and both
-may be lifted to hypergraphs when a relation holds among more than two elements. The operators
-that learn over these structures are bounded in what they can distinguish, and the projection
-from a hypergraph back to a graph discards information that has now been measured. The third
-thread concerns measurement. Reported performance depends on the split, on the corpus, on the
-baseline it is compared against, and, where a defence is claimed, on the strength of the attack
-applied to it.
-
-Four questions are left open by this material, and each is taken up by one of the research
-questions stated in Section~\ref{sec:intro:rqs}.
+The observation model determines which evidence reaches a detector. Program graphs and
+hypergraphs structure that evidence, while their learning operators determine how it is
+combined. Network and process studies make corresponding choices at other observation
+scales. Evaluation then relates the predictions to a defined population and, where relevant,
+to permitted adversarial modifications. The following gaps connect these foundations to the
+research questions in Section~\ref{sec:intro:rqs}.
 
 \phantomsection
-\paragraph{G1. How behaviour in networked and industrial systems should be represented as
-deployments change.}\label{gap:1}
-Communication whitelists, service-dependency graphs, flow records, and process time series have
-each supported anomaly detection under the conditions in which they were fitted
-\cite{barbosa2013flow,yoon2014communication,goh2016swatdataset}. The evidence is split across
-different observation units and system assumptions, and traffic-based models lose a substantial
-part of their measured performance once a deployment moves in time or place
-\cite{maali2025evaluating}. The literature lacks a common account of how these representation
-choices support detection as the observed system changes. RQ1 takes up the question through
-communication graphs and modular analysis of network and process features.
+\paragraph{G1. Representations for network and process observations.}\label{gap:1}
+Communication whitelists and host-pair models use relations observed between devices
+\cite{barbosa2013flow,yoon2014communication}, while process detectors use sensor and actuator
+measurements \cite{goh2016swatdataset}. The design question is how to match the representation
+to the available observations and accommodate changes to the monitored relations or learning
+method. RQ1 addresses representation and maintenance through service communication graphs
+and modular analysis of network and process features.
 
 \phantomsection
 \paragraph{G2. The value of combining program structure with observed behaviour.}\label{gap:2}
@@ -852,24 +821,20 @@ modality alone on the same samples. RQ2 investigates this question for program-g
 network-flow features in binary detection and malware-category classification.
 
 \phantomsection
-\paragraph{G3. Whether higher-order representation of program structure pays for itself.}\label{gap:3}
-Program structure is represented pairwise, and a relation holding among several functions at
-once is flattened into a set of edges that cannot record it as one group
-\cite{zhou2006learning}. Hypergraphs remove the restriction and the cost of the projection has
-been quantified \cite{kang2024low, wang2024graphs}, yet the sceptical result also stands: an
-operator whose vertex weights do not vary between the hyperedges a vertex belongs to is
-equivalent to one acting on a weighted clique expansion \cite{agarwal2006higherorder,
-chitra2019randomwalks}. Whether higher-order encoding, and the attention weighting often applied
-with it, improves detection and classification of Android malware is open, and no theoretical
-analysis of attention scoring in hypergraph operators has appeared since 2024
-\cite{kim2022equivariant, kim2021transformers}. RQ3 takes up this question.
+\paragraph{G3. The empirical value of higher-order program representations.}\label{gap:3}
+Prior Android work uses call-neighbour and permission-based hyperedges for application
+classification \cite{zhang2023android}. The empirical question concerns the additional value
+of other group constructions and learned aggregation under a common protocol. Changes to
+construction and weighting must be separated before a gain can be attributed to either.
+RQ3 examines attention-weighted representations against pairwise graph and non-attentive
+hypergraph models for binary detection and dataset-specific malware classification.
 
 \phantomsection
-\paragraph{G4. How an adversary model becomes a reproducible benchmark.}\label{gap:4} Defences are commonly
-evaluated against attacks chosen by the party proposing them, and a robustness claim is bounded
-by the strongest attack applied \cite{carlini2019evaluating}. Threat models are stated
-inconsistently, and the knowledge assumptions used in academic evaluations are more generous
-than deployment usually allows \cite{grosse2024towards}. How an explicit adversary model is
-translated into a benchmark that a third party can reproduce, and what such a benchmark then
-shows about the relation between clean predictive performance and robustness, has no accepted
-answer. RQ4 takes up this question.
+\paragraph{G4. Reproducible and interpretable adversarial evaluation.}\label{gap:4}
+Attack libraries and public competitions provide established evaluation infrastructure
+\cite{rauber2017foolbox,kurakin2018competition}. Reuse across prediction tasks still requires
+explicit attacker access and valid perturbation constraints. Scoring must match the prediction
+objective, and attacks must address the complete defended system
+\cite{carlini2019evaluating}. The question is how these requirements can be implemented in
+reusable protocols and which conclusions joint clean and attacked measurements support.
+RQ4 addresses this benchmark-design and measurement problem.

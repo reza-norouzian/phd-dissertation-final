@@ -2,6 +2,22 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-006 Align the Introduction with the dissertation evidence
+
+- **Date:** 2026-09-20
+- **Status:** accepted
+- **Context:** The author approved the complete Chapter 1 review with 'do it' on 20 September 2026.
+- **Decision:** Apply the author-approved Chapter 1 review within the existing six-section structure. Define contextual representations, retain Android as the principal application domain, and distinguish the industrial and adversarial-evaluation studies. Align gap positioning and contribution claims with the current Chapters 2 to 8; preserve all research-question macros and empirical results. Consolidate attribution, correct source interpretations and document software provenance.
+- **Consequence:** Implement under T-026 with a pre-drafting claim-to-source record, strict reference audits, an updated publication/evidence map and a rebuilt PDF. Existing uncommitted work and unresolved experimental questions remain intact; visual review stays with the author.
+
+### D-005 Refine Chapter 2 foundations and research-gap scope
+
+- **Date:** 2026-09-20
+- **Status:** accepted
+- **Context:** The author approved all recommendations of the read-only Chapter 2 review with 'do them all'. D-004's shared performance-measures treatment remains in force.
+- **Decision:** Apply the full author-approved Chapter 2 review within the existing seven sections. Correct source interpretations and analysis assumptions, add concise foundations and an observation/target map, refine G1 and G3-G4 to the available evidence, and consolidate repeated explanations. Retain the Android-first ordering, figure assets, shared metric equations and research-question macros. Allow only narrow cross-chapter wording corrections needed for the same scientific claims; preserve methods and empirical results.
+- **Consequence:** Implement under T-025 with claim-to-source evidence, corrected bibliography and vault versions, current planning records and a rebuilt PDF. Unreported experimental settings remain unresolved; visual review stays with the author.
+
 ### D-004 Add shared performance measures within Section 2.6
 
 - **Date:** 2026-09-20

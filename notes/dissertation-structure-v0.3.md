@@ -98,8 +98,9 @@ Chapter 5 will report the multiclass tasks with dataset-specific terminology:
 - Drebin: malware-family classification.
 - CICMalDroid: malware-category classification, including Benign.
 
-Binary detection remains a separate evaluation task. The source and count of benign
-applications in the Drebin binary experiment remain unresolved.
+Binary detection remains a separate evaluation task. Chapter 5 now documents the AndroZoo
+benign cohort used for Drebin binary detection. Its remaining label-curation and temporal
+qualifications are stated in that chapter.
 
 ### RQ4: Adversarial robustness evaluation
 
@@ -210,33 +211,61 @@ section on the work specific to its method, and that is where competing systems 
 
 1.6 Dissertation Structure
 
+Revised on 20 September 2026 under T-026 and D-006 after the author approved the complete
+Chapter 1 review. The six sections and all research-question macros are retained. The
+Introduction defines contextual representations and gives the Android contributions
+priority, with separate scope for the industrial studies and the image-based adversarial
+evaluations. Its problem statements acknowledge existing hybrid, hypergraph and evaluation
+methods. The RQ3 explanation concerns complete configurations; attention-only attribution
+remains open. The RQ4 explanation distinguishes reusable interfaces from reproduction of
+historical experiments and retains the limited clean-performance/robustness conclusion.
+
+The contribution statements now include the dissertation's operator and scoring analyses.
+Authorship is consolidated in Section 1.5, with the service-graph concept/measurement-design
+role and partial Hybroid graph contribution preserved. The dissemination table includes
+public SPARTA D7.2/D7.3 and the separate benchmark repository; the RQ map instead identifies
+scientific evidence. The contest toolkit uses a verified public source revision. Other
+chapter sources, empirical results and figures are unchanged. The nine-page planning
+allowance is retained; build results are recorded in T-026.
+
+The rebuilt Introduction's text and tables occupy printed pages 1-7, followed by the
+recto-opening blank on page 8; the complete PDF has 153 pages.
+Main-text prose decreases from 2,823 to 2,019 words before question-macro expansion
+(28.48%), while all question boxes and the two tables are retained.
+
 ### 2. Background
 
-Revised on 13 August 2026. The chapter is now titled Background, carries seven sections, and
-keeps its 15-page budget. Android material opens the chapter because Android malware analysis
+Revised on 13 August 2026. The chapter is titled Background and carries seven sections, with
+an original 15-page allocation before the D-004 metric expansion. Android material opens the chapter because Android malware analysis
 is the scientific centre; the representation and learning sections follow it, so that a reader
 meets hypergraphs only after function-call graphs have been defined.
 
 2.1 Android Applications and Their Analysis
 
-- Dalvik bytecode, manifest, permissions
+- Dalvik bytecode, component lifecycles, manifest and permission grants
 - Static, dynamic, and hybrid analysis
 - Obfuscation, packing, repackaging
 
 2.2 Graph Representations of Programs
 
-- Control-flow and function-call graphs
-- Hypergraphs and higher-order relations
+- Control-flow and function-call graphs; program dependence and backward slicing
+- Hypergraphs, typed incidence representations and clique projection
 
 2.3 Learning over Graphs
 
-- Message passing
+- Message passing, graph-level readout and permutation properties
 - Attention
 - Hypergraph convolution
 
 2.4 Detection in Networked and Cyber-Physical Systems
 
+- Flow and other observation units; supervised, normal-only and unlabelled learning
+- Reconstruction and relational methods; industrial observations and measurement limits
+
 2.5 Adversarial Machine Learning
+
+- Goals, knowledge and capability constraints; feature-space and problem-space attacks
+- Adaptive evaluation and existing attack-library/competition infrastructure
 
 2.6 Performance Measures and Evaluation Methodology
 
@@ -265,9 +294,29 @@ meets hypergraphs only after function-call graphs have been defined.
 
 2.7 Summary and Research Gaps
 
-Half a page of chapter summary, then four numbered gaps, G1 to G4. Each gap states what the
-literature leaves unsettled and names the research question that takes it up. A gap is written
-as an open question in the field, not as a description of the method used to close it.
+A concise chapter synthesis precedes four numbered gaps, G1 to G4. Each identifies the
+remaining design or empirical question and names the research question that addresses it.
+Gaps acknowledge existing approaches rather than asserting an unsupported field-wide absence.
+
+Revised on 20 September 2026 under T-025 and D-005 after the author approved the complete
+Chapter 2 review. G1 concerns observation-specific representations and their maintenance,
+without presupposing cross-site transfer. G2 retains the matched-modality comparison.
+G3 distinguishes alternative hyperedge construction from learned weighting and their
+component-specific attribution. G4 acknowledges existing evaluation infrastructure and
+concerns reproducible protocols and interpretable clean/attacked measurements. The
+research-question macros and gap labels remain unchanged.
+
+The revision adds a compact decision-unit/target table in Section 2.6 and preserves its 18
+equation blocks. Operator-specific derivations and empirical table bodies remain in the
+contribution chapters. Only two related Chapter 5 passages are corrected: approximate
+call-graph recovery and the task-dependent attention results in Fang et al. The two
+background figure assets remain unchanged; Figure 2.1's caption no longer promises complete
+static coverage.
+
+The rebuilt chapter occupies printed pages 9-24, with Chapter 3 beginning on page 25. Main
+prose decreases from 5,947 to 4,495 words (24.42%). The complete thesis has 153 pages, down
+from 155; the overall 170-page maximum is unchanged. The 18 numbered metric equations are
+preserved, and the existing degree definitions use one unnumbered display for line fitting.
 
 #### Page budget for Chapter 2
 
@@ -292,15 +341,16 @@ as an open question in the field, not as a description of the method used to clo
   in the contribution chapters (4.2, 5.2, and the related-work passages of Chapters 3 and 6).
   Section 2.4 and Section 2.5 therefore describe method families and their measurement
   problems; they do not rank published systems.
-- The old Learning-Based Security Analysis section is dissolved. Its framing material (what a
-  learning pipeline for security looks like, which of its assumptions the security setting
-  breaks) moves to the chapter preamble and to Section 2.6.
+- The old Learning-Based Security Analysis section is dissolved. Its framing material (the
+  observation-to-decision procedure and the assumptions needed to interpret an evaluation)
+  sits in the chapter preamble and Section 2.6.
 - Network-flow representation, previously grouped with program graphs, now sits in Section 2.4
   next to the detection methods that consume it. Chapter 4 needs both flow features and program
   graphs, so Section 4.7 must state the flow feature set itself rather than rely on Chapter 2.
-- Section ordering no longer follows chapter order: Chapter 3 draws on Section 2.4, which
-  appears after the Android sections. This is deliberate and should be signalled in the chapter
-  preamble and in Section 3.1.
+- Section ordering differs from contribution-chapter ordering: Chapter 3 draws on Section 2.4,
+  which appears after the Android sections but still precedes Chapter 3. The Chapter 2
+  preamble and decision-unit table provide the navigation; Section 3.3 retains its direct
+  background reference.
 
 #### Alignment with `notes/literature-map.md`
 
