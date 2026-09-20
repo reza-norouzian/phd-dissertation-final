@@ -63,6 +63,7 @@ chen2020androidhiv	have	14	967622	bb950502944a3a44	yes	arxiv	https://arxiv.org/p
 chien2022allset	have	24	747789	eeec1a1253d2014c	yes	arxiv	https://arxiv.org/abs/2106.13264	2026-08-14	title match 100%
 chitra2019randomwalks	have	10	337041	2caff6b9d676f841	yes	pmlr	http://proceedings.mlr.press/v97/chitra19a/chitra19a.pdf	2026-08-14	title match 100%
 chow2025beyond	have	20	2085772	e1fff957e248489d	yes	arxiv	https://arxiv.org/pdf/2506.23814	2026-08-14	title match 100%
+cicandmal2017dataset	no-pdf				-	publisher	https://www.unb.ca/cic/datasets/andmal2017.html	2026-09-20	Official live dataset page; family listing inspected and recounted under T-021. Web resource, no PDF expected.
 cina2025attackbench	have	9	541531	45a89820ec431d61	yes	publisher	https://ojs.aaai.org/index.php/AAAI/article/view/32263	2026-08-15	title match 100%; AAAI 2025 open-access version of record, 9 pp matching 2600-2608
 comparetti2010identifying	have	16	376280	3b8a3426e2e9f1e8	yes	ucsb-seclab	https://sites.cs.ucsb.edu/~chris/research/doc/oakland10_hybrid.pdf	2026-08-14	title match 100%
 dai2015svm	have	2	321851	38a37d907be8e3aa	yes	acm	https://dl.acm.org/doi/10.1145/2766498.2774991	2026-08-14	title match 100%
@@ -249,7 +250,7 @@ taheri2019extensible	have	8	774390	d802156ff1955167	yes	ieee	https://ieeexplore.
 tavallaee2009nslkdd	have	6	601490	3a62ca52a1bb1100	yes	author	https://www.ee.ryerson.ca/~bagheri/papers/cisda.pdf	2026-08-14	title match 100%
 tramer2016stealing	have	19	497869	acd17a4240ffe4f3	yes	usenix	https://www.usenix.org/system/files/conference/usenixsecurity16/sec16_paper_tramer.pdf	2026-08-14	title match 100%
 tramer2020adaptive	have	44	868762	b52d176d8d47f876	yes	arxiv	https://arxiv.org/pdf/2002.08347	2026-08-14	title match 100%
-tran2025quantifying	have	14	3594557	7dec40f9a0c7e9c1	yes	arxiv	https://arxiv.org/pdf/2508.06734	2026-08-14	title match 100%
+tran2025quantifying	have	11	804615	cb099d3106c51574	yes	arxiv	https://arxiv.org/pdf/2508.06734v3	2026-09-20	Version 3, 16 September 2026; updated title and acceptance at IEEE DSAA 2026 checked against arXiv. Full-text methods and evaluation inspected under T-021.
 urbina2016limiting	have	14	2366851	86c7cfc96cad6726	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/ICS/Limiting%20the%20Impact%20of%20Stealthy%20Attacks%20on%20Industrial%20Control%20Systems.pdf	2026-08-14	title match 100%
 valdes2009intrusion	have	7	470295	0b3ae47d1b872eb3	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Intrusion%20Monitoring%20in%20Process%20Control%20Systems.pdf	2026-08-14	title match 100%
 valleerai2010soot	have	11	182981	e63396058e4d236e	yes			2026-08-14	title match 100%

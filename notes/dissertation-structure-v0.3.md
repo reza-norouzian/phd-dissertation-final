@@ -351,6 +351,16 @@ first 56,240 support training and validation, while the later 393,679 form the t
 
 4.13 Chapter Summary
 
+Revised on 20 September 2026 under T-021 after approval of the T-019 review. The thirteen-section
+structure is retained, with the Section 4.5 title aligned to the outline above. The chapter now
+defines the skip-gram objective, CFG readout and flow preprocessing, and formalises the fusion
+contrast. The scientific explanations and citation placement are corrected; repeated source
+commentary is consolidated. Empirical table values and figure assets are unchanged, and the
+undocumented weighting/composition steps remain qualified. Chapter 2 receives only the related
+operand and G2 consistency corrections. Main prose decreases from 6,226 to 3,838 words, with
+nine displayed equations instead of three. The rebuilt chapter occupies pp. 45-60, Chapter 5
+starts on p. 61, and the complete thesis has 151 pages. The 23-page planning allowance is unchanged.
+
 ### 5. Higher-Order Android Malware Analysis with HGANN-Mal
 
 5.1 Research Problem and Relation to Hybroid
