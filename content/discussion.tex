@@ -89,14 +89,21 @@ makes explicit which applications and operating conditions a reported result des
 \label{sec:discussion:4}
 \label{sec:discussion:6}
 
+Representation design determines the evidence available to a detector. Predictive evaluation
+measures how effectively it uses that evidence, while adversarial evaluation examines its
+decisions when an attacker deliberately modifies the input. The SAFAIR contest and benchmark
+in Chapter~\ref{chap:advml} contribute a procedure for investigating this second question
+under explicit attacker assumptions.
+
 Reusable software provides a second connection between the contribution chapters.
 \nadics{} places estimators behind a common interface, so that researchers can change
 learning methods without rewriting the surrounding pipeline \cite{iuno_ap4}.
 SAFAIR applies a corresponding separation to evaluation: attack implementations share an
 execution procedure, while task-specific components define the model and data interfaces
 \cite{sparta2022d76}. Vicomtech's application of the framework to histopathology defences
-demonstrates reuse on a prediction task outside the facial-image contest. Both frameworks
-separate components that researchers can vary within one configured procedure.
+demonstrates reuse on a prediction task outside the facial-image contest
+\cite[Section~3.1.3.1]{sparta2022d76}. Both frameworks separate components that researchers
+can vary within one configured procedure.
 
 The Android studies provide within-system comparisons under their own protocols. \hybroid{} holds
 the applications and learner fixed when comparing input modalities. The \hgann{}
