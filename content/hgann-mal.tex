@@ -15,6 +15,7 @@
 % Preserve method specifications, equations, table bodies and figure assets.
 % T-024: approved priority-3 interpretation passages, 20 September 2026.
 % Method specifications remain unchanged; numerical results retain their provenance.
+% T-031 and D-007: RQ3 framing, results statement and summary aligned with the revised question.
 
 \section{Research Problem and Relation to Hybroid}
 \label{sec:hgann:1}
@@ -38,15 +39,17 @@ with separate binary and class-label heads \cite{norouzian2025hgannmal}.
 
 The evaluation compares this construction and operator with two pairwise graph networks and
 two non-attentive hypergraph operators, on two corpora and three tasks under one protocol.
-Construction and aggregation change together, so their individual contributions remain
-unresolved. Section~\ref{sec:hgann:13} specifies the ablations needed to separate them.
+Relative to the non-attentive operators, construction and aggregation change together, so
+their individual contributions remain unresolved; Section~\ref{sec:hgann:13} specifies the
+ablations needed to separate them.
 
 The chapter retains the source publication's eleven pipeline stages. Stages 0 to 2 catalogue
 and unpack the packages and recover the call graph and slices; Stage 3 computes node features.
 Stages 4 to 6 construct and assemble the hypergraph, followed by mini-batching in Stage 7 and
 attention in Stage 8. Stages 9 and 10 perform read-out and classification.
-Sections~\ref{sec:hgann:4} to~\ref{sec:hgann:8} describe the method, and
-Sections~\ref{sec:hgann:9} to~\ref{sec:hgann:13} report the evaluation and analysis.
+Sections~\ref{sec:hgann:4} to~\ref{sec:hgann:8} answer the first part of RQ3 through the
+method, and Sections~\ref{sec:hgann:9} to~\ref{sec:hgann:13} answer the second through the
+evaluation and analysis.
 
 \subsection*{Relation to \hybroid{}}
 
@@ -867,8 +870,8 @@ published results with the multiclass results of Table~\ref{tab:hgann:multi}.
   \label{fig:hgann:accuracy}
 \end{sidewaysfigure}
 
-Across the evaluated tasks, the hypergraph configurations achieved higher reported accuracy
-than the pairwise baselines. \hgann{} exceeded the strongest non-attentive hypergraph baseline
+Across the evaluated tasks, every hypergraph configuration exceeded the stronger pairwise
+baseline by 3.1 to 10.8 points of reported accuracy. \hgann{} exceeded the strongest non-attentive hypergraph baseline
 in three of the four task--dataset combinations \cite{norouzian2025hgannmal}. These comparisons
 concern complete model configurations, because hyperedge construction and attention weighting
 changed together. A controlled comparison using identical hyperedges and matched normalisation
@@ -991,8 +994,9 @@ Component analysis would require a non-attentive operator over the identical fus
 set and a separate comparison of \hgann{} with topological hyperedges alone. A leave-one-out
 analysis of the hyperedge families would assess their contributions, while a parameter sweep
 would examine $K$, $k$, $\tau$, $c_{\max}$, $L_p$ and the two weight constants. The source
-publication reports none of these tests. The first two comparisons address RQ3; the others
-concern the contributions of individual families and the sensitivity to construction parameters.
+publication reports none of these tests. The first two would separate attention from
+construction; the others concern the contributions of individual families and the sensitivity
+to construction parameters.
 Equation~\ref{eq:hgann:uniform} adds a condition to the first: uniform coefficients also rescale
 propagation, so that comparison has to fix a normalisation convention before its difference can be
 attributed to attention.
@@ -1095,8 +1099,8 @@ conditions that a comparison between representations needs. A deployment would m
 to the extractor, as described in Section~\ref{sec:hgann:3}.
 
 \paragraph{The baselines are general operators.} GCN, GraphSAGE, HGNN and HGNN+ were
-re-implemented on this pipeline's own representation. They test whether the higher-order encoding
-and attention help within one design, but they do not place \hgann{} against the Android detectors
+re-implemented on this pipeline's call graphs and node features. They test higher-order against
+pairwise encoding within one design, but they do not place \hgann{} against the Android detectors
 that the field uses as reference points. Later work on hypergraph stability includes HGNNv2
 \cite{gao2026hgnnv2}; the present experiment evaluates HGNN and HGNN+.
 
@@ -1138,22 +1142,21 @@ to catch.
 \section{Chapter Summary}
 \label{sec:hgann:15}
 
-This chapter answered RQ3 by lifting a method-level function-call graph to a hypergraph, joining
-its vertices by three rules of different kinds, and learning how strongly each method participates
-in each group rather than fixing that strength when the structure was built. The system was
-measured against two pairwise graph operators and two hypergraph operators without attention, on
-Drebin and on CICMalDroid, for binary detection and for classification into families and into
-categories.
+For the first part of RQ3, the chapter lifted a method-level function-call graph to a
+hypergraph. Three rules of different kinds join its methods into groups, and attention learns how
+strongly each method participates in each group. The operator analysis in
+Section~\ref{sec:hgann:8} shows that attention reweights the memberships that the construction
+fixed, and within one layer it ranks the hyperedges of every method in one shared order. It can
+distinguish hyperedge groupings that produce the same fixed propagation matrix, although the
+experiments do not establish whether training uses this capacity.
 
-In the reported comparisons, all hypergraph configurations achieved higher accuracy than the
-pairwise baselines. \hgann{} exceeded the strongest non-attentive hypergraph baseline in three
-of four task--dataset combinations; on CICMalDroid binary detection, its accuracy was
-97.6 per cent compared with 97.7 per cent for HGNN+. The operator analysis in
-Section~\ref{sec:hgann:8} describes representational capacity separately from these empirical
-comparisons. Attention reweights the
-memberships that the construction fixed, and within one layer it ranks the hyperedges of every
-method in one shared order. It can distinguish hyperedge groupings that produce the same fixed
-propagation matrix, although the experiments do not establish whether training uses this capacity.
+For the second part, the system was measured against two pairwise graph operators and two
+hypergraph operators without attention, on Drebin and on CICMalDroid, for binary detection and
+for classification into families and into categories. Every hypergraph configuration exceeded
+the stronger pairwise baseline by 3.1 to 10.8 points of accuracy. \hgann{} exceeded the
+strongest non-attentive hypergraph baseline in three of four task--dataset combinations; on
+CICMalDroid binary detection, its accuracy was 97.6 per cent compared with 97.7 per cent for
+HGNN+.
 
 Because the hyperedge vocabulary and the weighting were changed together, the improvement over the hypergraph
 baselines cannot be attributed to attention, and the experiment that would separate them was not

@@ -89,9 +89,16 @@ terminology, and it bases the answer on the reported within-system modality comp
 
 ### RQ3: Higher-order Android malware analysis
 
-**To what extent do attention-weighted hypergraph representations of static Android program
-structure improve binary malware detection and malware classification over pairwise graph
-models and non-attentive hypergraph models?**
+**How can higher-order relations within static Android program structure be represented and
+learned, and to what extent do they improve malware detection and classification over pairwise
+graph representations?**
+
+Revised on 21 September 2026 under D-007 and T-031. The earlier wording asked for the benefit
+of attention over non-attentive hypergraph models, which Chapter 5 cannot isolate (HG-01).
+Sections 5.4-5.8 answer the first part through the construction, learned membership weights and
+operator analysis. Sections 5.9-5.13 answer the second: every hypergraph configuration exceeds
+the stronger pairwise baseline by 3.1-10.8 accuracy points (single runs). The non-attentive
+comparison is a complete-system finding; attention-only attribution stays a declared limitation.
 
 Chapter 5 will report the multiclass tasks with dataset-specific terminology:
 

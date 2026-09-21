@@ -6,6 +6,7 @@
 % Retain the six sections, question macros and existing labels. The Android
 % comparisons are predictive evaluations; the SAFAIR evidence concerns other tasks.
 % Individual roles follow the author-confirmed accounts in Chapters 3 to 6.
+% RQ3 revised to a problem-level question under T-031 and D-007, 21 September 2026.
 
 \section{Research Context}
 \label{sec:intro:context}
@@ -82,9 +83,8 @@ constructs hyperedges from call neighbourhoods and shared permissions
 \cite{zhang2023android}, and hypergraph attention already provides a mechanism for learned
 membership weighting \cite{bai2021hypergraphattention}. Group construction determines which
 methods can exchange information through a hyperedge; membership weights then control their
-influence within that structure. RQ3 examines alternative
-program-related groups and attention-weighted aggregation against pairwise graph and
-non-attentive hypergraph configurations. The distinction between the information retained
+influence within that structure. RQ3 asks how such group relations can be represented and
+learned, and what they add over pairwise graph representations. The distinction between the information retained
 by a representation and the operations applied to it is developed in
 Section~\ref{sec:background:graphs:hypergraphs}.
 
@@ -160,10 +160,12 @@ prediction task. The category task includes Benign as one of five classes.
 
 \researchquestion[3]{RQ3}{Higher-order Android malware analysis}{\rqThreeText}
 
-For gap~\gapref{3}, the empirical answer concerns complete configurations: construction and
-weighting change together, so an attention-only effect remains unresolved. The tasks are
-binary detection and dataset-specific classification: \familyclassification{} on Drebin,
-and \categoryclassification{} on CICMalDroid, with Benign as one category.
+Gap~\gapref{3} is examined through \hgann{}, which learns membership weights over constructed
+groups of methods, and its comparison with pairwise graph models. Against non-attentive
+hypergraph models, construction and weighting change together, so an attention-only effect
+remains unresolved. The tasks are binary detection and dataset-specific
+classification: \familyclassification{} on Drebin, and \categoryclassification{} on
+CICMalDroid, with Benign as one category.
 
 \researchquestion[4]{RQ4}{Adversarial robustness evaluation}{\rqFourText}
 
@@ -188,8 +190,8 @@ These are descriptive comparisons of the published fold means
 \hgann{} groups methods by call neighbourhood and semantic similarity. Slice-aware
 hyperedges add relations around security-sensitive API calls, and learned membership
 weights control aggregation over the groups \cite{norouzian2025hgannmal}.
-The evaluated hypergraph configurations have higher reported accuracy than the pairwise
-baselines; \hgann{} exceeds the strongest non-attentive baseline in three of four
+Every evaluated hypergraph configuration has higher reported accuracy than the pairwise
+baselines on each task and corpus; \hgann{} exceeds the strongest non-attentive baseline in three of four
 task--corpus combinations. The operator analysis in Section~\ref{sec:hgann:8} also shows
 how attentive propagation can distinguish groupings with the same fixed propagation
 matrix. This representational capacity is separate from an empirical explanation of the
@@ -351,7 +353,7 @@ Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-impo
     RQ2 & \ref{chap:hybroid}
       & Within-system modality comparisons on a common retained CICAndMal2017 cohort. \\
     RQ3 & \ref{chap:hgann}
-      & Common-input configuration comparisons on Drebin and CICMalDroid; separate operator analysis. \\
+      & Hypergraph construction and operator analysis; common-input comparisons with pairwise and non-attentive hypergraph models on Drebin and CICMalDroid. \\
     RQ4 & \ref{chap:advml}
       & Contest and partner-benchmark records; mathematical analysis of scoring and detector responses. \\
     \bottomrule

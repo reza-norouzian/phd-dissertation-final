@@ -6,6 +6,7 @@
 % gaps are referenced without reprinting their wording. Detailed limitations remain in
 % Chapters 3 to 6; brief qualifications specify the scope of each answer. The HGANN-Mal
 % ablation opens the future work, as Section 5.15 promises.
+% T-031 and D-007: the RQ3 answer covers both parts of the revised question.
 
 \section{Answers to the Research Questions}
 \label{sec:conclusion:1}
@@ -29,13 +30,14 @@ $F_1$ by one or two percentage points over the better single modality. For categ
 classification, the difference ranged from minus two to plus three points across learners.
 These matched comparisons address gap~\gapref{2} within the evaluated corpus and protocol.
 
-\paragraph{RQ3.} \emph{\rqThreeText} On Drebin and CICMalDroid, all hypergraph configurations
-achieved higher reported accuracy than the pairwise baselines with common call graphs and
-node features. \hgann{} exceeded the strongest non-attentive baseline by 1.2 to 4.1
-percentage points in three of four task and
-corpus combinations; on CICMalDroid binary detection, it scored 97.6 against 97.7 per cent.
-These results address gap~\gapref{3} through comparisons of complete systems.
-Attention-specific attribution requires a controlled ablation.
+\paragraph{RQ3.} \emph{\rqThreeText} \hgann{} groups methods by call neighbourhood, semantic
+similarity and security-sensitive slices, and learns membership weights by attention. With
+common call graphs and node features, every hypergraph configuration exceeded the stronger
+pairwise baseline on Drebin and CICMalDroid by 3.1 to 10.8 points of reported accuracy.
+\hgann{} exceeded the strongest non-attentive baseline by 1.2 to 4.1 points in three of four
+task and corpus combinations; on CICMalDroid binary detection, it scored 97.6 against 97.7 per
+cent. These single-run comparisons of complete systems address gap~\gapref{3};
+attention-specific attribution requires a controlled ablation.
 
 \paragraph{RQ4.} \emph{\rqFourText} SAFAIR translated attacker assumptions into a contest
 protocol and a benchmark with task-specific interfaces. The implementation and scoring analysis
@@ -53,10 +55,9 @@ The Android studies form the main contribution. \hybroid{} combines static progr
 representations with observed network flows and measures the value of fusion on the same
 applications. The candidate designed the overall pipeline and traffic analysis and conducted
 the evaluation; his contribution to graph processing was partial.
-\hgann{} represents context within the application package through groups of related methods
-and learned membership weights. Chapter~\ref{chap:hgann} formalises the construction and
-analyses the operator's representational capacity. Different hyperedge groupings can produce
-different attentive propagation even when their fixed propagation matrices coincide.
+\hgann{} represents context within the application package. Chapter~\ref{chap:hgann}
+formalises its construction and shows that different hyperedge groupings can produce different
+attentive propagation even when their fixed propagation matrices coincide.
 
 The industrial contribution is a modular framework for network and process observations,
 supported by the candidate's extractor and labelled corpus, with a GAN-based extension for

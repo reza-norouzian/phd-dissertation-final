@@ -4,6 +4,7 @@
 % Written under T-016 from the current text of Chapters 3 to 8. Every number is restated from a
 % contribution chapter, and no citation is added. Each text is limited to one page at the
 % author's request of 13 September 2026.
+% T-031: HGANN-Mal sentences state the pairwise margin; the equivalence wording is removed.
 
 This dissertation examines two questions in learning-based security analysis. The first concerns
 representation: which observations of a program or a network a detector should receive, and how
@@ -25,8 +26,9 @@ single modality, and between minus two and plus three points in \categoryclassif
 \hgann{} lifts the function-call graph to a hypergraph whose hyperedges include the backward
 slices of security-sensitive call sites, and it learns hyperedge membership weights by attention.
 Across Drebin and CICMalDroid, every hypergraph operator exceeded both pairwise graph operators
-in all four task and corpus combinations. \hgann{} led the non-attentive hypergraph operators by
-1.2 to 4.1 points of accuracy in three combinations and was level in the fourth. Since
+in all four task and corpus combinations, by 3.1 to 10.8 points of accuracy. \hgann{} led the
+non-attentive hypergraph operators by 1.2 to 4.1 points in three combinations and scored 0.1
+point lower in the fourth. Since
 construction and attention changed together, an ablation that isolates attention remains open.
 
 Within the SPARTA project, an adversary model was translated into a contest on a hidden test set
@@ -63,9 +65,9 @@ der Effekt zwischen minus zwei und plus drei Punkten. \hgann{} überführt den
 Funktionsaufrufgraphen in einen Hypergraphen, dessen Hyperkanten auch Rückwärts-Slices
 sicherheitsrelevanter Aufrufstellen umfassen, und lernt Zugehörigkeitsgewichte mit Attention.
 Auf Drebin und CICMalDroid übertraf jeder Hypergraphoperator in allen vier Kombinationen aus
-Aufgabe und Korpus beide paarweisen Operatoren. \hgann{} lag in drei Kombinationen um 1,2 bis
-4,1 Prozentpunkte Genauigkeit vor den Hypergraphoperatoren ohne Attention und in der vierten
-gleichauf. Da Konstruktion und Attention gemeinsam verändert wurden, fehlt noch eine Ablation,
+Aufgabe und Korpus beide paarweisen Operatoren, um 3,1 bis 10,8 Prozentpunkte Genauigkeit.
+\hgann{} lag in drei Kombinationen um 1,2 bis 4,1 Prozentpunkte vor den Hypergraphoperatoren
+ohne Attention und in der vierten um 0,1 Prozentpunkte darunter. Da Konstruktion und Attention gemeinsam verändert wurden, fehlt noch eine Ablation,
 welche die Attention isoliert.
 
 Im Projekt SPARTA wurde ein Angreifermodell in einen Wettbewerb mit verdecktem Testdatensatz und
