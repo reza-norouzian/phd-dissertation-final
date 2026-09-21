@@ -2,6 +2,14 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-007 Revise RQ3 to a problem-level question on higher-order relations
+
+- **Date:** 2026-09-21
+- **Status:** accepted
+- **Context:** On 21 September 2026 the author judged the previous RQ3 (attention over pairwise and non-attentive models) misaligned with Chapter 5, which cannot isolate attention, and rejected a method-specific replacement from T-030 as reverse-engineered. The author approved the problem-level wording in chat.
+- **Decision:** RQ3 becomes: How can higher-order relations within static Android program structure be represented and learned, and to what extent do they improve malware detection and classification over pairwise graph representations? HGANN-Mal is the answer to the first part; the comparison with pairwise graph models answers the second. The comparison with non-attentive hypergraph models is reported as a complete-system finding, and attention-only attribution remains a declared limitation and the first future-work item.
+- **Consequence:** Implement under T-031: update the shared macro, G3, the Introduction, Chapter 5 framing and summary, the Chapter 8 answer, both abstracts and structure v0.3. No experiment, table value or method specification changes; the evidence limits of HG-01 and HG-05 remain declared.
+
 ### D-006 Align the Introduction with the dissertation evidence
 
 - **Date:** 2026-09-20

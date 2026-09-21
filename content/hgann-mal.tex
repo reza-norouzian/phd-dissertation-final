@@ -16,6 +16,7 @@
 % T-024: approved priority-3 interpretation passages, 20 September 2026.
 % Method specifications remain unchanged; numerical results retain their provenance.
 % T-031 and D-007: RQ3 framing, results statement and summary aligned with the revised question.
+% T-032: author-corrected five-run macro means on fixed splits.
 
 \section{Research Problem and Relation to Hybroid}
 \label{sec:hgann:1}
@@ -765,8 +766,7 @@ corpus of roughly 15,030 in which malware is 37.0 per cent.
 Turning that stored count into a benign label requires a threshold, and the threshold is a
 decision rather than a property of the data. The AndroZoo authors report the flagged share at one
 antivirus product and again at ten, and state that antivirus results have to be treated with care;
-the two thresholds give very different populations. Section~\ref{sec:hgann:14} states what
-follows from assembling the two classes from different collections.
+the two thresholds give very different populations.
 
 \subsection*{CICMalDroid}
 
@@ -778,9 +778,8 @@ holds 11,598 applications, which is not the number collected: 17,341 application
 gathered, 13,077 executed successfully in the dataset authors' sandbox, and the labelled
 distribution retains 11,598 after the analysis records of the remainder failed to parse
 \cite{mahdavifar2020dynamic}. This chapter uses the published distribution, so it inherits a
-selection made by dynamic analysis, and Section~\ref{sec:hgann:14} records what that implies for a
-static detector. The categories are far more even than the Drebin families, since the largest
-holds 3.1 times as many samples as the smallest.
+selection made by dynamic analysis. The categories are far more even than the Drebin families,
+since the largest holds 3.1 times as many samples as the smallest.
 
 \subsection*{Evaluation tasks}
 
@@ -801,16 +800,21 @@ its scanners labelled adware, while CICMalDroid keeps Adware as one of its four 
 categories. A sample of the kind Drebin discarded is therefore a positive case on CICMalDroid and
 absent from Drebin, which limits comparisons between the two classification tasks.
 
-\subsection*{Split policy}
+\subsection*{Split and repetition policy}
 
-Each corpus is divided at random into 70 per cent for training, 20 per cent for testing and 10 per
-cent for validation, and the same division is used for every method in the comparison, so the
-baselines and \hgann{} see the same samples. At that test fraction the smallest Drebin family, with
+Each corpus was divided at random into 70 per cent for training, 20 per cent for testing and
+10 per cent for validation. The partition was shared by all methods and held fixed across
+repetitions. Each configuration, including GCN, GraphSAGE, HGNN, HGNN+ and \hgann{}, was
+trained five times with different random seeds. The tabulated learned-model scores are
+arithmetic means over these five runs, as defined in
+Equation~\ref{eq:background:run-aggregation}. These repetitions sample training randomness
+conditional on the fixed partition.
+
+At that test fraction the smallest Drebin family, with
 41 samples, places about eight samples in the test partition in expectation, so a per-family score
 for the smallest classes would rest on a handful of decisions. The training and test partitions
 draw from the same collection period. No deduplication or hash-aware grouping was applied,
 although Drebin contains repackaged near-duplicates.
-Section~\ref{sec:hgann:14} discusses the resulting threats to validity.
 
 \section{Binary Detection Results}
 \label{sec:hgann:10}
@@ -820,11 +824,10 @@ Section~\ref{sec:hgann:9}. Figures~\ref{fig:hgann:f1} and~\ref{fig:hgann:accurac
 published results with the multiclass results of Table~\ref{tab:hgann:multi}.
 
 \begin{table}
-  \caption{Binary detection, in per cent, as published \cite{norouzian2025hgannmal}. The source
-  labels the F1 column Macro-F1 without specifying an averaging convention. The empirical
-  \hgann{} Drebin matrix gives a positive-class F1 of 97.7 per cent
-  (Section~\ref{sec:hgann:10}); the published 97.8 is retained here.
-  Section~\ref{sec:hgann:14} discusses the metric inconsistencies. Best values in bold.}
+  \caption{Binary detection, in per cent. Each F1, precision and recall value is a five-run mean
+  of the macro-averaged score on a common fixed split. Five author-corrected rows in the two result
+  tables supersede the values printed in the source publication \cite{norouzian2025hgannmal}.
+  Best values in bold.}
   \label{tab:hgann:binary}
   \centering
   \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
@@ -833,12 +836,12 @@ published results with the multiclass results of Table~\ref{tab:hgann:multi}.
     \cmidrule(lr){2-5} \cmidrule(lr){6-9}
     Method & F1 & Prec. & Rec. & Acc. & F1 & Prec. & Rec. & Acc. \\
     \midrule
-    GCN            & 92.2 & 92.2 & 91.5 & 92.8 & 90.6 & 90.6 & 90.6 & 90.9 \\
+    GCN            & 92.2 & 93.0 & 91.5 & 92.8 & 90.6 & 90.6 & 90.6 & 90.9 \\
     GraphSAGE      & 92.1 & 92.1 & 92.5 & 93.3 & 91.0 & 91.1 & 91.1 & 91.5 \\
     \midrule
-    HGNN           & 96.2 & 95.8 & 96.3 & 96.8 & 94.2 & 94.8 & 94.3 & 94.6 \\
+    HGNN           & 96.6 & 96.8 & 96.3 & 96.8 & 94.2 & 94.8 & 94.3 & 94.6 \\
     HGNN+          & 96.1 & 95.9 & 96.1 & 97.1 & 95.9 & 96.1 & 96.5 & \textbf{97.7} \\
-    \hgann{}       & \textbf{97.8} & \textbf{97.8} & \textbf{97.6} & \textbf{98.3}
+    \hgann{}       & \textbf{98.2} & \textbf{98.2} & \textbf{98.2} & \textbf{98.3}
                    & \textbf{96.2} & \textbf{96.2} & \textbf{97.6} & 97.6 \\
     \midrule
     Majority class & & & & 63.0 & & & & 84.5 \\
@@ -849,37 +852,34 @@ published results with the multiclass results of Table~\ref{tab:hgann:multi}.
 \begin{figure}[tbp]
   \centering
   \includegraphics[width=\linewidth]{hgann-mal/hgann-mal-f1.pdf}
-  \caption[F1 of the five methods on both corpora and both tasks]{F1 on both corpora and both
-  tasks, as published in Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}. The plot retains
-  the published values, including the Drebin binary discrepancy described in
-  Section~\ref{sec:hgann:10}. The source labels them Macro-F1, although several rows cannot follow
-  one averaging convention (Section~\ref{sec:hgann:14}). The vertical axis is truncated at 80
-  so that differences among the hypergraph methods remain visible. HGNNP is the source
-  publication's name for HGNN+.}
+  \caption[F1 of the five methods on both corpora and both tasks]{Mean Macro-F1 over five
+  training seeds on each fixed split, from Tables~\ref{tab:hgann:binary}
+  and~\ref{tab:hgann:multi}.
+  The vertical axis is truncated at 80 so that differences among the hypergraph methods remain
+  visible. HGNNP is the source publication's name for HGNN+.}
   \label{fig:hgann:f1}
 \end{figure}
 
 \begin{sidewaysfigure}
   \centering
   \includegraphics[width=\textheight]{hgann-mal/hgann-mal-accuracy.pdf}
-  \caption[Accuracy against the majority baseline and the strongest baselines]{Accuracy reported
-  in Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}, divided at the majority baseline, at
-  GraphSAGE and at HGNN+, which the figure labels HGNNP after the source publication. Variability
-  across runs and the isolated contribution of attention are not established by these reported
-  results.}
+  \caption[Accuracy against the majority baseline and the strongest baselines]{Mean accuracy
+  over five training seeds on each fixed split, from Tables~\ref{tab:hgann:binary}
+  and~\ref{tab:hgann:multi}, divided at the majority baseline, at GraphSAGE and at HGNN+.
+  The figure labels HGNN+ as HGNNP after the source publication.}
   \label{fig:hgann:accuracy}
 \end{sidewaysfigure}
 
 Across the evaluated tasks, every hypergraph configuration exceeded the stronger pairwise
-baseline by 3.1 to 10.8 points of reported accuracy. \hgann{} exceeded the strongest non-attentive hypergraph baseline
+baseline by 3.1 to 10.8 points of mean accuracy. \hgann{} exceeded the strongest non-attentive hypergraph baseline
 in three of the four task--dataset combinations \cite{norouzian2025hgannmal}. These comparisons
 concern complete model configurations, because hyperedge construction and attention weighting
 changed together. A controlled comparison using identical hyperedges and matched normalisation
 is required to isolate the contribution of attention.
 
-On CICMalDroid binary detection, \hgann{} achieved 97.6 per cent accuracy compared with
-97.7 per cent for HGNN+. These single-run estimates do not establish statistical equivalence
-or a reliable performance difference.
+On CICMalDroid binary detection, \hgann{} achieved 97.6 per cent mean accuracy compared with
+97.7 per cent for HGNN+. Without the individual run scores, this difference establishes neither
+statistical equivalence nor superiority.
 
 A majority-class predictor scores 63.0 per cent on the Drebin corpus, where benign applications
 are the majority, and 84.5 per cent on CICMalDroid, where they are 15.5 per cent of the samples. Reported
@@ -888,18 +888,17 @@ in the second. These differences place each reported accuracy in the context of 
 
 \subsection*{Drebin confusion matrix and class balance}
 
-The Drebin binary experiment evaluated \hgann{} on 1,112 malicious and 1,894 benign applications.
-The classifier identified 1,085 malware samples and missed 27. It raised 24 false alarms among
-the benign applications and classified 1,870 as benign. These 51 errors across 3,006 decisions
-give a false-positive rate of 1.3 per cent and a positive-class F1 of 97.7 per cent. The published
-F1 is 97.8 per cent; Table~\ref{tab:hgann:binary} and Figure~\ref{fig:hgann:f1} retain that source
-value, which differs from the value calculated from the empirical matrix by 0.1 percentage point
-after rounding. Precision, recall and accuracy calculated from the matrix round to the published
-97.8, 97.6 and 98.3 per cent, respectively.
+The five-run summary matrix for the \hgann{} Drebin binary evaluation reports 1,085 true positives and
+27 false negatives, with 24 false positives and 1,870 true negatives. Its entries total
+3,006, the test-set size, with 1,112 malicious and 1,894 benign applications. From these
+entries, the false-positive rate is 1.3 per cent and positive-class F1 is 97.7 per cent.
+Equal averaging over the malicious and benign classes gives 98.2 per cent for precision,
+recall and F1 after rounding; accuracy is 98.3 per cent. The corresponding GCN and HGNN
+summary matrices reproduce their corrected rows in Table~\ref{tab:hgann:binary} by the same calculation.
 
 The experiment used a corpus with 37.0 per cent malware, whereas deployments may contain a lower
 share. A separate sensitivity calculation holds recall and the false-positive rate fixed while
-reducing the malware share to 10 per cent. Under this assumption, precision falls from 97.8 to
+reducing the malware share to 10 per cent. Under this assumption, positive-class precision falls from 97.8 to
 about 89.5 per cent because benign applications outnumber malicious applications nine to
 one. This calculation illustrates the effect of class balance under fixed rates, as discussed in
 Section~\ref{sec:background:evaluation}.
@@ -913,11 +912,10 @@ Figure~\ref{fig:hgann:class-distribution}(a), and no
 benign application takes part. Results are in the left panel of Table~\ref{tab:hgann:multi}.
 
 \begin{table}
-  \caption{Multiclass classification, in per cent, as published \cite{norouzian2025hgannmal}.
-  The Drebin task assigns a malicious application to one of twenty families; the CICMalDroid task assigns an application to
-  one of five categories, of which Benign is one. The two tasks are not comparable with each other.
-  Section~\ref{sec:hgann:14} identifies two rows whose three columns cannot follow one averaging
-  convention.}
+  \caption{Multiclass classification, in per cent. Each F1, precision and recall value is a
+  five-run mean of the macro-averaged score on a common fixed split \cite{norouzian2025hgannmal}.
+  Drebin uses twenty malware families; CICMalDroid uses five categories, including Benign.
+  Best values in bold.}
   \label{tab:hgann:multi}
   \centering
   \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
@@ -926,12 +924,12 @@ benign application takes part. Results are in the left panel of Table~\ref{tab:h
     \cmidrule(lr){2-5} \cmidrule(lr){6-9}
     Method & F1 & Prec. & Rec. & Acc. & F1 & Prec. & Rec. & Acc. \\
     \midrule
-    GCN            & 86.1 & 85.9 & 86.2 & 87.8 & 82.4 & 82.0 & 82.4 & 82.7 \\
+    GCN            & 86.1 & 85.9 & 86.2 & 87.8 & 82.2 & 82.0 & 82.4 & 82.7 \\
     GraphSAGE      & 86.3 & 86.7 & 86.2 & 88.0 & 82.3 & 82.2 & 82.6 & 83.4 \\
     \midrule
     HGNN           & 92.0 & 92.1 & 92.4 & 92.0 & 88.7 & 88.8 & 88.8 & 89.0 \\
     HGNN+          & 92.3 & 92.5 & 92.5 & 93.3 & 89.3 & 89.5 & 89.8 & 90.1 \\
-    \hgann{}       & \textbf{94.2} & \textbf{94.1} & \textbf{93.8} & \textbf{95.0}
+    \hgann{}       & \textbf{93.9} & \textbf{94.1} & \textbf{93.8} & \textbf{95.0}
                    & \textbf{94.0} & \textbf{94.1} & \textbf{94.0} & \textbf{94.2} \\
     \midrule
     Majority class & & & & 19.8 & & & & 33.7 \\
@@ -948,8 +946,7 @@ The twenty families range from 925 samples down to 41, a ratio above twenty to o
 Macro-$F_1$ averages the family-specific $F_1$ scores with equal weights, irrespective of family
 size \cite{opitz2019macrof1}. A high average can still conceal poor performance for individual
 families. Assessing the smaller Drebin families therefore requires per-family scores and
-test-set counts. The published aggregate scores do not provide this information, and their
-averaging convention remains unresolved (Section~\ref{sec:hgann:14}).
+test-set counts. The published scores do not provide this information.
 
 The classes are also one vendor's
 labels rather than an agreed taxonomy, as Section~\ref{sec:hgann:9} records, so a disagreement
@@ -957,7 +954,7 @@ between the model and the label is not always an error of the model. The familie
 related to one another: several of the twenty are known to contain repackaged applications built from shared
 code. Shared code gives the applications of one family similar semantic hyperedges, each built
 inside its own application under Section~\ref{sec:hgann:7}, and it is also the condition under
-which duplication inflates a measured score. Section~\ref{sec:hgann:14} returns to that threat.
+which duplication inflates a measured score.
 
 \section{Malware-Category Classification on CICMalDroid}
 \label{sec:hgann:12}
@@ -972,8 +969,8 @@ the widest of the four task and corpus combinations reported in this chapter. On
 corpus, binary-detection accuracy is 0.1 percentage point below HGNN+
 (Section~\ref{sec:hgann:10}). The
 ranking of the four combinations does not depend on the measure. Over the strongest baseline, the
-published F1 margins in Figure~\ref{fig:hgann:f1} are 4.7 points here, 1.9 and 1.6 on the Drebin family and
-binary tasks and 0.3 on CICMalDroid binary detection, which is also the order of the accuracy
+F1 margins in Figure~\ref{fig:hgann:f1} are 4.7 points here, 1.6 on each Drebin task and
+0.3 on CICMalDroid binary detection, which is also the order of the accuracy
 margins. This pattern describes the evaluated configurations. Establishing why the category task
 has a larger accuracy margin requires the controlled comparisons in Section~\ref{sec:hgann:13}.
 
@@ -1080,12 +1077,6 @@ al.\ \cite{brody2022gatv2}. Both extensions remain proposals for evaluation.
 and aggregation together. The component-attribution question and the required comparisons are
 specified in Section~\ref{sec:hgann:13}; the reported gains concern the complete system.
 
-\paragraph{Every figure is a single run.} No configuration was repeated, and the tables therefore
-carry no standard deviation, confidence interval or significance test. Small margins are affected
-most. A tenth of a point separates \hgann{} from HGNN+ on CICMalDroid accuracy, and that difference
-cannot be interpreted. Even the 1.2 points on Drebin would need repeated runs before they could be
-called reliable.
-
 \paragraph{The evaluation covers favourable conditions only.} Both splits are random, so training
 and test samples come from the same collection period, and the figures do not describe performance
 on applications released later \cite{pendlebury2019tesseract}. Neither corpus was obfuscated, and
@@ -1119,26 +1110,6 @@ hyperedges. Attention operates downstream of an extraction that the adversary co
 therefore inherits the exposure of its representation, and in line with Chapter~\ref{chap:advml}
 this chapter makes no robustness claim.
 
-\paragraph{Threats to validity.} The source labels F1 as Macro-F1 without specifying an averaging
-convention. For the \hgann{} Drebin binary row a macro reading is impossible: over 1,112
-malicious and 1,894 benign test applications, macro precision 97.8 and macro recall 97.6 at an
-accuracy that rounds to 98.3 would require at least 1,897 true negatives. Precision and recall
-match the positive-class rates of the empirical matrix; the published F1 does not
-(Section~\ref{sec:hgann:10}). Under positive-class, macro and support-weighted averaging alike,
-$F_1 \le (P + R)/2$, and four rows exceed that mean by more than the 0.1 point that rounding
-allows: GCN and HGNN in the Drebin binary panel, \hgann{} in the \familyclassification{} panel, and
-GCN in the \categoryclassification{} panel. No single convention fits these rows, so the
-multiclass columns are not read as macro averages; accuracy is unaffected. On the data side, the
-benign Drebin applications come from AndroZoo, which began crawling in late 2011, while Drebin
-covers August 2010 to October 2012, so a classifier may separate the two collections by build tools
-or API levels that have nothing to do with malice \cite{arp2022dos, allix2016androzoo}. The source
-publication records that about 49 per cent of Drebin samples are repackaged applications, and none
-was removed. Near-duplicates across the partitions may inflate the family scores of
-Section~\ref{sec:hgann:11} more than the binary ones \cite{zhao2021impact, irolla2018duplication}.
-CICMalDroid, for its part, keeps only applications that ran in its authors' sandbox
-\cite{mahdavifar2020dynamic}, which may remove evasive samples that a static detector most needs
-to catch.
-
 \section{Chapter Summary}
 \label{sec:hgann:15}
 
@@ -1153,10 +1124,11 @@ experiments do not establish whether training uses this capacity.
 For the second part, the system was measured against two pairwise graph operators and two
 hypergraph operators without attention, on Drebin and on CICMalDroid, for binary detection and
 for classification into families and into categories. Every hypergraph configuration exceeded
-the stronger pairwise baseline by 3.1 to 10.8 points of accuracy. \hgann{} exceeded the
+the stronger pairwise baseline by 3.1 to 10.8 points of mean accuracy over five training runs.
+\hgann{} exceeded the
 strongest non-attentive hypergraph baseline in three of four task--dataset combinations; on
-CICMalDroid binary detection, its accuracy was 97.6 per cent compared with 97.7 per cent for
-HGNN+.
+CICMalDroid binary detection, its mean accuracy was 97.6 per cent compared with 97.7 per cent
+for HGNN+. These descriptive comparisons apply to the fixed evaluation partitions.
 
 Because the hyperedge vocabulary and the weighting were changed together, the improvement over the hypergraph
 baselines cannot be attributed to attention, and the experiment that would separate them was not

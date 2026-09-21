@@ -5,7 +5,7 @@ status: review
 priority: P1
 chapter: -
 owner: claude
-depends_on: [T-030]
+depends_on: []
 blocks: []
 tags: [research-questions, revision]
 created: 2026-09-21
@@ -70,5 +70,9 @@ No visual review, staging or commit.
 
 ## Log
 
+- 2026-09-21 T-032 bookkeeping repair: removed the formal dependency on absent T-030 so
+  workflow validation can run. Historical T-030 attribution remains in this ticket and the
+  worklog; its file is absent from both the working tree and available git history. No
+  missing evidence or review outcome has been reconstructed.
 - 2026-09-21 created
 - 2026-09-21 in-progress -> review (Revised RQ3 applied thesis-wide; audits and rebuild pass; visual review left to the author)

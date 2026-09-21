@@ -31,13 +31,12 @@ classification, the difference ranged from minus two to plus three points across
 These matched comparisons address gap~\gapref{2} within the evaluated corpus and protocol.
 
 \paragraph{RQ3.} \emph{\rqThreeText} \hgann{} groups methods by call neighbourhood, semantic
-similarity and security-sensitive slices, and learns membership weights by attention. With
-common call graphs and node features, every hypergraph configuration exceeded the stronger
-pairwise baseline on Drebin and CICMalDroid by 3.1 to 10.8 points of reported accuracy.
-\hgann{} exceeded the strongest non-attentive baseline by 1.2 to 4.1 points in three of four
-task and corpus combinations; on CICMalDroid binary detection, it scored 97.6 against 97.7 per
-cent. These single-run comparisons of complete systems address gap~\gapref{3};
-attention-specific attribution requires a controlled ablation.
+similarity and security-sensitive slices, and learns membership weights by attention.
+On Drebin and CICMalDroid, five-run mean accuracy exceeded the stronger pairwise baseline by
+3.1 to 10.8 points for every hypergraph configuration under common inputs and fixed splits.
+\hgann{} led the strongest non-attentive baseline in three of four settings by 1.2 to 4.1
+points; its CICMalDroid binary accuracy was 97.6 against 97.7 per cent. These complete-system
+comparisons address gap~\gapref{3}; attention attribution requires a controlled ablation.
 
 \paragraph{RQ4.} \emph{\rqFourText} SAFAIR translated attacker assumptions into a contest
 protocol and a benchmark with task-specific interfaces. The implementation and scoring analysis
@@ -74,8 +73,8 @@ label reversal after an alarm. Partner defences provide applications of the fram
 \label{sec:conclusion:3}
 
 The first priority is a controlled \hgann{} ablation on both corpora. Comparing learned and
-fixed weighting over identical fused hyperedges requires common preprocessing and a fixed
-normalisation convention, with repeated runs. A separate comparison with topological
+fixed weighting over identical fused hyperedges requires common preprocessing and
+normalisation, with reported variation across runs. A comparison with topological
 hyperedges alone would assess the contribution of construction.
 A common Android cohort with time-ordered splits would permit comparison of static relational
 encodings and the additional value of traffic, as proposed in Chapter~\ref{chap:discussion}.

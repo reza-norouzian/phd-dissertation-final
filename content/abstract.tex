@@ -25,8 +25,9 @@ produces. On CICAndMal2017, fusion added one or two points of detection $F_1$ ov
 single modality, and between minus two and plus three points in \categoryclassification{}.
 \hgann{} lifts the function-call graph to a hypergraph whose hyperedges include the backward
 slices of security-sensitive call sites, and it learns hyperedge membership weights by attention.
-Across Drebin and CICMalDroid, every hypergraph operator exceeded both pairwise graph operators
-in all four task and corpus combinations, by 3.1 to 10.8 points of accuracy. \hgann{} led the
+On Drebin and CICMalDroid, mean accuracy over five training runs was 3.1 to 10.8 points higher
+for every hypergraph operator than for the stronger pairwise baseline across all four task
+and corpus combinations. \hgann{} led the
 non-attentive hypergraph operators by 1.2 to 4.1 points in three combinations and scored 0.1
 point lower in the fourth. Since
 construction and attention changed together, an ablation that isolates attention remains open.
@@ -64,8 +65,9 @@ gegenüber der besseren Einzelmodalität; bei der Klassifikation nach Schadsoftw
 der Effekt zwischen minus zwei und plus drei Punkten. \hgann{} überführt den
 Funktionsaufrufgraphen in einen Hypergraphen, dessen Hyperkanten auch Rückwärts-Slices
 sicherheitsrelevanter Aufrufstellen umfassen, und lernt Zugehörigkeitsgewichte mit Attention.
-Auf Drebin und CICMalDroid übertraf jeder Hypergraphoperator in allen vier Kombinationen aus
-Aufgabe und Korpus beide paarweisen Operatoren, um 3,1 bis 10,8 Prozentpunkte Genauigkeit.
+Auf Drebin und CICMalDroid lag die über fünf Trainingsläufe gemittelte Genauigkeit jedes
+Hypergraphoperators in allen vier Kombinationen aus Aufgabe und Korpus um 3,1 bis 10,8
+Prozentpunkte über der stärkeren paarweisen Baseline.
 \hgann{} lag in drei Kombinationen um 1,2 bis 4,1 Prozentpunkte vor den Hypergraphoperatoren
 ohne Attention und in der vierten um 0,1 Prozentpunkte darunter. Da Konstruktion und Attention gemeinsam verändert wurden, fehlt noch eine Ablation,
 welche die Attention isoliert.

@@ -97,7 +97,9 @@ Revised on 21 September 2026 under D-007 and T-031. The earlier wording asked fo
 of attention over non-attentive hypergraph models, which Chapter 5 cannot isolate (HG-01).
 Sections 5.4-5.8 answer the first part through the construction, learned membership weights and
 operator analysis. Sections 5.9-5.13 answer the second: every hypergraph configuration exceeds
-the stronger pairwise baseline by 3.1-10.8 accuracy points (single runs). The non-attentive
+the stronger pairwise baseline by 3.1-10.8 points of mean accuracy over five training seeds
+on fixed partitions (author-confirmed under T-032). Individual run scores are unavailable.
+The non-attentive
 comparison is a complete-system finding; attention-only attribution stays a declared limitation.
 
 Chapter 5 will report the multiclass tasks with dataset-specific terminology:

@@ -710,11 +710,10 @@ Let $M_b$ be a metric from fold or run $b$. Its mean and sample standard deviati
   s_M=\sqrt{\frac1{B-1}\sum_{b=1}^{B}(M_b-\overline M)^2},\qquad B>1.
   \label{eq:background:run-aggregation}
 \end{equation}
-Fold averaging can differ from calculating $M(\sum_b\mathbf C^{(b)})$ on pooled counts,
-especially for nonlinear measures such as $F_1$. Class and fold averaging must be specified
-separately. \hybroid{} reports five-fold means without the values needed for $s_M$.
-Confidence intervals additionally require a sampling model that accounts for dependence;
-correlated timestamps are not independent repetitions \cite{sorbo2024navigating}.
+Reports should distinguish class averaging from averaging across folds or runs. For nonlinear
+measures such as $F_1$, the mean can differ from the value calculated from pooled counts.
+\hybroid{} averages over five folds, while \hgann{} averages over five training runs on a fixed
+partition.
 
 Operational performance uses time and resource denominators. For an observation interval of
 duration $T$, let $n_{\mathrm{in}}$, $n_{\mathrm{proc}}$ and $n_{\mathrm{drop}}$ count input,
@@ -725,10 +724,10 @@ processed and dropped frames. The extractor measurements in Chapter~\ref{chap:an
   p_{\mathrm{drop}}=\frac{n_{\mathrm{drop}}}{n_{\mathrm{in}}}.
   \label{eq:background:throughput}
 \end{equation}
-Using seconds gives frame rates per second. Chapter~\ref{chap:anomaly} also reports mean
-whole-device CPU utilisation and peak memory. Its 95th-percentile delay from window close to
-record emission excludes acquisition time; service-graph latency measures inter-service round trips. Timing endpoints
-and summary statistics must be stated before comparison.
+With $T$ in seconds, $q_{\mathrm{in}}$ and $q_{\mathrm{proc}}$ are frame rates. Chapter~\ref{chap:anomaly}
+also reports mean whole-device CPU utilisation and peak memory. Its record-emission delay begins
+at window close and excludes acquisition time. Service-graph latency measures inter-service
+round trips.
 
 Two further ratios describe operational scope:
 \begin{equation}
@@ -737,11 +736,10 @@ Two further ratios describe operational scope:
   c_{\mathrm{proc}}=\frac{N_{\mathrm{analysed}}}{N_{\mathrm{source}}}.
   \label{eq:background:alarm-coverage}
 \end{equation}
-The episode rate requires a grouping rule and benign exposure in a stated time unit; record FPR
-alone cannot determine it. Processing coverage gives the analysed fraction of source applications.
-Classification scores exclude the remaining applications, as in \hybroid{}. Complexity bounds
-in Chapter~\ref{chap:hgann} describe scaling under stated assumptions, rather than measured
-runtime or memory use.
+The episode rate requires a grouping rule and a stated benign exposure. Processing coverage is
+the analysed fraction of source applications; \hybroid{} reports classification scores for this
+fraction. Chapter~\ref{chap:hgann} uses analytical bounds to describe scaling under stated
+assumptions.
 
 \subsection{Experimental Protocol and Bias}
 \label{sec:background:evaluation:bias}

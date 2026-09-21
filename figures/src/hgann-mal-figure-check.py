@@ -1,7 +1,7 @@
-"""Check the numbers printed in the author's Chapter 5 figures.
+"""Check the numbers printed in the Chapter 5 data figures.
 
-Extracts the text of the three data figures in figures/hgann-mal/supplied with pdftotext. The F1
-and accuracy figures are compared with the result tables of content/hgann-mal.tex
+Extracts the text of the included F1 figure and the author-supplied accuracy and distribution
+figures with pdftotext. The F1 and accuracy figures are compared with the result tables of content/hgann-mal.tex
 (tab:hgann:binary, tab:hgann:multi), and the class-distribution figure with the two dataset
 tables of the source publication, which the chapter reprinted until T-006 cut them. Problems
 inside a figure are printed as notes and do not fail the check. Run from the repository root:
@@ -13,14 +13,15 @@ import subprocess
 import sys
 from pathlib import Path
 
-SRC = Path('figures/hgann-mal/supplied')
+ASSET = Path('figures/hgann-mal')
+SUPPLIED = ASSET / 'supplied'
 TEX = Path('content/hgann-mal.tex').read_text()
 PUB = next(Path('publications').glob('HGANN*/*.tex')).read_text()
 passed, failed, notes, info = [], [], [], []
 
 
-def text(name):
-    return subprocess.run(['pdftotext', '-layout', str(SRC / name), '-'],
+def text(name, root=SUPPLIED):
+    return subprocess.run(['pdftotext', '-layout', str(root / name), '-'],
                           capture_output=True, text=True, check=True).stdout
 
 
@@ -64,8 +65,34 @@ F1 = {name: [t[m][o] for m in METHODS] for name, t, o in TASKS}
 ACC = {name: [t[m][o + 3] for m in METHODS] for name, t, o in TASKS}
 MAJ = dict(zip([t[0] for t in TASKS], maj_b + maj_m))
 
+# Metric consistency and the three author-supplied Drebin binary summaries (T-032).
+for task, table, offset in TASKS:
+    for method in METHODS:
+        f1, precision, recall = table[method][offset:offset + 3]
+        check(f1 <= (precision + recall) / 2 + 0.1000001,
+              f'{task}, {method}: F1 respects the P/R bound within one-decimal rounding')
+
+MATRICES = {
+    'GCN': (962, 150, 66, 1828),
+    'HGNN': (1049, 63, 33, 1861),
+    'HGANN-Mal': (1085, 27, 24, 1870),
+}
+for method, (tp, fn, fp, tn) in MATRICES.items():
+    p_pos, r_pos = tp / (tp + fp), tp / (tp + fn)
+    p_neg, r_neg = tn / (tn + fn), tn / (tn + fp)
+    f_pos = 2 * p_pos * r_pos / (p_pos + r_pos)
+    f_neg = 2 * p_neg * r_neg / (p_neg + r_neg)
+    derived = [round(50 * (f_pos + f_neg), 1),
+               round(50 * (p_pos + p_neg), 1),
+               round(50 * (r_pos + r_neg), 1),
+               round(100 * (tp + tn) / (tp + fn + fp + tn), 1)]
+    check(derived == binary[method][:4],
+          f'Drebin binary {method}: matrix gives F1, P, R, accuracy {derived}')
+    check((tp + fn, fp + tn) == (1112, 1894),
+          f'Drebin binary {method}: matrix contains 1,112 malicious and 1,894 benign cases')
+
 # F1 figure: bar labels and the gain line.
-t2 = text('hgann-mal-f1_new.pdf')
+t2 = text('hgann-mal-f1.pdf', ASSET)
 bars = [float(x) for x in re.findall(r'(?<![+\d])(\d{2}\.\d)', t2)]
 expected = sum((F1[k] for k in ('Drebin binary', 'Drebin family', 'CICMalDroid binary',
                                 'CICMalDroid category')), [])
