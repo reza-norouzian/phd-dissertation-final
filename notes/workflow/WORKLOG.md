@@ -2,6 +2,12 @@
 
 Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the shape.
 
+## 2026-09-21
+
+- `00:28` **T-027** in-progress -> review - Nine bibliography defects repaired; strict audit and rebuild pass
+- `00:19` **T-027** created: Fix nine bibliography defects found by the reference validation pass
+- `00:20` **T-027** Note on numbering: the `[T-027]` harvest tags already present in bib/references.bib were written by the August 2026 SPARTA verification pass and do not originate from this ticket.
+
 ## 2026-09-20
 
 - `21:58` **T-026** Pagination detail: Chapter 1 text and both tables end on printed page 7; page 8 is the recto-opening blank before Chapter 2. The eight-page allocation and 153-page thesis total include that blank.

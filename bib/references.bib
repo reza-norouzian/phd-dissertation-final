@@ -900,30 +900,10 @@
   doi       = {10.1109/MALWARE.2015.7413693},
   keywords  = {android, malware, net-traffic}
 }
-% harvest: 03
-% verified: url
-% [03] src: chased per instruction; cited-in-paper: no; . No primary paper
-%   exists; cite as software. Relevant because the UNSW-NB15 feature set that
-%   NADICS consumes was generated with Argus together with Bro-IDS (see
-%   moustafa2015unsw).
-@misc{argus,
-  author       = {Bullard, Carter},
-  title        = {Argus: The Audit Record Generation and Utilization System},
-  url          = {https://openargus.org},
-  keywords     = {net-traffic},
-  organization = {QoSient, LLC}
-}
-% harvest: 01
-% verified: publisher
-% [01] src: hybroid.bib (key argus, accessed 1 Dec 2020); cited-in-paper: no;
-%   (openargus.org resolves; the Hybroid paper itself footnotes this URL)
-@misc{argus2020argus,
-  author       = {{QoSient, LLC}},
-  title        = {{Argus}: The Network Audit Record Generation and Utilization System},
-  year         = {2020},
-  howpublished = {\url{https://openargus.org/}},
-  keywords     = {net-traffic}
-}
+% [T-027] 2026-09-21: the keys `argus` (Bullard, undated) and `argus2020argus`
+%   (QoSient, 2020) were removed here. Both described the same openargus.org tool
+%   documentation as the cited key `qosient2026argus`, and neither was cited. The
+%   UNSW-NB15 note that `argus` carried is preserved on `qosient2026argus`.
 % harvest: 01
 % verified: doi
 % [01] src: hybroid.bib; cited-in-paper: yes
@@ -3652,12 +3632,23 @@
 % harvest: 09
 % verified: arxiv
 % [09] src: search; band: B
-@article{chow2025beyond,
-  author   = {Chow, Theo and D'Onghia, Mario and Linhardt, Lorenz and Kan, Zeliang and Arp, Daniel and Cavallaro, Lorenzo and Pierazzi, Fabio},
-  title    = {Beyond the {TESSERACT}: Trustworthy Dataset Curation for Sound Evaluations of Android Malware Classifiers},
-  journal  = {arXiv preprint arXiv:2506.23814},
-  year     = {2025},
-  keywords = {android, dataset, eval-method, malware}
+% [T-027] 2026-09-21: the arXiv identifier moved out of the journal field into
+%   eprint/archiveprefix. DataCite holds 10.48550/arXiv.2506.23814 with this title
+%   and seven creators; the record was submitted 30 June 2025. OPEN: OpenAlex
+%   classifies the work as a conference paper dated 23 March 2026, on the strength
+%   of a UCL Discovery repository record. arXiv shows no journal reference,
+%   Semantic Scholar reports no venue, and the repository page is behind a bot
+%   challenge, so no venue is confirmed. Recheck before submission and replace the
+%   preprint with the published version if one exists.
+@misc{chow2025beyond,
+  author        = {Chow, Theo and D'Onghia, Mario and Linhardt, Lorenz and Kan, Zeliang and Arp, Daniel and Cavallaro, Lorenzo and Pierazzi, Fabio},
+  title         = {Beyond the {TESSERACT}: Trustworthy Dataset Curation for Sound Evaluations of Android Malware Classifiers},
+  year          = {2025},
+  eprint        = {2506.23814},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.CR},
+  doi           = {10.48550/arXiv.2506.23814},
+  keywords      = {android, dataset, eval-method, malware}
 }
 % harvest: 10
 % verified: doi
@@ -5189,10 +5180,12 @@
 % [10] src: search; area: C
 % [09] src: search; band: A
 % CONFLICT: booktitle in 09: AAAI Conference on Artificial Intelligence
+% [T-027] 2026-09-21: the duplicate booktitle field was removed. The AAAI
+%   proceedings are registered as a journal, which is what Crossref returns for
+%   10.1609/aaai.v33i01.33013558, so the journal field carries the venue.
 @article{feng2019hypergraph,
   author    = {Feng, Yifan and You, Haoxuan and Zhang, Zizhao and Ji, Rongrong and Gao, Yue},
   title     = {Hypergraph Neural Networks},
-  booktitle = {Proceedings of the AAAI Conference on Artificial Intelligence},
   journal   = {Proceedings of the {AAAI} Conference on Artificial Intelligence},
   volume    = {33},
   number    = {01},
@@ -8248,12 +8241,22 @@
 % harvest: 09
 % verified: arxiv
 % [09] src: search; band: B
-@article{kan2024tesseract,
-  author   = {Kan, Zeliang and McFadden, Shae and Arp, Daniel and Pendlebury, Feargus and Jordaney, Roberto and Kinder, Johannes and Pierazzi, Fabio and Cavallaro, Lorenzo},
-  title    = {{TESSERACT}: Eliminating Experimental Bias in Malware Classification across Space and Time (Extended Version)},
-  journal  = {arXiv preprint arXiv:2402.01359},
-  year     = {2024},
-  keywords = {android, eval-method, malware}
+% [T-027] 2026-09-21: the arXiv identifier moved out of the journal field into
+%   eprint/archiveprefix, the house pattern used by grandini2020metrics and
+%   opitz2019macrof1. DataCite holds 10.48550/arXiv.2402.01359 with this title and
+%   eight creators. The arXiv record carries no journal reference, so the work is
+%   still a preprint. Its own comment notes the text overlap with arXiv:1807.07838,
+%   the conference version cited as pendlebury2019tesseract.
+@misc{kan2024tesseract,
+  author        = {Kan, Zeliang and McFadden, Shae and Arp, Daniel and Pendlebury, Feargus and Jordaney, Roberto and Kinder, Johannes and Pierazzi, Fabio and Cavallaro, Lorenzo},
+  title         = {{TESSERACT}: Eliminating Experimental Bias in Malware Classification across Space and Time (Extended Version)},
+  year          = {2024},
+  eprint        = {2402.01359},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.LG},
+  doi           = {10.48550/arXiv.2402.01359},
+  note          = {Extended version of the {USENIX} Security 2019 paper},
+  keywords      = {android, eval-method, malware}
 }
 % harvest: 01+02
 % verified: doi
@@ -12909,15 +12912,17 @@
 % [08] src: search; band: A
 % [06] src: xiao-thesis
 % CONFLICT: year in 06: 1998
+% [T-027] 2026-09-21: booktitle (USENIX Security 1998) and publisher (USENIX
+%   Association) removed. Both described the conference version, not the journal
+%   article this entry and its DOI point at. Biblatex ignored them in an @article,
+%   so the printed entry does not change.
 @article{paxson1999bro,
   author    = {Paxson, Vern},
   title     = {Bro: A System for Detecting Network Intruders in Real-Time},
-  booktitle = {Proceedings of the 7th USENIX Security Symposium},
   journal   = {Computer Networks},
   volume    = {31},
   number    = {23--24},
   pages     = {2435--2463},
-  publisher = {USENIX Association},
   year      = {1999},
   doi       = {10.1016/S1389-1286(99)00112-7},
   keywords  = {anomaly, net-traffic}
@@ -16648,6 +16653,10 @@
 % verified: doi
 % [14] src: search; band: C;  supersedes the 2023 edition cited as
 %   vassilev2024adversarial
+% [T-027] 2026-09-21: the six authors were read off the cover of the vault PDF,
+%   in this order: Vassilev, Oprea, Fordyce, Anderson, Davies, Hamin. The Crossref
+%   record for 10.6028/NIST.AI.100-2e2025 lists Vassilev alone, so a DOI-only check
+%   understates the author list.
 @techreport{vassilev2025adversarial,
   author      = {Vassilev, Apostol and Oprea, Alina and Fordyce, Alie and Anderson, Hyrum and Davies, Xander and Hamin, Maia},
   title       = {Adversarial Machine Learning: A Taxonomy and Terminology of Attacks and Mitigations},
@@ -19198,6 +19207,9 @@
 %   submission 2 June 2021, hence year 2021 rather than 2020. See D-003.
 %   Chapter-level authorship is not separable in this deliverable; see
 %   notes/known-issues-to-fix.md section 4.
+%   [T-027 follow-up, 2026-09-21] The cited URL now uses the apex host. The www host
+%   serves a TLS certificate that does not cover www.sparta.eu, so a browser refuses
+%   the connection; sparta.eu returns the same PDF with HTTP 200.
 @techreport{sparta2021d71,
   author      = {{SPARTA Consortium}},
   title       = {{AI} Systems Threat Analysis Mechanisms and Tools},
@@ -19206,7 +19218,7 @@
   institution = {{SPARTA} Project, {EU} Horizon 2020 grant agreement No.~830892},
   year        = {2021},
   month       = {6},
-  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.1-AI-systems-threat-analysis-mechanisms-and-tools-PU-M18_v1.1.pdf},
+  url         = {https://sparta.eu/assets/deliverables/SPARTA-D7.1-AI-systems-threat-analysis-mechanisms-and-tools-PU-M18_v1.1.pdf},
   note        = {Editor: E. R{\'i}os (TEC). Contributor: M. R. Norouzian (TUM). Dissemination level: public. 95 pages},
   keywords    = {advml-attack, advml-defense, ctx, ml-general, standard}
 }
@@ -19219,6 +19231,9 @@
 %   filename "defensive_solutions_AI_contest_concept" is not the official title;
 %   the cover title is used. NOTE 2: the contributor list misspells the forename
 %   as "Mohammed Reza Norouzian"; the correct spelling is used here.
+%   [T-027 follow-up, 2026-09-21] The cited URL now uses the apex host. The www host
+%   serves a TLS certificate that does not cover www.sparta.eu, so a browser refuses
+%   the connection; sparta.eu returns the same PDF with HTTP 200.
 @techreport{sparta2021d75,
   author      = {{SPARTA Consortium}},
   title       = {Final Version of {AI} Systems Security Mechanisms and Tools},
@@ -19227,7 +19242,7 @@
   institution = {{SPARTA} Project, {EU} Horizon 2020 grant agreement No.~830892},
   year        = {2021},
   month       = {8},
-  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.5-Final-version-of-AI-systems-securtiy-mechanisms-and-tools-PU-M30.pdf},
+  url         = {https://sparta.eu/assets/deliverables/SPARTA-D7.5-Final-version-of-AI-systems-securtiy-mechanisms-and-tools-PU-M30.pdf},
   note        = {Editor: B. Addad (TCS). Contributor: M. R. Norouzian (TUM). Dissemination level: public. 129 pages},
   keywords    = {advml-attack, advml-defense, advml-eval, ml-general}
 }
@@ -19241,6 +19256,9 @@
 %   sole Editor, which is the documentary basis for the contribution claim in
 %   Chapter 6. NOTE: the filename published on sparta.eu reads "Final version of
 %   evaluation and validation plan", which contradicts the cover title used here.
+%   [T-027 follow-up, 2026-09-21] The cited URL now uses the apex host. The www host
+%   serves a TLS certificate that does not cover www.sparta.eu, so a browser refuses
+%   the connection; sparta.eu returns the same PDF with HTTP 200.
 @techreport{sparta2022d76,
   author      = {{SPARTA Consortium}},
   title       = {Validation and Evaluation Report},
@@ -19249,7 +19267,7 @@
   institution = {{SPARTA} Project, {EU} Horizon 2020 grant agreement No.~830892},
   year        = {2022},
   month       = {2},
-  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.6-Final-version-of-evaluation-and-validation-plan-PU-M36.pdf},
+  url         = {https://sparta.eu/assets/deliverables/SPARTA-D7.6-Final-version-of-evaluation-and-validation-plan-PU-M36.pdf},
   note        = {Editor: M. R. Norouzian (TUM). Dissemination level: public. 73 pages},
   keywords    = {advml-attack, advml-eval, eval-method, ml-general}
 }
@@ -19262,6 +19280,9 @@
 %   organisation TUM and M. R. Norouzian sole Editor, the same documentary
 %   position as D7.6. This is the design document the contest and the benchmark
 %   were built from, and D7.6 defers to it for the rules and the metric.
+%   [T-027 follow-up, 2026-09-21] The cited URL now uses the apex host. The www host
+%   serves a TLS certificate that does not cover www.sparta.eu, so a browser refuses
+%   the connection; sparta.eu returns the same PDF with HTTP 200.
 @techreport{sparta2021d73,
   author      = {{SPARTA Consortium}},
   title       = {Validation and Evaluation Plan},
@@ -19270,7 +19291,7 @@
   institution = {{SPARTA} Project, {EU} Horizon 2020 grant agreement No.~830892},
   year        = {2021},
   month       = {6},
-  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.3-Validation-and-evaluation-plan-PU-M21-v1.1.pdf},
+  url         = {https://sparta.eu/assets/deliverables/SPARTA-D7.3-Validation-and-evaluation-plan-PU-M21-v1.1.pdf},
   note        = {Editor: M. R. Norouzian (TUM). Dissemination level: public. 19 pages},
   keywords    = {advml-attack, advml-defense, advml-eval, eval-method, ml-general}
 }
@@ -19282,6 +19303,9 @@
 %   V1.0. Due July 2020 (M18); actual submission 31 July 2020. ITTI responsible,
 %   M. Pawlicki editor; the candidate is not on the cover. Cited for the five
 %   SAFAIR defence implementations that D7.3 section 2.3 enumerates.
+%   [T-027 follow-up, 2026-09-21] The cited URL now uses the apex host. The www host
+%   serves a TLS certificate that does not cover www.sparta.eu, so a browser refuses
+%   the connection; sparta.eu returns the same PDF with HTTP 200.
 @techreport{sparta2020d72,
   author      = {{SPARTA Consortium}},
   title       = {Preliminary Description of {AI} Systems Security Mechanisms and Tools},
@@ -19290,7 +19314,7 @@
   institution = {{SPARTA} Project, {EU} Horizon 2020 grant agreement No.~830892},
   year        = {2020},
   month       = {7},
-  url         = {https://www.sparta.eu/assets/deliverables/SPARTA-D7.2-Preliminary-description-of-AI-systems-security-mechanisms-and-tools-PU-M18.pdf},
+  url         = {https://sparta.eu/assets/deliverables/SPARTA-D7.2-Preliminary-description-of-AI-systems-security-mechanisms-and-tools-PU-M18.pdf},
   note        = {Editor: M. Pawlicki (ITTI). Dissemination level: public. 85 pages},
   keywords    = {advml-defense, ml-general}
 }
@@ -19398,6 +19422,10 @@
 %   feature in Chapter 4 and the source paper cites it by URL only. No peer-reviewed
 %   paper for the tool was located in Crossref, DBLP or arXiv, so it is cited as an
 %   online resource with an access date, in the manner D-012 set for the AOSP pages.
+% [T-027] 2026-09-21: this key replaces the removed duplicates `argus` and
+%   `argus2020argus`. Argus, with Bro-IDS, generated the UNSW-NB15 feature set
+%   that NADICS consumes (see moustafa2015unsw). The separate key
+%   `qosient2012argus` describes the Getting Started page, a different document.
 @online{qosient2026argus,
   author       = {{QoSient, LLC}},
   title        = {Argus: The Network Audit Record Generation and Utilization System},
@@ -19562,12 +19590,17 @@
 % verified: publisher
 % Official CICAndMal2017 dataset page, inspected 2026-09-20. Its family listing
 % supports the corrected category counts; the related paper reports different counts.
+% [T-027] 2026-09-21: year 2026 added, the year of consultation, following the same
+%   convention as the other live web resources in this file. The page itself carries
+%   no publication date. It asks that the dataset be credited to Lashkari, Kadir,
+%   Taheri and Ghorbani, ICCST 2018.
 @online{cicandmal2017dataset,
   author       = {{Canadian Institute for Cybersecurity}},
   title        = {{Android} Malware Dataset ({CICAndMal2017})},
   organization = {University of New Brunswick},
   url          = {https://www.unb.ca/cic/datasets/andmal2017.html},
-  urldate      = {2026-09-20}
+  urldate      = {2026-09-20},
+  year         = {2026}
 }
 
 % harvest: T-023

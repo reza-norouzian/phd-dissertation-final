@@ -24,7 +24,7 @@ arzt2014flowdroid	have	11	361224	0616d8f70dbb982c	yes	author	https://www.bodden.
 athalye2018obfuscated	have	10	275659	c0b778f2f400286b	yes	pmlr	http://proceedings.mlr.press/v80/athalye18a/athalye18a.pdf	2026-09-20	title match 100%
 au2012pscout	have	12	439535	a504b1e34d5c5801	yes	author	https://security.csl.toronto.edu/papers/PScout-CCS2012-web.pdf	2026-09-20	title match 80%
 aubet2018graph	have	2	144441	ce97bd26cda1aded	yes	local		2026-09-20	title match 100%
-auernhammer2019attacks	have	9	217888	a407e4319f5dc387	yes	publisher	https://ceur-ws.org/Vol-2301/paper_2.pdf	2026-09-20	title match 100%
+auernhammer2019attacks	have	9	217888	a407e4319f5dc387	yes	publisher	https://ceur-ws.org/Vol-2301/paper_2.pdf	2026-09-20	title match 100%; CEUR Vol-2301 paper_2, SafeAI 2019; read in full for the availability definition
 axelsson2000base	have	20	124412	b8e4235d21e19e30	yes	publisher	https://dl.acm.org/doi/10.1145/357830.357849	2026-09-20	title match 100%
 bahl2007towards	have	12	594079	cb99ada37a701c3d	yes	author	https://www.microsoft.com/en-us/research/wp-content/uploads/2016/02/sherlock_sigcomm_07.pdf	2026-09-20	title match 100%
 bai2021hypergraphattention	have	30	572518	2d6393b21a7570b7	yes	arxiv	https://arxiv.org/pdf/1901.08150	2026-09-20	title match 100%
@@ -33,7 +33,7 @@ barbosa2013flow	have	19	404645	53638f521d8e8cd2	yes	publisher	https://ris.utwent
 barbosa2016exploiting	have	14	300054	2b3dcc25d3847b5e	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Exploiting%20Traffic%20Periodicity%20in%20Industrial%20Networks.pdf	2026-09-20	title match 83%
 barford2001characteristics	have	5	2863063	bd4eaa17c433f227	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Characteristics%20of%20Network%20Traffic%20Flow%20Anomalies.pdf	2026-09-20	title match 80%
 barreno2006can	have	10	420746	9524b0c8c2facd4a	yes	author	https://people.eecs.berkeley.edu/~tygar/papers/Machine_Learning_Security/asiaccs06.pdf	2026-09-20	title match 100%
-bengio2013representation	have	30	1891575	ff1668886c857e03	yes	arxiv	https://arxiv.org/abs/1206.5538	2026-09-20	title match 100%
+bengio2013representation	have	30	1891575	ff1668886c857e03	yes	arxiv	https://arxiv.org/abs/1206.5538	2026-09-20	title match 100%; vault copy is arXiv:1206.5538v3 preprint, not the IEEE TPAMI typeset article (30 pp vs 1798-1828)
 beresford2011exploiting	have	26	4860132	b8a6397ed0103939	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Exploiting%20Siemens%20Simatic%20S7%20PLCs%20.pdf	2026-09-20	title match 100%
 bhuyan2011portscans	have	17	397174	e827a7bbb27b085b	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Reconnaissance%20attacks/Surveying%20Port%20Scans%20and%20Their%20Detection%20Methodologies.pdf	2026-09-20	title match 100%
 biggio2012poisoning	have	8	533188	c1c3d82271c27ef7	yes	arxiv	https://arxiv.org/abs/1206.6389	2026-09-20	title match 100%
@@ -59,17 +59,17 @@ chawla2002smote	have	37	501702	8eece9837dbc7719	yes	publisher	https://www.jair.o
 cheminod2013review	have	17	999053	1a7540ffa0950f60	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Review%20of%20Security%20Issues%20in%20Industrial%20Networks.pdf	2026-09-20	title match 100%
 chen2006featureselection	have	15	809795	2d9ffa020f15ddd6	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Survey%20and%20Taxonomy%20of%20Feature%20Selection%20Algorithms%20in%20Intrusion%20Detection%20System.pdf	2026-09-20	title match 100%
 chen2008automating	have	14	497814	8b64e5cafedf6fbf	yes	usenix	https://www.usenix.org/legacy/events/osdi08/tech/full_papers/chen_xu/chen_xu.pdf	2026-09-20	title match 100%
-chen2018android	have	11	534674	ed2661a7d5d62f4d	yes	publisher-csroc	https://www.csroc.org.tw/journal/JOC29-6/JOC2906-24.pdf	2026-09-20	title match 100%
+chen2018android	have	11	534674	ed2661a7d5d62f4d	yes	publisher-csroc	https://www.csroc.org.tw/journal/JOC29-6/JOC2906-24.pdf	2026-09-21	title match 100% T-027 (2026-09-21): DOI 10.3966/199115992018122906024 is not registered with Crossref (API 404) but resolves through doi.org to an ERICDATA landing page carrying this title; the publisher PDF prints the same DOI on page 243. Crossref-only tooling reports it as unresolvable.
 chen2020androidhiv	have	14	967622	bb950502944a3a44	yes	arxiv	https://arxiv.org/pdf/1808.04218	2026-09-20	title match 100%
 chien2022allset	have	24	747789	eeec1a1253d2014c	yes	arxiv	https://arxiv.org/abs/2106.13264	2026-09-20	title match 100%
 chitra2019randomwalks	have	10	337041	2caff6b9d676f841	yes	pmlr	http://proceedings.mlr.press/v97/chitra19a/chitra19a.pdf	2026-09-20	title match 100%
-chow2025beyond	have	20	2085772	e1fff957e248489d	yes	arxiv	https://arxiv.org/pdf/2506.23814	2026-09-20	title match 100%
+chow2025beyond	have	20	2085772	e1fff957e248489d	yes	arxiv	https://arxiv.org/pdf/2506.23814	2026-09-21	title match 100% T-027 (2026-09-21): entry normalised to eprint/archiveprefix; DataCite holds 10.48550/arXiv.2506.23814 with seven creators. OPEN: OpenAlex shows a 2026 conference version, venue unconfirmed.
 cicandmal2017dataset	no-pdf				-	publisher	https://www.unb.ca/cic/datasets/andmal2017.html	2026-09-20	Official live dataset page; family listing inspected and recounted under T-021. Web resource, no PDF expected.
-cina2025attackbench	have	9	541531	45a89820ec431d61	yes	publisher	https://ojs.aaai.org/index.php/AAAI/article/view/32263	2026-09-20	title match 100%
+cina2025attackbench	have	9	541531	45a89820ec431d61	yes	publisher	https://ojs.aaai.org/index.php/AAAI/article/view/32263	2026-09-20	title match 100%; AAAI 2025 open-access version of record, 9 pp matching 2600-2608
 comparetti2010identifying	have	16	376280	3b8a3426e2e9f1e8	yes	ucsb-seclab	https://sites.cs.ucsb.edu/~chris/research/doc/oakland10_hybrid.pdf	2026-09-20	title match 100%
 dai2015svm	have	2	321851	38a37d907be8e3aa	yes	acm	https://dl.acm.org/doi/10.1145/2766498.2774991	2026-09-20	title match 100%
 dai2016discriminative	have	10	1233268	0e1df527f506b18b	yes	pmlr	http://proceedings.mlr.press/v48/daib16.pdf	2026-09-20	title match 100%
-damiani2016bigdatathreat	have	62	2484783	f5667c801d60a45d	yes	publisher	https://www.enisa.europa.eu/sites/default/files/publications/Big%20Data%20Threat%20Landscape.pdf	2026-09-20	title match 100%
+damiani2016bigdatathreat	have	62	2484783	f5667c801d60a45d	yes	publisher	https://www.enisa.europa.eu/sites/default/files/publications/Big%20Data%20Threat%20Landscape.pdf	2026-09-20	ENISA copy, Jan 2016, 62 pp; threat taxonomy with named threat groups checked in full text; D7.1 [2] link at_download/fullReport now returns 404
 daoudi2021lessons	have	53	2473768	d53281ed7a095026	yes	author	https://orbilu.uni.lu/bitstream/10993/47296/1/Daoudi2021_Article_LessonsLearntOnReproducibility.pdf	2026-09-20	title match 78%
 desnos2012android	have	10	747955	5682fcfe85820d19	yes	publisher	https://ieeexplore.ieee.org/document/6149548/	2026-09-20	title match 100%
 dong2018understanding	have	11	2311537	aeb0c35b9bdd97e6	yes	arxiv	https://arxiv.org/pdf/1801.01633	2026-09-20	title match 100%
@@ -79,7 +79,7 @@ erba2020constrained	have	16	5935124	10d50417e6e26e04	yes	author	file:///Users/re
 europeanunion2024regulation	have	144	2583319	bba630444b3278e8	yes	eurlex	https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ:L_202401689	2026-09-20	title match 71%
 fahad2013feature	have	19	2851810	63293bbe003e7549	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Feature%20Selection/Toward%20an%20efficient%20and%20scalable%20feature%20selection%20approach%20for%20internet%20traffic%20classification.pdf	2026-09-20	title match 100%
 fang2025kaa	have	25	697462	8446faa1ddcae6db	yes	arxiv	https://arxiv.org/pdf/2501.13456v4	2026-09-20	title match 100%
-fawcett2006roc	have	14	784702	f912f86f83470921	yes	institutional	https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf	2026-09-20	title match 100%
+fawcett2006roc	have	14	784702	f912f86f83470921	yes	institutional	https://www.math.ucdavis.edu/~saito/data/roc/fawcett-roc.pdf	2026-09-20	DOI metadata and full text inspected; binary metrics and ROC/AUC
 felt2011android	have	11	661909	2cac7d9ded6c5685	partial	author	https://people.eecs.berkeley.edu/~dawnsong/papers/2011%20Android%20permissions%20demystified.pdf	2026-09-20	title match 67%
 feng2017multi	have	12	1120714	d7af6403d28e2616	yes	author	file:///Users/reza/Downloads/phd/TUM/student_thesis/Yalvac/Related%20works/Multi-level%20Anomaly%20Detection%20in%20Industrial%20Control%20Systems%20via%20Package%20Signatures%20and%20LSTM%20networks.pdf.pdf	2026-09-20	title match 100%
 feng2019hypergraph	have	9	665260	6a52a23caeb7aabc	yes	arxiv	https://arxiv.org/pdf/1809.09401	2026-09-20	title match 100%
@@ -87,7 +87,7 @@ feng2025hgdetector	have	16	4483492	588addefae5bc4be	yes	publisher	https://doi.or
 flood2024bad	have	18	566443	c070c5a93f9e1f23	yes	author	https://distrinet.cs.kuleuven.be/news/bad_smells_euros_p_template-4.pdf	2026-09-20	title match 100%
 foolbox2021api	no-pdf				-	publisher	https://github.com/bethgelab/foolbox/blob/v3.3.1/foolbox/attacks/base.py	2026-09-10	Official versioned software source; release API verifies 2021-02-23 and v3.3.1 tag at 92af8673ee957e5af1f9ad5f3abb474c63f93397; setup.py author Jonas Rauber. Full base.py read 2026-09-10: MinimizationAttack clips at 418 and returns raw/clipped separately at 434; FixedEpsilonAttack also clips at 284. Provenance and SHA-256 hashes: references/source-records/chapter6-software.md.
 formby2016fingerprinting	have	15	4651990	4e58c45850e1f260	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/who-control-your-control-system-device-fingerprinting-cyber-physical-systems.pdf	2026-09-20	title match 100%
-galyardt2020nistir8269comments	have	12	838435	16b1a983f8a3ebe9	yes	publisher	https://resources.sei.cmu.edu/asset_files/WhitePaper/2020_019_001_637336.pdf	2026-09-20	title match 100%
+galyardt2020nistir8269comments	have	12	838435	16b1a983f8a3ebe9	yes	publisher	https://resources.sei.cmu.edu/asset_files/WhitePaper/2020_019_001_637336.pdf	2026-09-20	SEI white paper, Jan 2020; ML lifecycle assets (training, test, operational data, model) checked in full text; D7.1 [5]
 gao2022hypergraph	paywall				-	publisher	https://doi.org/10.1109/TPAMI.2020.3039374	2026-08-13	IEEE TPAMI 44(5). No arXiv preprint located. Needs TUM institutional access.
 gao2023hgnn	have	19	3267352	e193da730aabc892	yes	publisher	https://ieeexplore.ieee.org/document/9795251	2026-09-20	title match 100%
 gao2024comprehensive	have	13	4319353	2b51e8ef1418aaf4	yes	author	https://wu-yueming.github.io/Files/ICSE2024_MalwareStudy.pdf	2026-09-20	title match 100%
@@ -100,11 +100,11 @@ geiger2020tadgan	have	11	642406	5484907c82a8fd7b	yes	arxiv	https://arxiv.org/abs
 ghaeini2018stateaware	have	9	5284805	578cd4e6d84e43a4	yes	author	file:///Users/reza/Downloads/phd/TUM/student_thesis/Yalvac/Related%20works/State-Aware%20Anomaly%20Detection%20for%20Industrial%20Control%20Systems.pdf	2026-09-20	title match 100%
 gilmer2017neural	have	14	523413	37dc4ad74bf3da3e	yes	arxiv	https://arxiv.org/abs/1704.01212	2026-09-20	title match 100%
 gogoi2011outlier	have	19	615643	9a2ae318dae763e6	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/A%20Survey%20of%20Outlier%20Detection%20Methods%20in%20Network%20Anomaly%20Identification.pdf	2026-09-20	title match 86%
-goh2016swatdataset	have	13	3424358	c83bcb5850123bcf	yes	author	https://www.researchgate.net/profile/Khurum-Junejo/publication/305809559_A_Dataset_to_Support_Research_in_the_Design_of_Secure_Water_Treatment_Systems/links/57a2beb308ae5f8b258cb437/A-Dataset-to-Support-Research-in-the-Design-of-Secure-Water-Treatment-Systems.pdf	2026-09-20	title match 100%
+goh2016swatdataset	have	13	3424358	c83bcb5850123bcf	yes	author	https://www.researchgate.net/profile/Khurum-Junejo/publication/305809559_A_Dataset_to_Support_Research_in_the_Design_of_Secure_Water_Treatment_Systems/links/57a2beb308ae5f8b258cb437/A-Dataset-to-Support-Research-in-the-Design-of-Secure-Water-Treatment-Systems.pdf	2026-09-20	Full author paper inspected, 12 pages plus ResearchGate cover; local author-upload copy replaces the earlier 16-page presentation. Metadata verified against Springer DOI 10.1007/978-3-319-71368-7_8; printed proceedings year 2017 retained.
 goh2016swatdataset-slides	have	16	565217	fc1c790b65ca6012	?			2026-09-20	
 goodfellow2015explaining	have	11	1036360	7f6c0a50475149e1	yes	arxiv	https://arxiv.org/pdf/1412.6572	2026-09-20	title match 100%
 google2025android	no-pdf				-	publisher	https://blog.google/products/android/the-android-show-io-2025/	2026-08-13	live blog post, 13 May 2025; h1/og:title = 'The Android Show: I/O Edition'; states 'more than 3 billion active devices in over 190 countries'; bib URL 302s to /products-and-platforms/platforms/android/
-grandini2020metrics	have	17	660560	eb78cffc3ccaa903	yes	arxiv	https://arxiv.org/pdf/2008.05756	2026-09-20	title match 100%
+grandini2020metrics	have	17	660560	eb78cffc3ccaa903	yes	arxiv	https://arxiv.org/pdf/2008.05756	2026-09-20	Official arXiv metadata and full text inspected; use ordinary balanced accuracy and micro averaging only
 grosse2017adversarial	have	18	676301	7e9e273c7d5b184a	yes	author	https://patrickmcdaniel.org/pubs/esorics17.pdf	2026-09-20	title match 100%
 grosse2024towards	have	19	749841	075da45c125c057e	yes	usenix	https://www.usenix.org/system/files/usenixsecurity24-grosse.pdf	2026-09-20	title match 100%
 gu2019badnets	have	15	9493224	f1eb719bde0056fa	yes	ieee	https://doi.org/10.1109/ACCESS.2019.2909068	2026-09-20	title match 100%
@@ -112,11 +112,11 @@ haller2019practical	have	21	1924892	b157444c8a408939	yes	author	file:///Users/re
 hammad2018large	have	11	1029939	8ee59de103902402	yes	author	https://jgarcia.ics.uci.edu/wp-content/uploads/2018ICSE_Hammad.pdf	2026-09-20	title match 100%
 haq2021survey	have	22	531941	9996d1b28411abbc	yes	arxiv	https://arxiv.org/pdf/1909.11424	2026-09-20	title match 100%
 he2023msdroid	have	18	3187281	2cfa87adceded1ae	yes	author	https://drive.google.com/file/d/1uKAi4-pa47BmeDygogcNeWI_qIfvak3U/view	2026-09-20	title match 100%
-horwitz1990interprocedural	have	35	164681	35b9c8b9ddb476d4	yes	author	https://research.cs.wisc.edu/wpis/papers/toplas90.pdf	2026-09-20	title match 100%
+horwitz1990interprocedural	have	35	164681	35b9c8b9ddb476d4	yes	author	https://research.cs.wisc.edu/wpis/papers/toplas90.pdf	2026-09-20	T-025: DOI-registry metadata and author full text inspected, Sections 1-4; program dependence, backward slicing and calling-context requirements. Author manuscript identifies TOPLAS 12(1), January 1990.
 hou2017hindroid	have	9	1165945	7c78e1475120dcf2	yes	author	https://www.cse.ust.hk/~yqsong/papers/2017-KDD-HINDROID.pdf	2026-09-20	title match 100%
-huang2007lfw	have	11	223526	87d9b19c74de1fc0	yes	author	https://people.cs.umass.edu/~elm/papers/lfw.pdf	2026-09-20	title match 100%
+huang2007lfw	have	11	223526	87d9b19c74de1fc0	yes	author	https://people.cs.umass.edu/~elm/papers/lfw.pdf	2026-09-20	title match 100%; UMass Amherst TR 07-49; official host vis-www.cs.umass.edu unreachable from this environment (no HTTP response, http or https), copy taken from Learned-Miller's UMass page
 huang2011adversarial	have	15	564830	28bacde9b47de78a	yes	author	https://people.eecs.berkeley.edu/~tygar/papers/SML2/Adversarial_AISEC.pdf	2026-09-20	title match 100%
-huang2014lfwupdate	have	5	135174	cceb20f7902b7c80	yes	publisher	https://web.cs.umass.edu/publication/docs/2014/UM-CS-2014-003.pdf	2026-09-20	title match 100%
+huang2014lfwupdate	have	5	135174	cceb20f7902b7c80	yes	publisher	https://web.cs.umass.edu/publication/docs/2014/UM-CS-2014-003.pdf	2026-09-20	title match 100%; UMass CS technical report server copy of UM-CS-2014-003; same Content-Length (135174) as the lfw_update.pdf on Learned-Miller's UMass page; official host vis-www.cs.umass.edu unreachable from this environment
 huitsing2008taxonomies	have	9	703402	a16f3447e5ebceb6	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Attack%20taxonomies%20for%20the%20Modbus%20protocols.pdf	2026-09-20	title match 100%
 iglesias2015analysis	have	26	1492839	cc841248e0b5595b	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Feature%20Selection/Analysis%20of%20network%20traffic%20features%20for%20anomaly%20detection.pdf	2026-09-20	title match 83%
 iliofotou2007network	have	6	1055667	2bfb482f7a8056d7	yes	author	http://alumni.cs.ucr.edu/~marios/Papers/imc07-tdgs.pdf	2026-09-20	title match 100%
@@ -126,14 +126,14 @@ iuno_ap4	have	30	2248965	af388bdbc3f55138	yes	author		2026-09-20	title match 100
 iuno_ap7	have	40	2225412	033350fb4b282ff3	yes	author		2026-09-20	title match 100%
 jagielski2018manipulating	have	17	1112912	fcd171272d00e4a6	yes	arxiv	https://arxiv.org/pdf/1804.00308v3	2026-09-20	title match 100%
 jain2026hybrid	have	24	5222912	4f94cd54ef19cb60	yes	publisher	https://doi.org/10.1016/j.cosrev.2026.100980	2026-09-20	title match 100%
-jang2017objective	have	15	1879758	c952f1f138d7504e	yes	author	https://andrewxiwu.github.io/public/papers/2017/JWJ17-objective-metrics-and-gradient-descent-based-algorithms-for-adversarial-examples-in-machine-learning.pdf	2026-09-20	title match 100%
+jang2017objective	have	15	1879758	c952f1f138d7504e	yes	author	https://andrewxiwu.github.io/public/papers/2017/JWJ17-objective-metrics-and-gradient-descent-based-algorithms-for-adversarial-examples-in-machine-learning.pdf	2026-09-20	Author-hosted ACSAC 2017 paper; full 15-page text inspected; Section 3 defines NewtonFool; DOI metadata verified against Crossref.
 jeon2020dynamic	have	13	2501509	56b59cdcbe2eed1f	yes	ieee-access-oa	https://ieeexplore.ieee.org/document/9097224	2026-09-20	title match 100%
 jiang2026widthwall	have	40	741531	c9996188c078ba19	yes	arxiv	https://arxiv.org/pdf/2605.13690	2026-09-20	title match 86%
 jin2009unveiling	have	12	2968754	4f77863e27336b2c	yes	author	https://web.archive.org/web/20110401060356/http://www.cs.umn.edu/~zhzhang/Papers/Unveiling-Jin09-Sigmetrics09.pdf	2026-09-20	title match 100%
 jing2026oipr	have	19	8600589	409797f35dab7b79	yes	arxiv	https://arxiv.org/abs/2503.01260	2026-09-20	title match 100%
 jordaney2017transcend	have	20	1640393	e99b898f92e65f39	yes	usenix	https://www.usenix.org/system/files/conference/usenixsecurity17/sec17-jordaney.pdf	2026-09-20	title match 100%
 kamol2026mcndroid	have	28	9439347	a61619af595c8b97	yes	arxiv	https://arxiv.org/pdf/2605.06894	2026-09-20	title match 100%
-kan2024tesseract	have	30	6871761	3c498e7b8023345b	yes	arxiv	https://arxiv.org/pdf/2402.01359	2026-09-20	title match 100%
+kan2024tesseract	have	30	6871761	3c498e7b8023345b	yes	arxiv	https://arxiv.org/pdf/2402.01359	2026-09-21	title match 100% T-027 (2026-09-21): entry normalised to eprint/archiveprefix; DataCite holds 10.48550/arXiv.2402.01359 with eight creators. Still a preprint, no journal reference on arXiv.
 kang2016ngram	have	24	697348	c3e4755cd06ed33c	yes	arxiv	https://arxiv.org/pdf/1612.01445	2026-09-20	title match 100%
 kang2024low	have	10	573776	b395d89c679152b5	yes	openreview	https://openreview.net/pdf?id=O4p8cbzur1	2026-09-20	title match 100%
 kim2021transformers	have	13	2542165	77144393ee703411	yes	publisher	https://proceedings.neurips.cc/paper/2021/hash/ec0f40c389aeef789ce03eb814facc6c-Abstract.html	2026-09-20	title match 100%
@@ -143,8 +143,8 @@ kim2024rethinking	have	32	3084767	8fdaa22c38c25269	yes	arxiv	https://arxiv.org/p
 kipf2017semi	have	14	873897	a654f884db04a317	yes	arxiv	https://arxiv.org/pdf/1609.02907	2026-09-20	title match 100%
 kleinmann2014accurate	have	15	867144	cec57e99c355721c	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/ACCURATE%20MODELING%20OF%20THE%20SIEMENS%20S7%20SCADA%20PROTOCOL%20FOR%20INTRUSION%20DETECTION%20AND%20DIGITAL%20FORENSICS%20%28Case%20Conflict%29.pdf	2026-09-20	title match 100%
 kravchik2018detecting	have	12	1971121	76107f15699129a5	yes	arxiv	https://arxiv.org/pdf/1806.08110	2026-09-20	title match 100%
-kurakin2017bim	have	14	6437171	0d473a870b4b5e2d	yes	arxiv	https://arxiv.org/pdf/1607.02533	2026-09-20	title match 100%
-kurakin2018competition	have	36	1926416	7c5cf4090755c889	yes	arxiv	https://arxiv.org/pdf/1804.00097	2026-09-20	title match 100%
+kurakin2017bim	have	14	6437171	0d473a870b4b5e2d	yes	arxiv	https://arxiv.org/pdf/1607.02533	2026-09-20	title match 100%; vault copy is arXiv:1607.02533v4 (11 Feb 2017); ICLR 2017 workshop track has no separate proceedings PDF
+kurakin2018competition	have	36	1926416	7c5cf4090755c889	yes	arxiv	https://arxiv.org/pdf/1804.00097	2026-09-20	title match 100%; vault copy is arXiv:1804.00097v1 (31 Mar 2018), self-labelled 'a preprint of a Springer book chapter from the NIPS 2017 Competition Book', not the Springer typeset chapter (36 pp vs 195-231)
 kus2022false	have	13	2047082	334af636c6eec203	yes	arxiv	https://arxiv.org/abs/2205.09199	2026-09-20	title match 100%
 lashkari2018toward	have	7	321262	b8a8e945d5141927	yes	ieee	https://ieeexplore.ieee.org/document/8585560/	2026-09-20	title match 89%
 lee1998datamining	have	15	133845	a77aaa5c2a91f61d	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Data%20mining%20approaches%20for%20intrusion%20detection.pdf	2026-09-20	title match 100%
@@ -161,7 +161,7 @@ li2025efficient	have	14	2736702	64d27c8a19c3f71c	yes	ieee	https://ieeexplore.iee
 li2026highpass	have	8	2073796	5df6c7e5785c887a	yes	publisher	https://ojs.aaai.org/index.php/AAAI/article/download/39469/43430	2026-09-20	title match 100%
 lindorfer2015marvin	have	12	878249	fb9510cd7df67f58	yes	author	https://martina.lindorfer.in/files/papers/marvin_compsac15.pdf	2026-09-20	title match 80%
 liu2008isolation	have	10	258040	188a224c40786174	yes	author	https://cs.nju.edu.cn/zhouzh/zhouzh.files/publication/icdm08b.pdf	2026-09-20	title match 100%
-liu2015celeba	have	9	2402765	9a99629dee8f2ef7	yes	publisher	https://openaccess.thecvf.com/content_iccv_2015/papers/Liu_Deep_Learning_Face_ICCV_2015_paper.pdf	2026-09-20	title match 100%
+liu2015celeba	have	9	2402765	9a99629dee8f2ef7	yes	publisher	https://openaccess.thecvf.com/content_iccv_2015/papers/Liu_Deep_Learning_Face_ICCV_2015_paper.pdf	2026-09-20	title match 100%; CVF open-access ICCV 2015 version of record, 9 pp matching 3730-3738
 liu2023deeplearning	have	37	1019472	bc5a072694d5260d	yes	arxiv	https://arxiv.org/pdf/2103.05292	2026-09-20	title match 100%
 liu2024elephant	have	31	4422745	02991f865b6c06e2	yes	publisher	https://proceedings.neurips.cc/paper_files/paper/2024/file/c3f3c690b7a99fba16d0efd35cb83b2c-Paper-Datasets_and_Benchmarks_Track.pdf	2026-09-20	title match 100%
 liu2026unraveling	have	43	1236148	aafa62a9965ccf2f	yes	arxiv	https://arxiv.org/pdf/2402.02953	2026-09-20	title match 100%
@@ -184,14 +184,14 @@ meidan2023cadesh	have	20	1843342	c62dc0b382b7847b	yes	arxiv	https://arxiv.org/pd
 mell2003overview	have	22	648504	17af249e6f6f8233	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/An%20Overview%20of%20Issues%20in%20Testing%20Intrusion%20Detection%20Systems%20.pdf	2026-09-20	title match 100%
 mikolov2013distributed	have	9	111997	9ee42f08c5e63258	yes	neurips	https://proceedings.neurips.cc/paper_files/paper/2013/hash/9aa42b31882ec039965f3c4923ce901b-Abstract.html	2026-09-20	title match 100%
 mooney2017idc	no-pdf				-	publisher	https://www.kaggle.com/datasets/paultimothymooney/breast-histopathology-images	2026-08-15	dataset page; composition read verbatim, 277,524 patches at 198,738 IDC-negative and 78,786 IDC-positive
-moosavi2016deepfool	have	9	502500	110d8d92baaee4ff	yes	publisher	https://openaccess.thecvf.com/content_cvpr_2016/papers/Moosavi-Dezfooli_DeepFool_A_Simple_CVPR_2016_paper.pdf	2026-09-20	title match 100%
+moosavi2016deepfool	have	9	502500	110d8d92baaee4ff	yes	publisher	https://openaccess.thecvf.com/content_cvpr_2016/papers/Moosavi-Dezfooli_DeepFool_A_Simple_CVPR_2016_paper.pdf	2026-09-20	title match 100%; CVF open-access CVPR 2016 version of record, 9 pp matching 2574-2582
 morris2013attacks	have	8	200449	d3e3382676d5442c	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Industrial%20Control%20System%20Cyber%20Attacks.pdf	2026-09-20	title match 100%
 morris2014industrial	have	14	263343	11b64c3bf20fa9a9	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Industrial%20Control%20System%20Traffic%20Data%20Sets%20for%20Intrusion%20Detection%20Research.pdf	2026-09-20	title match 100%
 moser2007limits	have	10	189360	3e84e46d2d935209	yes	author	https://sites.cs.ucsb.edu/~chris/research/doc/acsac07_limits.pdf	2026-09-20	title match 100%
 moustafa2015unsw	have	6	341750	216aae36dc178679	yes	author	https://doi.org/10.1109/MilCIS.2015.7348942	2026-09-20	title match 100%
 muzaffar2026reassessing	have	41	7415838	674a8202b6c3c0ea	yes	publisher	https://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0341013&type=printable	2026-09-20	title match 100%
 narayanan2018apk2vec	have	11	1035358	a7cd96d0918f55ff	yes	arxiv	https://arxiv.org/pdf/1809.05693	2026-09-20	title match 100%
-nasr2025attacker	have	29	2134469	5067f88c7c14a007	yes	arxiv	https://arxiv.org/pdf/2510.09023	2026-09-20	title match 85%
+nasr2025attacker	have	29	2134469	5067f88c7c14a007	yes	arxiv	https://arxiv.org/pdf/2510.09023	2026-09-20	title match 85% (hyphenation in extracted title); vault copy is arXiv:2510.09023v1 (10 Oct 2025), marked 'Preprint. Under review.'
 natarajan2012nsdminer	have	9	673548	a784aab27345597a	yes	author	https://web.archive.org/web/20240421202718/https://cse.usf.edu/~yliu21/webresources/?n=pdf/infocom12-NSDMiner.pdf	2026-09-20	title match 100%
 ndonda2020trace	have	37	1754254	ac30c13fabb870e8	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Network%20trace%20generation%20for%20flow-based%20IDS%20evaluation%20in%20control%20and%20automation%20systems.pdf	2026-09-20	title match 100%
 nguyen2008survey	have	21	457982	3b686a8777593e8b	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/A%20Survey%20of%20Techniques%20for%20Internet%20Traffic%20Classification%20using%20Machine%20Learning.pdf	2026-09-20	title match 86%
@@ -203,14 +203,14 @@ norouzian2021safairtoolkit	no-pdf				-	publisher	https://github.com/reza-norouzi
 norouzian2025hgannmal	have	21	501922	aeb85cda2fa1e68a	yes	local	https://doi.org/10.1007/978-3-032-08124-7_23	2026-09-20	title match 100%
 onwuzurike2018family	have	12	694384	1eb456ac92b3b2e2	yes	arxiv	https://arxiv.org/pdf/1803.03448	2026-09-20	title match 100%
 onwuzurike2019mamadroid	have	33	1485044	bdaf31955921bfe5	yes	arxiv	https://arxiv.org/pdf/1711.07477	2026-09-20	title match 100%
-opitz2019macrof1	have	12	1151174	40cdcaffe6adbedd	yes	arxiv	https://arxiv.org/pdf/1911.03347v3	2026-09-20	title match 100%
+opitz2019macrof1	have	12	1151174	40cdcaffe6adbedd	yes	arxiv	https://arxiv.org/pdf/1911.03347v3	2026-09-20	Official arXiv metadata and v3 full text inspected; two macro-F1 conventions and their ordering
 pahl2016distributed	have	6	290758	5dad9aaa233abdcc	yes	author	https://doi.org/10.1109/NOMS.2016.7502936	2026-09-20	title match 100%
 pahl2018all	have	9	912710	0ce4d39db1f0cd79	yes	author	https://s2labs.org/download/publications/2018-11_CNSM_All_Eyes_On_You_pahl.pdf	2026-09-20	title match 100%
 pahl2018graphbased	have	3	378954	ed1edf0c6b684edf	yes	author	https://s2labs.org/download/publications/NOMS2018_Demo_Graph-based_IoT_Microservice_Security.pdf	2026-09-20	title match 100%
 pang2021deep	have	36	1001733	ad2a22bd714ac858	yes	arxiv	https://arxiv.org/pdf/2007.02500	2026-09-20	title match 100%
 papernot2016jsma	have	16	1225722	193f4fe48c751bd0	yes	arxiv	https://arxiv.org/pdf/1511.07528v1	2026-09-20	title match 100%
 papernot2017practical	have	14	6848576	bf3ab9d2dec1c9c6	yes	author	https://patrickmcdaniel.org/pubs/asiaccs17.pdf	2026-09-20	title match 100%
-papernot2018cleverhans	have	12	170158	4825f14405823698	yes	arxiv	https://arxiv.org/pdf/1610.00768	2026-09-20	title match 100%
+papernot2018cleverhans	have	12	170158	4825f14405823698	yes	arxiv	https://arxiv.org/pdf/1610.00768	2026-09-20	title match 100%; vault copy is arXiv:1610.00768v6 (27 Jun 2018), the v2.1.0 report; bib year 2016 is the v1 posting date and does not match this report
 papernot2018sok	have	16	780406	279da7a89b535153	yes	author	https://patrickmcdaniel.org/pubs/pmsw18.pdf	2026-09-20	title match 100%
 pawlicki2020databalancing	have	14	716686	7b48802fddd2d56b	yes	author	file:///Users/reza/Downloads/phd/TUM/research_projects_done/NADICS/related_works/On%20the%20impact%20of%20network%20data%20balancing%20in%20cybersecurity%20applications.pdf	2026-09-20	title match 100%
 paxson1999bro	have	22	192228	057cf22d42b78243	yes	author	https://www.icir.org/vern/papers/bro-CN99.pdf	2026-09-20	title match 100%
@@ -220,13 +220,13 @@ peiravian2013machine	have	6	273246	0879f256c0a6722d	yes	ieee	https://ieeexplore.
 pendlebury2019tesseract	have	19	7692906	ec4de197f52e024d	yes	usenix	https://www.usenix.org/system/files/sec19-pendlebury.pdf	2026-09-20	title match 100%
 perdisci2006ensemble	have	11	167923	aac4a8414a29a790	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Using%20an%20Ensemble%20of%20One-Class%20SVM%20Classifiers%20to%20Harden%20Payload-based%20Anomaly%20Detection%20Systems.pdf	2026-09-20	title match 91%
 petsas2014rage	have	6	160600	5b780216647e9d29	yes	author	https://thanasispetsas.com/media/pdfs/ratvm_eurosec2014.pdf	2026-09-20	title match 100%
-pierazzi2020intriguing	have	18	1668127	3d4b23706e6a4adc	yes	arxiv	https://arxiv.org/pdf/1911.02142v2	2026-09-20	title match 100%
-piras2025adversarial	have	15	568667	6fac2ae8ad095d1f	yes	arxiv	https://arxiv.org/pdf/2409.01249	2026-09-20	title match 100%
+pierazzi2020intriguing	have	18	1668127	3d4b23706e6a4adc	yes	arxiv	https://arxiv.org/pdf/1911.02142v2	2026-09-20	T-025: four-author manuscript dated 16 March 2020, matching the cited S&P paper; replaces the misfiled six-author 2024 extension. DOI metadata and Section III inspected; four problem-space constraints retained.
+piras2025adversarial	have	15	568667	6fac2ae8ad095d1f	yes	arxiv	https://arxiv.org/pdf/2409.01249	2026-09-20	title match 100%; vault copy is arXiv:2409.01249v2 (30 May 2025), the accepted Pattern Recognition manuscript
 pourali2022hidden	have	19	883146	465ab6a21a5a9397	yes	arxiv	https://arxiv.org/pdf/2209.15107	2026-09-20	title match 100%
 probstle2021development	have	39	606388	7e0882581e23768b	?			2026-09-20	
 qosient2026argus	no-pdf				-	web	https://openargus.org/	2026-08-14	
 rasmussen2006gaussian	have	266	4052292	20355ed64b3df27c	yes	publisher	https://gaussianprocess.org/gpml/chapters/RW.pdf	2026-09-20	title match 100%
-rauber2017foolbox	have	6	121183	49f673583d106cb5	yes	arxiv	https://arxiv.org/pdf/1707.04131	2026-09-20	title match 100%
+rauber2017foolbox	have	6	121183	49f673583d106cb5	yes	arxiv	https://arxiv.org/pdf/1707.04131	2026-09-20	title match 100%; vault copy is arXiv:1707.04131v3 (20 Mar 2018)
 roeling2020hybrid	have	28	6227184	5dfd800a49093adf	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Hybrid%20connection%20and%20host%20clustering%20for%20community%20detection%20in%20spatial-temporal%20network%20data%20.pdf	2026-09-20	title match 100%
 rubio2017analysis	have	22	424825	f6350bc1df3a1448	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Analysis%20of%20Intrusion%20Detection%20Systems%20in%20Industrial%20Ecosystems.pdf	2026-09-20	title match 100%
 ruff2021unifying	have	40	6015351	a3aa0d76fc40457e	yes	arxiv	https://arxiv.org/pdf/2009.11732	2026-09-20	title match 100%
@@ -241,34 +241,34 @@ shokouhinejad2025recent	have	81	8259370	6a401e5cf5a16297	yes	arxiv	https://arxiv
 sommer2010outside	have	12	162273	b73595240914c8b7	yes	author	https://www.icir.org/robin/papers/oakland10-ml.pdf	2026-09-20	title match 100%
 song2026fcghunter	have	14	3027430	59ccd2b90fef92cb	yes	arxiv	https://arxiv.org/pdf/2504.19456v1	2026-09-20	title match 100%
 sorbo2024navigating	have	42	2417490	f17ac6e460c58e86	yes	publisher	https://link.springer.com/content/pdf/10.1007/s10618-023-00988-8.pdf	2026-09-20	title match 100%
-sparta2020d72	have	85	3866204	5bc049b54f850d85	yes	publisher	https://www.sparta.eu/assets/deliverables/SPARTA-D7.2-Preliminary-description-of-AI-systems-security-mechanisms-and-tools-PU-M18.pdf	2026-09-20	title match 100%
-sparta2021d71	have	95	4449260	03e1653bb09aafde	yes	local	https://www.sparta.eu/assets/deliverables/SPARTA-D7.1-AI-systems-threat-analysis-mechanisms-and-tools-PU-M18_v1.1.pdf	2026-09-20	title match 100%
-sparta2021d73	have	19	1024599	bca169ccb196eefa	yes	publisher	https://www.sparta.eu/assets/deliverables/SPARTA-D7.3-Validation-and-evaluation-plan-PU-M21-v1.1.pdf	2026-09-20	title match 100%
+sparta2020d72	have	85	3866204	5bc049b54f850d85	yes	publisher	https://sparta.eu/assets/deliverables/SPARTA-D7.2-Preliminary-description-of-AI-systems-security-mechanisms-and-tools-PU-M18.pdf	2026-09-21	T-026: missing vault copy restored from byte-identical publications/SPARTA copy, matching prior manifest hash; cover/editor/contributor list and Section 2.3.2.1 inspected. ITTI responsible, Pawlicki editor, Norouzian contributor. T-027 (2026-09-21): cited URL moved to the apex host; the www host serves a certificate that does not cover it, the apex host returns the same PDF.
+sparta2021d71	have	95	4449260	03e1653bb09aafde	yes	local	https://sparta.eu/assets/deliverables/SPARTA-D7.1-AI-systems-threat-analysis-mechanisms-and-tools-PU-M18_v1.1.pdf	2026-09-21	title match 100% T-027 (2026-09-21): cited URL moved to the apex host; the www host serves a certificate that does not cover it, the apex host returns the same PDF.
+sparta2021d73	have	19	1024599	bca169ccb196eefa	yes	publisher	https://sparta.eu/assets/deliverables/SPARTA-D7.3-Validation-and-evaluation-plan-PU-M21-v1.1.pdf	2026-09-21	T-026: missing vault copy restored from byte-identical publications/SPARTA copy, matching prior manifest hash; cover/editor list and contest/benchmark plan inspected. TUM responsible, Norouzian editor; individual editing role follows Chapter 6. T-027 (2026-09-21): cited URL moved to the apex host; the www host serves a certificate that does not cover it, the apex host returns the same PDF.
 sparta2021d74	have	94	3689375	61f103de57bceaea	yes	author	-	2026-08-15	CONFIDENTIAL (CO) deliverable, supplied by the author; NOT publicly obtainable, do not cite as a checkable source
-sparta2021d75	have	129	7887891	99e9563225976337	yes	local	https://www.sparta.eu/assets/deliverables/SPARTA-D7.5-Final-version-of-AI-systems-securtiy-mechanisms-and-tools-PU-M30.pdf	2026-09-20	title match 100%
-sparta2022d76	have	73	6018620	b1cbb7d5e1ee55d8	yes	local	https://www.sparta.eu/assets/deliverables/SPARTA-D7.6-Final-version-of-evaluation-and-validation-plan-PU-M36.pdf	2026-09-20	title match 100%
+sparta2021d75	have	129	7887891	99e9563225976337	yes	local	https://sparta.eu/assets/deliverables/SPARTA-D7.5-Final-version-of-AI-systems-securtiy-mechanisms-and-tools-PU-M30.pdf	2026-09-21	title match 100% T-027 (2026-09-21): cited URL moved to the apex host; the www host serves a certificate that does not cover it, the apex host returns the same PDF.
+sparta2022d76	have	73	6018620	b1cbb7d5e1ee55d8	yes	local	https://sparta.eu/assets/deliverables/SPARTA-D7.6-Final-version-of-evaluation-and-validation-plan-PU-M36.pdf	2026-09-21	title match 100% T-027 (2026-09-21): cited URL moved to the apex host; the www host serves a certificate that does not cover it, the apex host returns the same PDF.
 sperotto2010overview	have	14	551797	846dcfd119db9a0e	yes	publisher	https://ris.utwente.nl/ws/files/6523249/Surveys_and_tutorial.pdf	2026-09-20	title match 100%
 suaboot2020scadataxonomy	have	37	2476786	3c839b49125ee6ec	yes	author	file:///Users/reza/Downloads/phd/TUM/research_projects_done/NADICS/related_works/A%20Taxonomy%20of%20Supervised%20Learning%20for%20IDSs%20in%20SCADA%20Environments.pdf	2026-09-20	title match 100%
 suarez2017droidsieve	have	13	530573	65d3bbfb505861fb	yes	author	https://kclpure.kcl.ac.uk/ws/files/96717063/2017codaspy_droidsieve.pdf	2026-09-20	title match 100%
-suya2024sok	have	21	3254466	7e2ee734e0cb3f77	yes	arxiv	https://arxiv.org/pdf/2310.17534	2026-09-20	title match 100%
+suya2024sok	have	21	3254466	7e2ee734e0cb3f77	yes	arxiv	https://arxiv.org/pdf/2310.17534	2026-09-20	title match 100%; vault copy is arXiv:2310.17534v2 (14 Feb 2024) preprint of the IEEE SaTML 2024 paper, 21 pp matching 387-407
 szegedy2014intriguing	have	10	6565323	c4e3bd872ef20b7d	yes	arxiv	https://arxiv.org/pdf/1312.6199	2026-09-20	title match 100%
-tabassi2019nistir8269	have	37	990208	3143f0445b15d5f4	yes	nist	https://nvlpubs.nist.gov/nistpubs/ir/2019/NIST.IR.8269-draft.pdf	2026-09-20	title match 100%
+tabassi2019nistir8269	have	37	990208	3143f0445b15d5f4	yes	nist	https://nvlpubs.nist.gov/nistpubs/ir/2019/NIST.IR.8269-draft.pdf	2026-09-20	draft of 30 Oct 2019, withdrawn 8 Mar 2023 and superseded by NIST AI 100-2e2023 ipd; poisoning/evasion and black/gray/white box knowledge checked in full text; cited as D7.1's source only
 taheri2019extensible	have	8	774390	d802156ff1955167	yes	ieee	https://ieeexplore.ieee.org/document/8888430/	2026-09-20	title match 90%
 tavallaee2009nslkdd	have	6	601490	3a62ca52a1bb1100	yes	author	https://www.ee.ryerson.ca/~bagheri/papers/cisda.pdf	2026-09-20	title match 100%
 tramer2016stealing	have	19	497869	acd17a4240ffe4f3	yes	usenix	https://www.usenix.org/system/files/conference/usenixsecurity16/sec16_paper_tramer.pdf	2026-09-20	title match 100%
 tramer2020adaptive	have	44	868762	b52d176d8d47f876	yes	arxiv	https://arxiv.org/pdf/2002.08347	2026-09-20	title match 100%
-tran2025quantifying	have	11	804615	cb099d3106c51574	yes	arxiv	https://arxiv.org/pdf/2508.06734v3	2026-09-20	title match 100%
+tran2025quantifying	have	11	804615	cb099d3106c51574	yes	arxiv	https://arxiv.org/pdf/2508.06734v3	2026-09-20	Version 3, 16 September 2026; updated title and acceptance at IEEE DSAA 2026 checked against arXiv. Full-text methods and evaluation inspected under T-021.
 urbina2016limiting	have	14	2366851	86c7cfc96cad6726	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/ICS/Limiting%20the%20Impact%20of%20Stealthy%20Attacks%20on%20Industrial%20Control%20Systems.pdf	2026-09-20	title match 100%
 valdes2009intrusion	have	7	470295	0b3ae47d1b872eb3	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/Industrial%20networking%20and%20attacks/Intrusion%20Monitoring%20in%20Process%20Control%20Systems.pdf	2026-09-20	title match 100%
 valleerai2010soot	have	11	182981	e63396058e4d236e	yes			2026-09-20	title match 100%
 vasilomanolakis2015taxonomy	have	33	1415447	44b9d573fcdd1e8c	yes	author	file:///Users/reza/Downloads/phd/TUM/articles/IDS/Taxonomy%20and%20Survey%20of%20Collaborative%20Intrusion%20Detection.pdf	2026-09-20	title match 100%
-vassilev2025adversarial	have	127	1964469	4811fb6ad73f9c91	yes	nist	https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2025.pdf	2026-09-20	title match 100%
+vassilev2025adversarial	have	127	1964469	4811fb6ad73f9c91	yes	nist	https://nvlpubs.nist.gov/nistpubs/ai/NIST.AI.100-2e2025.pdf	2026-09-21	title match 100% T-027 (2026-09-21): six authors read off the cover of the vault PDF and matched against the entry; the Crossref record for this DOI names Vassilev alone.
 vaswani2017attention	have	15	2215244	bdfaa68d8984f0dc	yes	arxiv	https://arxiv.org/pdf/1706.03762	2026-09-20	title match 100%
 velickovic2018graph	have	12	1637828	a7d811a44e1c65bf	yes	arxiv	https://arxiv.org/pdf/1710.10903	2026-09-20	title match 100%
 vidas2014evading	have	12	221824	e4a2366bab26d5b5	yes	author	https://users.ece.cmu.edu/~tvidas/papers/ASIACCS14.pdf	2026-09-20	title match 100%
-voracek2024treatment	have	17	874405	d421d9295b831de1	yes	arxiv	https://arxiv.org/pdf/2406.17830	2026-09-20	title match 100%
+voracek2024treatment	have	17	874405	d421d9295b831de1	yes	arxiv	https://arxiv.org/pdf/2406.17830	2026-09-20	title match 100%; vault copy is arXiv:2406.17830v2 (20 Jan 2025), carries the NeurIPS 2024 camera-ready footer; 17 pp vs proceedings 133464-133486
 wang2017malware	have	6	422725	0c398e09dc74fb4a	yes	ieee	https://ieeexplore.ieee.org/document/7899588/	2026-09-20	title match 100%
-wang2024graphs	have	31	2772496	cb80733cf7d4ddd7	yes	arxiv	https://arxiv.org/pdf/2401.08519v1	2026-09-20	title match 100%
+wang2024graphs	have	31	2772496	cb80733cf7d4ddd7	yes	arxiv	https://arxiv.org/pdf/2401.08519v1	2026-09-20	T-025: title corrected to Hypergraph Projection and Its Remediation from the paper and primary arXiv record. Section 1 defines unweighted clique projection on the same vertex set; results do not cover typed incidence encoding.
 wei2014amandroid	have	13	1029530	a81bd0a3ce613055	yes	author	https://cse.usf.edu/~xou/publications/ccs14.pdf	2026-09-20	title match 100%
 wermke2018large	have	14	991667	334c2e48f1e690ae	yes	arxiv	https://arxiv.org/pdf/1801.02742	2026-09-20	title match 100%
 wijesekera2015android	have	17	784793	05935357b1fd8a45	yes	usenix	https://www.usenix.org/system/files/conference/usenixsecurity15/sec15-paper-wijesekera.pdf	2026-09-20	title match 100%
@@ -277,7 +277,7 @@ wu2012droidmat	paywall				-	ieee	https://ieeexplore.ieee.org/document/6298136/	2
 wu2022greedy	have	13	1743882	8363dee65bfb387d	yes	publisher	https://proceedings.mlr.press/v162/wu22d/wu22d.pdf	2026-09-20	title match 100%
 xu2017neural	have	14	6108617	4504f0a909d35b2a	yes	arxiv	https://arxiv.org/abs/1708.06525	2026-09-20	title match 100%
 xu2019powerful	have	17	819821	a6ebf80c2790b8ba	yes	arxiv	https://arxiv.org/abs/1810.00826	2026-09-20	title match 100%
-xu2020manis	have	9	681739	9065dc6192b645e2	yes	tum-sec	https://www.sec.in.tum.de/i20/publications/manis-evading-malware-detection-system-on-graph-structure/	2026-09-20	title match 100%
+xu2020manis	have	9	681739	9065dc6192b645e2	yes	tum-sec	https://www.sec.in.tum.de/i20/publications/manis-evading-malware-detection-system-on-graph-structure/	2026-09-20	title match 100%; author copy from TUM chair site, 9 pp vs ACM DL 1688-1695 (8 pp)
 xu2021detecting	have	4	583763	0010f4e7414ddd36	yes	tum-sec	https://www.sec.in.tum.de/i20/publications/detecting-and-categorizing-android-malware-with-graph-neural-networks/	2026-09-20	title match 100%
 xu2021falcon	have	12	392747	1e9ffbb9078ffc88	yes	tum-sec	https://www.sec.in.tum.de/i20/publications/falcon-malware-detection-and-categorization-with-network-traffic-images	2026-09-20	title match 86%
 xu2021hawkeye	have	12	513900	acb97eee22cad87c	yes	tum-sec	https://www.sec.in.tum.de/i20/publications/hawkeye-cross-platform-malware-detection-with-representation-learning-on-graphs	2026-09-20	title match 100%
@@ -287,11 +287,11 @@ yadati2019hypergcn	have	23	2336798	a2aea017acafe630	yes	arxiv	https://arxiv.org/
 yan2012droidscope	have	16	608347	01b5b70c37eab879	yes	usenix	https://www.usenix.org/system/files/conference/usenixsecurity12/sec12-final107.pdf	2026-09-20	title match 100%
 yan2019classifying	have	12	516619	b45c138a75bcd2d1	yes	author-page-binghamton	https://www.cs.binghamton.edu/~ghyan/papers/dsn19.pdf	2026-09-20	title match 100%
 yoon2014communication	have	10	6463104	cd8c0828ad9c52c8	yes	ndss	https://www.ndss-symposium.org/wp-content/uploads/2017/09/02_4-paper_0.pdf	2026-09-20	title match 100%
-yu2025reliable	have	14	429792	6c63e463a501f347	yes	arxiv	https://arxiv.org/pdf/2306.08565	2026-09-20	title match 100%
+yu2025reliable	have	14	429792	6c63e463a501f347	yes	arxiv	https://arxiv.org/pdf/2306.08565	2026-09-20	title match 100%; vault copy is arXiv:2306.08565v1 (14 Jun 2023), marked 'Preprint. Under review.', NOT the IEEE SaTML 2025 camera-ready (797-810); content may differ
 zhang2020apigraph	have	14	1311938	bf00492c8892b156	yes	author	https://yinzhicao.org/apigraph/apigraph.pdf	2026-09-20	title match 100%
 zhang2022deeptralog	have	12	1763744	b637b10c98ff7dde	yes	author	https://doi.org/10.1145/3510003.3510180	2026-09-20	title match 100%
 zhang2023android	have	14	831326	b3ac6fe91c2ee171	yes	publisher	https://www.mdpi.com/2076-3417/13/23/12629	2026-09-20	title match 100%
-zhang2024evaluating	have	10	1591990	bb39e1e61be2408d	yes	arxiv	https://arxiv.org/pdf/2411.14834	2026-09-20	title match 100%
+zhang2024evaluating	have	10	1591990	bb39e1e61be2408d	yes	arxiv	https://arxiv.org/pdf/2411.14834	2026-09-20	title match 100%; vault copy is arXiv:2411.14834v2 (4 Feb 2025), which corrects an attack bug in v1; cite the corrected numbers only
 zhao2021impact	have	36	1623635	6ba088f4c313d567	yes	author	https://jacquesklein2302.github.io/papers/2021-yanjie-TOSEM-sampleDuplication.pdf	2026-09-20	title match 100%
 zhao2021structural	have	18	3178878	06f88843d7a40ce7	yes	author	https://www4.comp.polyu.edu.hk/~csxluo/HRAT.pdf	2026-09-20	title match 100%
 zhou2006learning	have	8	231127	b063f21afd130331	yes	nips	https://papers.nips.cc/paper_files/paper/2006/file/dff8e9c2ac33381546d96deea9922999-Paper.pdf	2026-09-20	title match 80%
