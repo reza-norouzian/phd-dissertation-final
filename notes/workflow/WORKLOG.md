@@ -2,6 +2,15 @@
 
 Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the shape.
 
+## 2026-09-22
+
+- `15:28` **T-033** in-progress -> review - Revised RQ2 applied thesis-wide; audits and rebuild pass; visual review left to the author
+- `15:28` **T-033** Applied D-008 across Chapters 1, 2, 4 and 8 and structure v0.3; abstracts, Chapters 3/5/6/7 checked and unchanged. Strict audits pass; latexmk 151 pages with chapter starts unchanged after tightening the Chapter 4 opening; underfull vboxes 44 -> 48, no other new warnings. No visual review.
+- `15:25` **T-033** backlog -> in-progress - Author approved the revised RQ2 in chat (D-008); applying it thesis-wide
+- `15:25` **T-033** created: Apply the revised RQ2 across the dissertation
+- `15:25` decision **D-008**: Revise RQ2 to a problem-level question on joint representation
+- `15:16` Read-only RQ2 assessment requested by the author: read Chapter 4 in full, Section 1.3, G2, the current plan and Chapters 7-8; checked the original Hybroid method/evaluation text. Proposed two unaccepted alternatives: (1) How can static program structure and observed network behaviour be jointly represented for Android malware detection and category classification, and how does their combination affect predictive performance compared with either source alone? (2) How does the predictive value of combining static program structure with observed network behaviour vary between Android malware detection and category classification, and across learning methods? Recommend (1) for design-and-evaluation coverage and consistency with revised RQ3; (2) foregrounds task- and learner-dependent empirical contrasts. No general fusion benefit, causal explanation, temporal generalisation or adversarial robustness is implied. No thesis or PDF changes and no decision recorded.
+
 ## 2026-09-21
 
 - `15:45` **T-032** in-progress -> review - Five corrected five-run macro rows integrated; figure, audits, algebra checks and PDF rebuild pass

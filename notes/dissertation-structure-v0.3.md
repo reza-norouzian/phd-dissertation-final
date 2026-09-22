@@ -80,12 +80,20 @@ implementation, and evaluation roles before it assigns originality to individual
 
 ### RQ2: Multimodal Android malware analysis
 
-**To what extent does fusing static code-graph representations with dynamic network-flow
-features improve Android malware detection and category classification compared with either
-modality alone?**
+**How can static program structure and observed network behaviour be jointly represented for
+Android malware detection and category classification, and how does their combination affect
+predictive performance compared with either source alone?**
 
-Chapter 4 answers RQ2 through Hybroid. It uses corrected dataset counts and precise graph
-terminology, and it bases the answer on the reported within-system modality comparison.
+Revised on 22 September 2026 under D-008 and T-033. The earlier wording asked only to what
+extent fusing static code-graph representations with dynamic network-flow features improves
+performance over either modality alone. Chapter 4 answers RQ2 through Hybroid. Sections 4.5-4.8
+answer the first part: a 64-dimensional code vector and 13 flow features averaged per
+application are concatenated at application level. Section 4.11 answers the second through the
+reported within-system comparison: fusion adds one to two points of detection F1 over the
+better single modality, and minus two to plus three points in category classification,
+depending on the learner. Fold-level scores are unavailable, so these are descriptive
+differences between rounded means. The chapter uses corrected dataset counts and precise graph
+terminology.
 
 ### RQ3: Higher-order Android malware analysis
 

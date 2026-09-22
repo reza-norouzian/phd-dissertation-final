@@ -8,14 +8,14 @@
 % Classifier and ROC figures restored under T-002 from Hybroid Section 3.5.
 % Revised under T-021 after approval of T-019: scientific corrections, supported
 % mathematical definitions and a readability pass. Empirical values are preserved.
+% T-033 and D-008: framing and summary map both parts of the revised RQ2.
 
 \section{Research Problem and Contribution}
 \label{sec:hybroid:1}
 
 This chapter addresses RQ2, stated in Section~\ref{sec:intro:rqs}: \rqTwoText{}
-It examines gap~\gapref{2} through a comparison of program-code and network-flow representations
-on the same application cohort. The comparison measures the additional value of fusion for each
-prediction task and learner.
+It examines gap~\gapref{2} on one application cohort, separately for each prediction task and
+learner.
 
 \hybroid{} combines program structure recovered from an Android application package with
 network traffic recorded during execution on a physical handset. Every sample enters the
@@ -37,8 +37,9 @@ pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
 The contribution comprises the multimodal pipeline and its within-system evaluation. The network
 branch aggregates bidirectional flow records into \netfeatures{} features per application. The
 code branch uses learned instruction embeddings and program graphs to represent static structure.
-Their common application-level granularity permits a direct comparison of each branch with the
-joint representation. Section~\ref{sec:hybroid:11} uses these contrasts to answer RQ2.
+Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} answer the first part of RQ2 with this
+joint representation; Section~\ref{sec:hybroid:11} answers the second by comparing the fused
+input with each branch alone.
 
 The work was published at ISC 2021 \cite{norouzian2021hybroid}. The candidate is the first of four
 authors, with shared first authorship recorded for the first two. He designed the overall pipeline
@@ -621,7 +622,7 @@ the aggregate score of 0.94 therefore does not establish equal performance acros
 \section{Modality Comparison}
 \label{sec:hybroid:11}
 
-RQ2 is evaluated through the within-system contrasts in
+The second part of RQ2 is evaluated through the within-system contrasts in
 Figures~\ref{fig:hybroid:detection-classifiers} and~\ref{fig:hybroid:categorisation-classifiers}
 \cite{norouzian2021hybroid}. For a fixed learner and task, let $\overline M_s$, $\overline M_d$
 and $\overline M_f$ be the reported mean scores for static, dynamic and fused inputs. The
@@ -722,13 +723,14 @@ joint classifier under a specified attacker model.
 \section{Chapter Summary}
 \label{sec:hybroid:13}
 
-\hybroid{} combines a learned representation of static program structure with
-\netfeatures{} features of recorded network flows. The application-level representation
-supports separate binary and five-class prediction tasks. On CICAndMal2017, gradient boosting
-with the joint input achieves a reported detection accuracy of 97.0 per cent and category
-classification precision, recall and $F_1$ of 0.94 \cite{norouzian2021hybroid}.
+\hybroid{} answers the first part of RQ2 with an application-level joint representation.
+A learned 64-dimensional vector of static program structure is concatenated with
+\netfeatures{} features averaged over the recorded network flows of the same application.
+The joint input supports separate binary and five-class prediction tasks. On CICAndMal2017,
+gradient boosting with this input achieves a reported detection accuracy of 97.0 per cent and
+category classification precision, recall and $F_1$ of 0.94 \cite{norouzian2021hybroid}.
 
-The within-system comparisons answer RQ2 for the evaluated cohort. Fusion improves reported
+The within-system comparisons answer the second part for the evaluated cohort. Fusion improves reported
 detection $F_1$ by one or two percentage points over the better single modality. Its category
 classification contrast ranges from minus two to plus three points across learners. Flow
 features lead code features in detection, while code features lead in categorisation for each

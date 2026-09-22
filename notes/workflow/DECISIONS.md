@@ -2,6 +2,14 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-008 Revise RQ2 to a problem-level question on joint representation
+
+- **Date:** 2026-09-22
+- **Status:** accepted
+- **Context:** On 22 September 2026 the author replaced the previous RQ2 (the extent to which fusing static code-graph representations with dynamic network-flow features improves detection and category classification over either modality alone) with alternative (1) from the read-only RQ2 assessment of the same day, and asked for it to be applied throughout the thesis.
+- **Decision:** RQ2 becomes: How can static program structure and observed network behaviour be jointly represented for Android malware detection and category classification, and how does their combination affect predictive performance compared with either source alone? Hybroid's application-level joint representation (Sections 4.5-4.8) answers the first part; the within-system contrasts of Section 4.11 answer the second. No general fusion benefit, causal mechanism, temporal generalisation or adversarial robustness is implied.
+- **Consequence:** Implement under T-033: update the shared macro, G2, the Introduction, Chapter 4 framing and summary, the Chapter 8 answer and structure v0.3. No experiment, table value or method specification changes.
+
 ### D-007 Revise RQ3 to a problem-level question on higher-order relations
 
 - **Date:** 2026-09-21

@@ -71,9 +71,11 @@ Dynamic analysis records triggered behaviour through instrumentation, as in tain
 have reported benefits from combining static and dynamic observations
 \cite{onwuzurike2018family}. Binary and category classification impose different distinctions
 on the observations: a feature that separates malware from benign applications need not
-separate malicious categories. RQ2 concerns the additional value of fusing program-graph
-representations with network-flow features for the same applications, separately for binary
-detection and malware-category classification.
+separate malicious categories. A joint representation must also describe both observations
+at a common unit, because code is recovered from the package while traffic is recorded as
+individual flows. RQ2 asks how program structure and network behaviour can be represented
+together, and how their combination compares with each source alone on the same applications,
+separately for binary detection and malware-category classification.
 
 A function-call graph relates methods through recovered call sites. A hypergraph can record
 a chosen group of methods as one hyperedge \cite{zhou2006learning}. Replacing each group by
@@ -154,9 +156,10 @@ empirical cases.
 
 \researchquestion[2]{RQ2}{Multimodal Android malware analysis}{\rqTwoText}
 
-Gap~\gapref{2} is examined on a common retained cohort of CICAndMal2017 applications.
-The contrast is between each modality and their fusion, separately for each learner and
-prediction task. The category task includes Benign as one of five classes.
+Gap~\gapref{2} is examined through \hybroid{}, which summarises program graphs and recorded
+flows per application and concatenates the two feature groups. On a common retained cohort of
+CICAndMal2017 applications, the joint input is compared with each source alone, separately for
+each learner and prediction task. The category task includes Benign as one of five classes.
 
 \researchquestion[3]{RQ3}{Higher-order Android malware analysis}{\rqThreeText}
 
@@ -178,9 +181,9 @@ adversarial robustness.
 \label{sec:intro:contributions}
 
 \paragraph{Multimodal Android malware analysis.}
-\hybroid{} combines a representation of static program structure with features of recorded
-network flows. Its within-system comparison measures the value of fusion on applications
-for which both observations are available \cite{norouzian2021hybroid}. Fusion has the
+\hybroid{} represents static program structure and recorded network flows at application
+level and combines them in one input vector. Its within-system comparison measures the value of
+fusion on applications for which both observations are available \cite{norouzian2021hybroid}. Fusion has the
 highest reported detection $F_1$ for each evaluated learner. For category classification,
 fusion improves $F_1$ for the ensemble classifiers, while the decision tree favours static features.
 These are descriptive comparisons of the published fold means
@@ -351,7 +354,7 @@ Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-impo
     RQ1.2 & \ref{chap:anomaly}
       & Session-disjoint S7-300 classification and benign monitoring; SWaT input-representation comparison at timestamp level. \\
     RQ2 & \ref{chap:hybroid}
-      & Within-system modality comparisons on a common retained CICAndMal2017 cohort. \\
+      & Application-level joint representation; within-system comparisons with each source alone on a common retained CICAndMal2017 cohort. \\
     RQ3 & \ref{chap:hgann}
       & Hypergraph construction and operator analysis; common-input comparisons with pairwise and non-attentive hypergraph models on Drebin and CICMalDroid. \\
     RQ4 & \ref{chap:advml}

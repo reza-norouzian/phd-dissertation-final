@@ -104,7 +104,8 @@ applications may recognise an analysis environment and alter their behaviour
 Hybrid analysis combines static and dynamic observations. Within-system studies have reported
 benefits from their combination, with outcomes dependent on the observation types and the
 stimulation used during execution \cite{lindorfer2015marvin,onwuzurike2018family}.
-Feature-level fusion supplies the derived features together to a classifier. Its additional
+Feature-level fusion supplies the derived features together to a classifier, so both
+observations must first be summarised for the same unit, such as an application. Its additional
 value is assessed against each modality alone for the same application cohort and prediction
 task, as in Chapter~\ref{chap:hybroid}.
 
@@ -810,13 +811,14 @@ method. RQ1 addresses representation and maintenance through service communicati
 and modular analysis of network and process features.
 
 \phantomsection
-\paragraph{G2. The value of combining program structure with observed behaviour.}\label{gap:2}
+\paragraph{G2. Combining program structure with observed behaviour.}\label{gap:2}
 MARVIN and the study by Onwuzurike et al.\ report benefits from combining static and dynamic
 features in within-system comparisons \cite{lindorfer2015marvin, onwuzurike2018family}.
-Those results concern particular observation types and prediction tasks. Whether the benefit
-persists when either changes requires comparison of the fused representation with each
-modality alone on the same samples. RQ2 investigates this question for program-graph and
-network-flow features in binary detection and malware-category classification.
+Those results concern particular observation types and prediction tasks. A different pair
+first needs a joint representation at a common unit of analysis. Whether the benefit persists
+then requires comparison of that representation with each modality alone on the same samples.
+RQ2 addresses both steps for program structure and network behaviour in binary detection and
+malware-category classification.
 
 \phantomsection
 \paragraph{G3. The empirical value of higher-order program representations.}\label{gap:3}
