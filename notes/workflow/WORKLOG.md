@@ -4,6 +4,14 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-22
 
+- `21:52` **T-023** in-progress -> review - Opening sentence simplified; strict audit and isolated PDF rebuild pass
+- `21:52` **T-023** Simplified the Section 2.6.6 opening into two direct sentences. Strict audit passes. A stalled external LaTeX process corrupted shared intermediates, so an isolated clean build supplied the verified 151-page tracked PDF; no new warning class and no visual review.
+- `21:50` **T-023** review -> in-progress - Simplify the opening sentence of Experimental Protocol and Bias at the author's request
+- `20:21` **T-023** in-progress -> review - Concise evaluation principles complete; event-definitions passage removed; audits and PDF rebuild pass
+- `20:21` **T-023** Reduced Experimental Protocol and Bias from 389 to 121 prose words, removed the full event-definitions/benchmark-labels passage and averaging equation, repaired Chapter 5's sole equation reference, and corrected the planning outline. Strict audits and 151-page rebuild pass; underfull vboxes 44 -> 42 with no new warning class. No visual review.
+- `20:19` **T-023** review -> in-progress - Shorten Experimental Protocol and Bias to two paragraphs and remove event definitions and benchmark labels at the author's request
+- `20:16` **T-023** in-progress -> review - Removed Section 2.6.6; kept concise fold/run aggregation under evaluation protocol; audit and rebuild pass
+- `20:14` **T-023** review -> in-progress - Remove Section 2.6.6 and retain only the fold/run distinction within the experimental-protocol subsection
 - `20:11` **T-023** in-progress -> review - Section 2.6.3 shortened by 39.7%; core aggregation definitions retained; strict audit and 151-page rebuild pass
 - `20:09` **T-023** review -> in-progress - Shorten Section 2.6.3 substantially at the author's request while preserving its core definitions and verified citations
 - `19:53` **T-025** in-progress -> review - Problem-level background orientation added; citations, source-stable rebuild and checks pass

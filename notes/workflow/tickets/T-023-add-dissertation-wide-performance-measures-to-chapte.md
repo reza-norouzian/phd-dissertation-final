@@ -190,9 +190,102 @@ undefined citations or references, Biber warnings, or overfull boxes. Its 43 und
 vertical-box notices and the template/end-group warnings match the existing warning classes.
 No visual review, staging, commit, or push was performed.
 
+### Follow-up: remove Section 2.6.6
+
+The author approved removal of the standalone aggregation and operational-reporting subsection.
+Its operational quantities are already defined with their data in Chapter~3, while Chapter~4
+states its processing coverage at the cohort definition. The fold/run distinction remains
+necessary because Chapter~5 cites Equation~`eq:background:run-aggregation`; it will be retained
+in shortened form at the opening of the experimental-protocol subsection. This change adds no
+citation or empirical claim, so the verified source record above remains applicable.
+
+- [x] Remove the standalone subsection and its redundant operational equations.
+- [x] Retain a concise fold/run aggregation definition without breaking Chapter~5's reference.
+- [x] Run the strict reference audit, rebuild the tracked PDF, and inspect the log.
+
+Section 2.6.6, `Aggregation and Operational Reporting`, has been removed. Its throughput,
+false-alarm-rate, and processing-coverage equations were deleted because Chapters~3 and~4
+define these study-specific quantities with their data. The arithmetic-mean equation and two
+sentences distinguishing class, fold, and run aggregation now sit under the reporting criteria
+in `Experimental Protocol and Bias`; the existing Chapter~5 cross-reference remains valid.
+That subsection is now numbered 2.6.6.
+
+The strict Chapter 2 citation audit passes with 120 cited keys and none requiring attention.
+`latexmk thesis.tex` succeeds and rebuilds the tracked 151-page PDF. The log contains no
+undefined citations or references, Biber warnings, or overfull boxes. It contains 44 underfull
+vertical-box notices and the existing template/end-group warning classes. No visual review,
+staging, commit, or push was performed.
+
+### Follow-up: concise experimental protocol and bias
+
+The author approved a 120--150-word treatment of the remaining evaluation principles and
+explicitly requested complete removal of `Event definitions and benchmark labels`. Retain
+the subsection title and label, remove the paragraph headings and averaging equation, and
+make Chapter 5's existing arithmetic-mean statement self-contained. No empirical result or
+experimental protocol changes. Preserve the earlier uncommitted Section 2.6.6 removal.
+
+#### Claim-to-source record before drafting
+
+| Core source / evidence | Retained claim | Full-text, metadata and vault status |
+| --- | --- | --- |
+| `pendlebury2019tesseract` | Prospective Android evaluation uses temporally ordered training/test data and a test population appropriate to deployment. | Re-inspected Section 4.1, constraints C1--C3, in the existing full-text extraction. Cached USENIX primary record and prior metadata-verification response checked. Vault: `have`, `title_ok=yes`. |
+| `arp2022dos` | Keep test information out of preprocessing and model selection; use suitable baselines under a common evaluation protocol. | Re-inspected P3/P5 and P6 in the existing full-text extraction. Cached USENIX author/title/year record checked. Vault: `have`, `title_ok=yes`. Controlled component comparisons remain a methodological requirement, not a new empirical attribution. |
+| `irolla2018duplication` | Repackaged applications can create dependence between training and test samples. | Re-inspected the abstract, introduction and duplicate-analysis passages in the existing publisher-text extraction; the cached publisher/DOI metadata record is verified. Vault: `have`, `title_ok=yes`. No claim that all classifiers suffer equally. |
+| Existing Chapter 4 protocol and T-032 author-confirmed repetition record | Hybroid uses five-fold means; HGANN-Mal uses five training runs on a fixed partition. | Re-read the current protocol passages; T-032 records the author's five-run clarification. No new numerical claim or reinterpretation of the publication. The nonlinear-metric averaging distinction is already established in this ticket. |
+
+All retained citation keys already have manifest rows. The strict Chapter 2 audit passed
+before drafting (120 cited keys, none requiring attention).
+
+- [x] Reduce the subsection to two short paragraphs; remove the event-definitions passage
+      and averaging equation, and repair the sole Chapter 5 equation reference.
+- [x] Correct the stale subsection numbering in the current planning outline.
+- [x] Pass strict citation audits and source checks; rebuild the tracked PDF and inspect
+      warnings, with visual review left to the author.
+
+Implementation: the subsection now has 121 prose words, compared with 389 before this pass
+(`texcount`, excluding headings and mathematics), a 68.9% reduction. Two paragraphs replace
+the five paragraph headings. The complete event-definitions and benchmark-labels passage and
+the fold/run mean equation are removed. The title and subsection label remain; Chapter 5 now
+states its five-run arithmetic means without the obsolete equation reference. No result or
+protocol changed. Source comparisons confirm that all other Chapter 2 text is preserved and
+that Chapter 5 differs only by that reference deletion. Updated the current plan's subsection
+numbering and recorded the author-approved reductions without overwriting historical notes.
+
+Verification: strict audits pass for Chapter 2 (112 cited keys) and Chapter 5 (35), with none
+requiring attention. `latexmk thesis.tex` exits 0 and produces the tracked 151-page PDF.
+There are no undefined citations/references, Biber warnings or overfull boxes. The 21 existing
+template/package warning messages are unchanged; underfull vertical boxes decrease from 44
+to 42, and the existing end-group notice remains. The root PDF symlink is intact. No visual
+review, staging, commit or push. Pre-edit source/log snapshots are in
+`/tmp/thesis-protocol-3OuQWC/`.
+
+### Follow-up: simplify the opening sentence
+
+The author requested plainer wording for the opening statement on temporal order and deployment
+conditions. The existing `pendlebury2019tesseract` claim-to-source record above remains
+applicable; no citation or scientific claim changes.
+
+- [x] Split the sentence into two direct statements while preserving its meaning.
+- [x] Pass the strict Chapter 2 citation audit and rebuild the tracked PDF.
+
+The revised text states that training samples should be collected before the test period and
+that the test set should match expected deployment conditions. The strict audit passes with
+112 cited keys and none requiring attention. A pre-existing external LaTeX process remained
+stalled on the shared output directory and corrupted its intermediates during a forced rebuild.
+An isolated `latexmk` build therefore produced the verified 151-page PDF, which was installed
+atomically as the tracked output. The isolated log contains no undefined citations/references,
+Biber warnings or overfull boxes; the existing 21 template/package warnings, 42 underfull
+vertical boxes and end-group notice remain. No visual review, staging, commit or push.
+
 - 2026-09-20 created
 - 2026-09-20 in-progress -> review (Shared performance measures added, sources and formulas checked, citation audit and PDF rebuild pass; visual review left to author)
 - 2026-09-20 review -> in-progress (Shorten Section 2.6 at the author's request, preserving its measures, equations and qualifications)
 - 2026-09-20 in-progress -> review (Concise revision complete; metric definitions and equations preserved, citation audit and PDF rebuild pass)
 - 2026-09-22 review -> in-progress (Shorten Section 2.6.3 substantially at the author's request while preserving its core definitions and verified citations)
 - 2026-09-22 in-progress -> review (Section 2.6.3 shortened by 39.7%; core aggregation definitions retained; strict audit and 151-page rebuild pass)
+- 2026-09-22 review -> in-progress (Remove Section 2.6.6 and retain only the fold/run distinction within the experimental-protocol subsection)
+- 2026-09-22 in-progress -> review (Removed Section 2.6.6; kept concise fold/run aggregation under evaluation protocol; audit and rebuild pass)
+- 2026-09-22 review -> in-progress (Shorten Experimental Protocol and Bias to two paragraphs and remove event definitions and benchmark labels at the author's request)
+- 2026-09-22 in-progress -> review (Concise evaluation principles complete; event-definitions passage removed; audits and PDF rebuild pass)
+- 2026-09-22 review -> in-progress (Simplify the opening sentence of Experimental Protocol and Bias at the author's request)
+- 2026-09-22 in-progress -> review (Opening sentence simplified; strict audit and isolated PDF rebuild pass)

@@ -706,95 +706,23 @@ criteria and per-example attack-suite aggregation as analytical measures, not re
 scores. Finite attacks do not certify worst-case robustness
 \cite{carlini2019evaluating}.
 
-\subsection{Aggregation and Operational Reporting}
-\label{sec:background:metrics:reporting}
-
-Let $M_b$ be a metric from fold or run $b$. Its mean and sample standard deviation are
-\begin{equation}
-  \overline M=\frac1B\sum_{b=1}^{B}M_b,
-  \qquad
-  s_M=\sqrt{\frac1{B-1}\sum_{b=1}^{B}(M_b-\overline M)^2},\qquad B>1.
-  \label{eq:background:run-aggregation}
-\end{equation}
-Reports should distinguish class averaging from averaging across folds or runs. For nonlinear
-measures such as $F_1$, the mean can differ from the value calculated from pooled counts.
-\hybroid{} averages over five folds, while \hgann{} averages over five training runs on a fixed
-partition.
-
-Operational performance uses time and resource denominators. For an observation interval of
-duration $T$, let $n_{\mathrm{in}}$, $n_{\mathrm{proc}}$ and $n_{\mathrm{drop}}$ count input,
-processed and dropped frames. The extractor measurements in Chapter~\ref{chap:anomaly} use
-\begin{equation}
-  q_{\mathrm{in}}=\frac{n_{\mathrm{in}}}{T},\qquad
-  q_{\mathrm{proc}}=\frac{n_{\mathrm{proc}}}{T},\qquad
-  p_{\mathrm{drop}}=\frac{n_{\mathrm{drop}}}{n_{\mathrm{in}}}.
-  \label{eq:background:throughput}
-\end{equation}
-With $T$ in seconds, $q_{\mathrm{in}}$ and $q_{\mathrm{proc}}$ are frame rates. Chapter~\ref{chap:anomaly}
-also reports mean whole-device CPU utilisation and peak memory. Its record-emission delay begins
-at window close and excludes acquisition time. Service-graph latency measures inter-service
-round trips.
-
-Two further ratios describe operational scope:
-\begin{equation}
-  r_{\mathrm{FA}}=\frac{n_{\mathrm{false\ alarm\ episodes}}}{T_{\mathrm{benign}}},
-  \qquad
-  c_{\mathrm{proc}}=\frac{N_{\mathrm{analysed}}}{N_{\mathrm{source}}}.
-  \label{eq:background:alarm-coverage}
-\end{equation}
-The episode rate requires a grouping rule and a stated benign exposure. Processing coverage is
-the analysed fraction of source applications; \hybroid{} reports classification scores for this
-fraction. Chapter~\ref{chap:hgann} uses analytical bounds to describe scaling under stated
-assumptions.
-
 \subsection{Experimental Protocol and Bias}
 \label{sec:background:evaluation:bias}
 
-The evaluation population and protocol determine which conclusions a metric supports.
+Malware evaluation should use training samples collected before the test period. The test set
+should match the conditions expected during deployment \cite{pendlebury2019tesseract}.
+Preprocessing and model selection must exclude test information; data-dependent transformations
+are fitted within each training fold \cite{arp2022dos}. Repackaged applications require
+checks for dependence across partitions \cite{irolla2018duplication}.
 
-\paragraph{Sampling bias in space and time.} Prospective evaluation requires training
-observations to precede the test period \cite{pendlebury2019tesseract}. Random splits within
-one collection answer a different question and can conceal deterioration on later applications
-\cite{jordaney2017transcend}. Test-set composition also matters: precision describes the
-evaluated population, and transfer to another class prevalence requires the assumptions of
-Equation~\ref{eq:background:prevalence}. Corpus curation introduces further differences,
-including timestamp quality and labelling criteria
-\cite{chow2025beyond,kan2024tesseract}. Chronological ordering alone does not remove these
-sources of bias.
-
-\paragraph{Leakage and related samples.} In inductive evaluation, data-dependent
-transformations and model-selection decisions must respect the training boundary.
-Normalisation and resampling belong within the training partition of each fold; feature
-selection must also exclude test information \cite{arp2022dos}. Independently pretrained
-representations require documented provenance and checks for overlap with the evaluation
-cohort. Repackaged or otherwise related applications can create dependencies across partitions
-\cite{irolla2018duplication}. Zhao et al.\ observed limited duplication effects for the
-supervised binary detectors they tested, but larger effects for unsupervised family clustering
-\cite{zhao2021impact}. These findings do not establish that duplication is harmless for
-other models or tasks.
-
-\paragraph{Event definitions and benchmark labels.} Point adjustment credits an entire
-labelled anomaly interval as detected when any point within it is flagged. Under this rule,
-even random scores can receive high $F_1$ values \cite{kim2022towards,sorbo2024navigating}.
-Point-level and interval-level scoring therefore require explicit, separate conventions.
-Label errors and trivially separable anomalies can further distort benchmark comparisons
-\cite{liu2024elephant}.
-
-\paragraph{Baselines and component attribution.} A common-protocol comparison with simple
-alternatives tests whether model complexity provides an empirical benefit. In provenance-based
-intrusion detection, a shared-framework evaluation found a simple neural baseline competitive
-with more elaborate systems \cite{bilot2025sometimes}. Component-specific claims additionally
-require the relevant design factors to be varied separately. For adversarial evaluation, the
-corresponding comparison fixes the threat model and adapts attacks to the complete defence,
-as described in Section~\ref{sec:background:adversarial}.
-
-\paragraph{Reporting criteria.} Reproducible reporting identifies the sample population and
-split policy, together with preprocessing and model-selection procedures. It also specifies
-metric aggregation and experimental settings, including random seeds
-\cite{arp2022dos,daoudi2021lessons}. Baselines and uncertainty estimates must be tied to the
-same evaluation unit. These are criteria for assessing the contribution chapters, not an
-assertion that all historical experiments satisfy them. Published results retain their stated
-protocols; unreported settings remain unresolved and limit the conclusions drawn from them.
+Baseline comparisons should use a common evaluation protocol on shared data partitions and
+include simple alternatives \cite{arp2022dos}. Claims about individual components require
+controlled ablations. Reports
+must distinguish class averaging from averaging across folds or training runs. For nonlinear
+measures such as $F_1$, the mean of individual scores can differ from the score calculated from
+pooled counts. \hybroid{} uses five-fold cross-validation, while \hgann{} reports five-run means
+on a fixed partition. The contribution chapters specify their protocols and the resulting
+limits on interpretation.
 
 \section{Summary and Research Gaps}
 \label{sec:background:summary}

@@ -298,8 +298,7 @@ meets hypergraphs only after function-call graphs have been defined.
   - 2.6.3 Multiclass and Multilabel Aggregation
   - 2.6.4 ROC Curves and Area under the Curve
   - 2.6.5 Performance under Adversarial Input
-  - 2.6.6 Aggregation and Operational Reporting
-  - 2.6.7 Experimental Protocol and Bias
+  - 2.6.6 Experimental Protocol and Bias
 
   The seven main sections and the existing evaluation label are retained. Mathematical
   definitions do not resolve unreported averaging conventions in the source studies, and no
@@ -312,6 +311,13 @@ meets hypergraphs only after function-call graphs have been defined.
   1,857 to 1,460 words while preserving all 18 equations and the subsection structure. The
   section now occupies pages 18-23. The thesis remains 155 pages because the shorter background
   is followed by a recto-opening blank before Chapter 3.
+
+  Author-approved reductions on 22 September 2026 under T-023 supersede the original
+  equation-preservation scope: Section 2.6.3 is shorter, and the standalone Aggregation and
+  Operational Reporting subsection has been removed. Experimental Protocol and Bias is now
+  Section 2.6.6, reduced to two short paragraphs without the event-definitions and benchmark-labels
+  passage or the fold/run mean equation. Operational quantities remain defined in Chapters 3
+  and 4; Chapter 5 states its five-run arithmetic means without the deleted equation reference.
 
 2.7 Summary and Research Gaps
 
