@@ -24,12 +24,13 @@ This dissertation examines contextual representation and adversarial evaluation,
 malware analysis at the centre. The term \emph{context} covers two sources of information:
 relations among program or system elements, and complementary observations combined for one
 prediction. \hybroid{} studies
-context across static code and recorded network traffic; \hgann{} studies context within
-the application package through groups of related methods. Supporting work examines service
-relationships in the Internet of Things (IoT). The industrial control studies use
+context across static code and recorded network traffic \cite{norouzian2021hybroid}; \hgann{}
+studies context within the application package through groups of related methods
+\cite{norouzian2025hgannmal}. Supporting work examines service relationships in the Internet of
+Things (IoT) \cite{aubet2018graph}. The industrial control studies use
 protocol-specific records and multivariate process windows.
 
-Predictive evaluation must account for the population on which a model is tested.
+Researchers must consider the test population when evaluating a model's predictive performance.
 Jordaney et al.\ document changes in malware that make previously trained classifiers
 unreliable \cite{jordaney2017transcend}. Pendlebury et al.\ show how temporally inconsistent
 partitions and unrepresentative class distributions can inflate reported performance
@@ -53,10 +54,10 @@ thirteen defences, almost all of which had attempted adaptive evaluation
 the particular defence.
 
 For Android, a problem-space attack must produce a valid modified package that retains its
-malicious functionality \cite{pierazzi2020intriguing}. The permitted transformations and
-their effect on extracted features therefore belong in the evaluation specification.
-Predictive comparison of representations and adversarial assessment of a complete system
-are the two research themes developed in this dissertation.
+malicious functionality \cite{pierazzi2020intriguing}. The evaluation must therefore specify
+which transformations an attack may use and how they change the extracted features. This
+dissertation compares the predictive performance of different representations and assesses
+complete systems under adversarial attacks.
 
 \section{Problem Statement and Scope}
 \label{sec:intro:problem}
@@ -65,7 +66,7 @@ are the two research themes developed in this dissertation.
 
 Static analysis examines an application without executing it and can inspect code outside
 the paths exercised by a test harness. Its coverage depends on the available code and the
-analysis approximations; obfuscation can hinder recovery \cite{moser2007limits}.
+analysis approximations \cite{li2017static}; obfuscation can hinder recovery \cite{moser2007limits}.
 Dynamic analysis records triggered behaviour through instrumentation, as in taint tracking
 \cite{enck2014taintdroid}, but depends on the execution paths reached. Within-system studies
 have reported benefits from combining static and dynamic observations
@@ -105,7 +106,8 @@ Attack libraries such as Foolbox and earlier attack/defence competitions provide
 evaluation infrastructure \cite{rauber2017foolbox,kurakin2018competition}. Reuse across
 prediction tasks requires explicit attacker access and valid perturbation constraints,
 together with scoring rules that match the prediction objective \cite{carlini2019evaluating}.
-RQ4 examines these requirements through the SAFAIR contest and benchmark. Reusable interfaces
+RQ4 examines these requirements through the SAFAIR contest and benchmark
+\cite{norouzian2021safaircontest,norouzian2021adversarialbenchmark}. Reusable interfaces
 support a common execution procedure. Reproducing a historical result also requires the
 evaluated data and trained models, with the complete experimental configuration.
 
@@ -197,8 +199,7 @@ Every evaluated hypergraph configuration has higher mean accuracy over five trai
 baselines on each task and corpus; \hgann{} exceeds the strongest non-attentive baseline in three of four
 task--corpus combinations. The operator analysis in Section~\ref{sec:hgann:8} also shows
 how attentive propagation can distinguish groupings with the same fixed propagation
-matrix. This representational capacity is separate from an empirical explanation of the
-accuracy differences.
+matrix. 
 
 \paragraph{Communication-graph modelling for IoT services.}
 The service-graph study represents observed communication partners as node-local
@@ -217,7 +218,7 @@ SWaT process data. Their different recall and false-positive profiles relate the
 representation choice to the operating objective (Section~\ref{sec:anomaly:gan}).
 
 \paragraph{Evaluating adversarial robustness: benchmark design and metric analysis.}
-SAFAIR translates attacker assumptions into a contest protocol and a reusable benchmark
+SPARTA SAFAIR translates attacker assumptions into a contest protocol and a reusable benchmark
 with task-specific interfaces \cite{sparta2021d73,sparta2022d76}. The partner
 histopathology application documents reuse outside the contest's facial-image tasks.
 Chapter~\ref{chap:advml} derives the zero accuracy loss of constant predictions under
