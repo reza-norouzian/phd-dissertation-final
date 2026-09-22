@@ -4,6 +4,9 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-22
 
+- `19:53` **T-025** in-progress -> review - Problem-level background orientation added; citations, source-stable rebuild and checks pass
+- `19:53` **T-025** Added concise Android malware task/pipeline background, moved and expanded anomaly foundations ahead of flow mechanics, and strengthened adversarial framing; reused nine verified vault sources. Strict chapter and whole-thesis audits pass. Source-stable isolated latexmk build produces 153 pages with no undefined citations/references, Biber warnings or overfull boxes; 44 underfull vboxes and existing template/end-group notices remain. Preserved the concurrent Figure 2.1 replacement and crop removal. No visual review.
+- `19:37` **T-025** review -> in-progress - Add author-approved problem-level orientation for Android malware detection, anomaly detection and adversarial machine learning
 - `19:22` **T-026** review -> done - Author-requested Chapter 1 clarifications applied: S7-300/SWaT and PROFINET explained, static-analysis and SAFAIR citations added; latexmk 151 pages, strict audit clean
 - `19:21` **T-026** in-progress -> review - Hybroid and HGANN-Mal contribution statements separated; source checks pass; compilation omitted by author request
 - `19:21` **T-026** Separated the Hybroid and HGANN-Mal individual-contribution statements into distinct paragraphs and applied the author-approved wording. Strict Introduction citation audit and file-scoped diff check pass. Whole-tree diff check still reports pre-existing trailing whitespace in content/anomaly-detection.tex:40. PDF compilation omitted under the author's standing request, so the tracked PDF remains stale.

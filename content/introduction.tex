@@ -11,7 +11,13 @@
 \section{Research Context}
 \label{sec:intro:context}
 
-Learning-based Android malware analysis depends on the observations available to the
+Binary malware detection assigns an application to a benign or malicious class. Multiclass
+analysis can instead distinguish malware families or broader application categories; the
+selected label scheme defines the prediction target \cite{bilot2024survey}. Learning-based
+detectors derive features or structured representations from observable application properties
+and learn a decision rule from labelled examples.
+
+The reliability of Android malware analysis depends on the observations available to the
 classifier. DREBIN uses features from an application's manifest and bytecode
 \cite{arp2014drebin}, while MaMaDroid models sequences of abstracted application programming
 interface (API) calls recovered through static analysis \cite{onwuzurike2019mamadroid}.

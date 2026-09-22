@@ -21,9 +21,36 @@ contribution chapters.
 \section{Android Applications and Their Analysis}
 \label{sec:background:android}
 
-The Android studies analyse distributed application packages (APKs).
-Chapter~\ref{chap:hybroid} also uses recorded network traffic, whereas
-Chapter~\ref{chap:hgann} derives its input from the package alone.
+\subsection{Android Malware Detection}
+\label{sec:background:android:detection}
+
+Malware detection assigns a software artefact to a benign or malicious class. Multiclass
+malware analysis uses a finer label scheme: a corpus may group malicious applications by
+family or define broader application categories \cite{bilot2024survey}. Each target partitions
+the applications differently, so its metrics answer a different question. In this dissertation,
+\hybroid{} evaluates binary detection and
+five-class category classification, with Benign as one category. \hgann{} evaluates binary
+detection and malware-family classification on Drebin, together with category classification
+on CICMalDroid \cite{norouzian2021hybroid,norouzian2025hgannmal}.
+
+Signature and heuristic detectors search for specified indicators of malicious activity.
+Learning-based detectors acquire observable properties of an application, encode them as a
+numerical or relational representation. They then fit a decision rule to labelled samples
+\cite{arp2014drebin,liu2023deeplearning}. DREBIN, for example, extracts manifest and bytecode
+features from an Android package and embeds them in a joint vector space. A linear classifier
+operates on that representation \cite{arp2014drebin}. Graph-based systems add a structural
+encoding before classification \cite{bilot2024survey}. The prediction concerns an application
+even when the representation is assembled from instructions, methods or recorded network
+flows.
+
+The evidence available to a detector remains bounded by its acquisition process. Static
+analysis depends on the code recovered from the package and on the analyser's approximations;
+dynamic analysis depends on the paths exercised during observation. Obfuscation and loading at
+runtime can conceal relevant behaviour, while changes in applications and attack techniques can
+weaken associations learned from historical data \cite{liu2023deeplearning}. The following
+subsections develop these observation limits. Section~\ref{sec:background:evaluation:bias}
+addresses temporal change, related samples and other protocol choices that affect reported
+performance.
 
 \subsection{Dalvik Bytecode, Manifest, and Permissions}
 \label{sec:background:android:artefacts}
@@ -76,14 +103,12 @@ Figure~\ref{fig:background:apk} distinguishes package artefacts from execution o
 
 \begin{figure}[tbp]
   \centering
-  % Approved imagegen variant; trim removes only the temporary preview label.
-  \includegraphics[width=\linewidth,trim=0 0 0 115bp,clip]
-    {background-apk-analysis.png}
+  \includegraphics[width=\linewidth]{background-apk-analysis.png}
   \caption[Android package contents and analysis modes]{Package artefacts and analysis modes.
   Static analysis reads available code and metadata and infers possible behaviour.
   Dynamic analysis records behaviour along the execution paths exercised by the harness;
   network traffic from those executions supplies the additional observation used in
-  Chapter~\ref{chap:hybroid}. Coverage depends on the artefacts and instrumentation available.}
+  Chapter~\ref{chap:hybroid}.}
   \label{fig:background:apk}
 \end{figure}
 
@@ -322,6 +347,40 @@ Network and industrial detectors operate on several observation units. Traffic c
 represented by flow records or service interactions; a process detector instead receives
 measurements of the physical system. Chapter~\ref{chap:anomaly} uses each of these forms.
 
+\subsection{Anomaly Detection as a Security Task}
+\label{sec:background:networks:families}
+
+Signature-based detection matches specified attack patterns, whereas anomaly detection
+identifies deviations from a reference model of expected behaviour
+\cite{paxson1999bro,chandola2009anomaly}. An anomaly detector may return a binary label or an
+anomaly score. A threshold converts the score into a decision and therefore determines which
+deviations are reported \cite{chandola2009anomaly}.
+
+The unit and context of the decision define what constitutes a deviation. A point anomaly is
+unusual as an individual observation. A contextual anomaly is unusual under a particular
+condition, such as an operating state, while a collective anomaly arises from a related group
+whose individual elements need not be unusual \cite{chandola2009anomaly}. These distinctions
+matter for the contribution studies: the SWaT method derives timestamp decisions from
+multivariate windows (Section~\ref{sec:anomaly:gan}), and the service-graph method evaluates a
+relation against learned communication structure
+(Section~\ref{sec:anomaly:service-graphs}).
+
+An unusual observation can reflect legitimate activity, so an anomaly score requires a security
+interpretation \cite{sommer2010outside}. Learning regimes also depend on the available labels.
+Supervised classification uses labelled examples of the target classes. Normal-only training
+estimates a reference from observations assumed benign, while unsupervised methods work with
+unlabelled data under assumptions about its composition \cite{chandola2009anomaly}. Labels used
+for feature selection or threshold choice make the development procedure partly supervised even
+when the model's fitting objective uses no class labels.
+
+Local-density methods compare a point with its neighbourhood \cite{breunig2000lof}, and
+isolation methods exploit the short partition paths of isolated observations
+\cite{liu2008isolation}. Reconstruction methods encode observations and attempt to reproduce
+them; reconstruction discrepancies provide scores relative to the fitted representation
+\cite{ruff2021unifying,pang2021deep}. Relational methods can assess vertex attributes
+together with graph structure \cite{akoglu2015graph}. Each method must specify its normality
+reference and the unit it scores.
+
 \subsection{Network Flows as a Unit of Observation}
 \label{sec:background:networks:flows}
 
@@ -337,29 +396,6 @@ messages and layer-2 industrial traffic require other identifiers.
 Section~\ref{sec:hybroid:7} defines how \hybroid{} aggregates bidirectional flow records into
 an application-level vector. Chapter~\ref{chap:anomaly} separately defines its service
 relations and windowed industrial connection records.
-
-\subsection{Anomaly-Detection Method Families}
-\label{sec:background:networks:families}
-
-Signature-based detection matches specified attack patterns, whereas anomaly detection
-identifies deviations from a reference model of expected behaviour
-\cite{paxson1999bro,chandola2009anomaly}. An unusual observation can reflect legitimate
-activity, so an anomaly score needs a security interpretation \cite{sommer2010outside}.
-
-Learning regimes depend on the available labels. Supervised classification uses labelled
-examples of the target classes. Normal-only training estimates a reference from observations
-assumed benign, while unsupervised methods work with unlabelled data under assumptions about
-its composition \cite{chandola2009anomaly}. Labels used for feature selection or threshold
-choice make the development procedure partly supervised even when the model's fitting
-objective uses no class labels.
-
-Local-density methods compare a point with its neighbourhood \cite{breunig2000lof}, and
-isolation methods exploit the short partition paths of isolated observations
-\cite{liu2008isolation}. Reconstruction methods encode observations and attempt to reproduce
-them; reconstruction discrepancies provide scores relative to the fitted representation
-\cite{ruff2021unifying,pang2021deep}. Relational methods can assess vertex attributes
-together with graph structure \cite{akoglu2015graph}. The normality reference and the unit
-scored must be specified for each method.
 
 \subsection{Communication Structure in Industrial and IoT Networks}
 \label{sec:background:networks:industrial}
@@ -399,8 +435,14 @@ Section~\ref{sec:background:evaluation:bias}.
 \section{Adversarial Machine Learning}
 \label{sec:background:adversarial}
 
-Adversarial evaluation concerns deliberate interference with a learning system. Its
-conditions must specify the attack objective and the access available to the attacker.
+Adversarial machine learning studies attackers who choose changes to training data or inference
+inputs with the aim of altering model behaviour, together with methods for resisting those
+changes \cite{biggio2018wildpatterns}. Such strategic manipulation differs from incidental noise
+or distributional change because the attacker selects the modification to serve an objective. A
+robustness statement is therefore conditional on the attack goal, the attacker's knowledge and
+the permitted transformations
+\cite{carlini2019evaluating}. Adversarial evaluation tests a learning system under those
+conditions.
 
 \paragraph{Threat models.} A threat model states the attacker's goal and knowledge, together
 with the capabilities and constraints governing permitted modifications

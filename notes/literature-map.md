@@ -16,11 +16,11 @@ cited key to the reference vault.
 
 | Section | Material to support | Candidate pools below |
 | --- | --- | --- |
-| 2.1 Android Applications and Their Analysis | APK/DEX artefacts, component lifecycles, permission grants and mapping; analysis modes, obfuscation and packaging | Android Applications and Malware Analysis; Static, Dynamic, and Hybrid Observation |
+| 2.1 Android Applications and Their Analysis | Detection and family/category classification; observation--representation--decision pipeline; APK/DEX artefacts, component lifecycles, permission grants and mapping; analysis modes, obfuscation and packaging | Android Applications and Malware Analysis; Static, Dynamic, and Hybrid Observation |
 | 2.2 Graph Representations of Programs | CFGs and FCGs; dependence and backward slicing; hypergraph incidence, clique projection and operator-specific equivalence | Verified foundation sources below; Network Flows, Program Graphs, and Hypergraphs; Android Applications and Malware Analysis |
 | 2.3 Learning over Graphs | message passing, graph-level readout and permutation properties; attention and hypergraph propagation under stated assumptions | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
-| 2.4 Detection in Networked and Cyber-Physical Systems | observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
-| 2.5 Adversarial Machine Learning | goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Evaluating Adversarial Robustness |
+| 2.4 Detection in Networked and Cyber-Physical Systems | anomaly definitions, types, scores and thresholds; observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
+| 2.5 Adversarial Machine Learning | strategic manipulation and threat-model-relative robustness; goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Evaluating Adversarial Robustness |
 | 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Evaluating Adversarial Robustness |
 | 2.7 Summary and Research Gaps | a short synthesis followed by G1-G4, using sources already cited in Sections 2.1-2.6 | no new source pool |
 

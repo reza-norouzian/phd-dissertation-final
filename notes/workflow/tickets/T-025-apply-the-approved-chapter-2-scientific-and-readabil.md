@@ -1,7 +1,7 @@
 ---
 id: T-025
 title: Apply the approved Chapter 2 scientific and readability revision
-status: review
+status: done
 priority: P1
 chapter: 2
 owner: codex
@@ -9,7 +9,7 @@ depends_on: []
 blocks: []
 tags: []
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 ---
 
 ## Goal
@@ -159,3 +159,66 @@ Verification records: `tmp/background-revision-2026-09-20/final-verification.jso
 
 - 2026-09-20 created
 - 2026-09-20 in-progress -> review (Approved scientific/readability revision complete; source-preservation checks, strict citation audits and PDF rebuild pass)
+- 2026-09-22 review -> in-progress (Add author-approved problem-level orientation for Android malware detection, anomaly detection and adversarial machine learning)
+
+## Follow-up: problem-level orientation, 22 September 2026
+
+The author approved a read-only comparison of Chapter 2 with nine colleagues' dissertations.
+The comparison found a pedagogical gap rather than a missing technical survey: the current
+chapter explains artefacts, representations and evaluation in depth, but it introduces the
+Android detection task only implicitly and places the anomaly definition after network-flow
+details. The adversarial section needs only a stronger opening. This follow-up retains the
+seven-section structure, contribution-specific related work and all existing equations.
+
+### Acceptance criteria
+
+- [x] Add a compact problem-level introduction to Android malware detection and distinguish
+      binary detection from the family/category tasks used in this dissertation.
+- [x] Present the common observation--representation--decision pipeline without duplicating
+      the method descriptions in Chapters 4 and 5.
+- [x] Place the anomaly-detection definition and learning regimes before network-flow details;
+      add anomaly scores, thresholds and point/contextual/collective scope.
+- [x] Strengthen the opening of adversarial machine learning by distinguishing strategic
+      manipulation from incidental variation and tying robustness to a stated threat model.
+- [x] Add only a short matching orientation in Chapter 1, preserve the approved chapter
+      structures and avoid a general malware taxonomy or broad machine-learning tutorial.
+- [x] Pass strict citation audits, rebuild the tracked PDF, inspect the log and leave visual
+      review to the author.
+
+### Claim-to-source record, before drafting
+
+| Section / claim | Core citekeys | Full-text, metadata and vault status |
+| --- | --- | --- |
+| 1.1 and 2.1: malware detection, family/category classification and the observation--representation--classifier pipeline | `bilot2024survey`, `arp2014drebin`, `norouzian2021hybroid`, `norouzian2025hgannmal` | Bilot Sections 3.2 and 4.1 were inspected: they distinguish binary detection from category/family classification and describe feature extraction, graph construction and downstream classification. DREBIN abstract and Sections 1--2 were re-inspected for its APK--static analysis--vector--classifier pipeline and its stated limits for obfuscated or dynamically loaded code. The Hybroid and HGANN-Mal abstracts and introductions were re-inspected for the dissertation's detection, category and family tasks. All four source files are already present in the reference vault with `have` and `title_ok=yes`; no metadata change is required. |
+| 2.1: scale, evolving applications and evasion as general Android-analysis constraints | `liu2023deeplearning` | Abstract and Introduction were re-inspected. The review documents manual-analysis scalability limits, evolving Android applications, dependence on training data and attacker adaptation. DOI metadata and the 37-page full text are already verified and vaulted with `title_ok=yes`. The new prose will state these as problem conditions, without importing the review's claims of model superiority. |
+| 2.4: anomaly definition, anomaly types, scores and thresholds | `chandola2009anomaly` | Sections 1.1--1.2 and 2.2--2.4 were re-inspected. They define anomalies relative to expected behaviour, distinguish point, contextual and collective anomalies, and distinguish score outputs from binary labels selected by a cutoff. DOI 10.1145/1541880.1541882 and the 58-page author manuscript are already verified and vaulted with `title_ok=yes`. |
+| 2.4: an anomaly alert requires a security interpretation | `sommer2010outside` | Abstract and Sections 1--3 were re-inspected. The paper distinguishes deviations from attacks and identifies the semantic gap between an anomaly score and an operational security conclusion. The 12-page author manuscript and bibliographic record are already verified and vaulted with `title_ok=yes`. |
+| 2.5: deliberate training/test manipulation and threat-model-relative robustness | `biggio2018wildpatterns`, `carlini2019evaluating` | Biggio et al. abstract and Sections 1, 3.3 and 3.6 were re-inspected for intentional perturbations, poisoning/evasion and application-specific manipulation constraints. Carlini et al. Sections 2.1--2.5 were re-inspected for goals, capabilities, knowledge and worst-case evaluation under a stated threat model. Both arXiv full texts and primary metadata are already verified and vaulted with `title_ok=yes`. |
+
+All proposed citations already occur in the dissertation and have manifest rows. No new
+bibliography entry is needed. The core-source set for this follow-up is:
+\cite{bilot2024survey,arp2014drebin,norouzian2021hybroid,norouzian2025hgannmal,liu2023deeplearning,chandola2009anomaly,sommer2010outside,biggio2018wildpatterns,carlini2019evaluating}.
+
+### Follow-up implementation and verification
+
+- Added 52 prose words to the opening of Chapter 1 and 377 to Chapter 2, measured with
+  `texcount -sum -brief` against `HEAD`. The addition defines the prediction tasks and the
+  observation--representation--decision pipeline without adding a general malware taxonomy.
+- Added Section 2.1.1, `Android Malware Detection`. Reordered the existing anomaly material
+  as Section 2.4.1, `Anomaly Detection as a Security Task`, and added the score/threshold and
+  point/contextual/collective distinctions. Expanded the opening of Section 2.5 without adding
+  an attack or defence catalogue.
+- Re-inspected the claim-bearing passages named above. All core sources were already present
+  in `references/MANIFEST.tsv`; no bibliography or vault change was needed. Strict audits pass
+  for Chapters 1 and 2 and for all chapter files, with 180 cited keys and none unresolved.
+- A concurrent local process replaced `figures/background-apk-analysis.png` and removed the
+  prior crop from the `\includegraphics` command. Those unrelated user changes were
+  preserved. Because that process held the shared output files open, the final source-stable
+  build was run in `tmp/orientation-build/` and its PDF was installed atomically at
+  `output/pdf/thesis.pdf`.
+- The rebuilt thesis has 153 pages; Chapter 2 begins on page 9 and Chapter 3 on page 27.
+  The final isolated log contains no undefined citation/reference, Biber warning or overfull
+  box. It retains 44 underfull vertical-box notices, 21 existing template/package warnings and
+  the pre-existing end-group notice. The root `thesis.pdf` symlink remains correct. No visual
+  review, staging, commit or push was performed.
+- 2026-09-22 in-progress -> review (Problem-level background orientation added; citations, source-stable rebuild and checks pass)

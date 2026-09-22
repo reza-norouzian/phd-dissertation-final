@@ -259,6 +259,8 @@ meets hypergraphs only after function-call graphs have been defined.
 
 2.1 Android Applications and Their Analysis
 
+- Malware detection, family/category classification and the
+  observation--representation--decision pipeline
 - Dalvik bytecode, component lifecycles, manifest and permission grants
 - Static, dynamic, and hybrid analysis
 - Obfuscation, packing, repackaging
@@ -276,11 +278,13 @@ meets hypergraphs only after function-call graphs have been defined.
 
 2.4 Detection in Networked and Cyber-Physical Systems
 
+- Anomaly scores and thresholds; point, contextual and collective anomalies
 - Flow and other observation units; supervised, normal-only and unlabelled learning
 - Reconstruction and relational methods; industrial observations and measurement limits
 
 2.5 Adversarial Machine Learning
 
+- Strategic manipulation and threat-model-relative robustness
 - Goals, knowledge and capability constraints; feature-space and problem-space attacks
 - Adaptive evaluation and existing attack-library/competition infrastructure
 
@@ -334,6 +338,13 @@ The rebuilt chapter occupies printed pages 9-24, with Chapter 3 beginning on pag
 prose decreases from 5,947 to 4,495 words (24.42%). The complete thesis has 153 pages, down
 from 155; the overall 170-page maximum is unchanged. The 18 numbered metric equations are
 preserved, and the existing degree definitions use one unnumbered display for line fitting.
+
+Follow-up on 22 September 2026 under T-025: a compact problem-level orientation now precedes
+the Android artefact details, and the anomaly definition precedes the network-flow material.
+The adversarial section opens by separating strategic manipulation from incidental variation.
+The follow-up adds 377 prose words to Chapter 2 and 52 to Chapter 1. Chapter 3 now begins on
+page 27 after the recto-opening blank, and the complete thesis has 153 pages. The seven main
+sections and all 18 numbered metric equations remain unchanged.
 
 #### Page budget for Chapter 2
 
