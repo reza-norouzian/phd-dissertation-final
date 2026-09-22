@@ -4,6 +4,13 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-22
 
+- `19:22` **T-026** review -> done - Author-requested Chapter 1 clarifications applied: S7-300/SWaT and PROFINET explained, static-analysis and SAFAIR citations added; latexmk 151 pages, strict audit clean
+- `19:21` **T-026** in-progress -> review - Hybroid and HGANN-Mal contribution statements separated; source checks pass; compilation omitted by author request
+- `19:21` **T-026** Separated the Hybroid and HGANN-Mal individual-contribution statements into distinct paragraphs and applied the author-approved wording. Strict Introduction citation audit and file-scoped diff check pass. Whole-tree diff check still reports pre-existing trailing whitespace in content/anomaly-detection.tex:40. PDF compilation omitted under the author's standing request, so the tracked PDF remains stale.
+- `19:21` **T-026** review -> in-progress - Separate the Hybroid and HGANN-Mal individual-contribution statements at the author's request
+- `19:16` **T-026** in-progress -> review - Attribution wording shortened; source checks pass; compilation omitted by author request
+- `19:16` **T-026** Shortened the companion-paper attribution in Section 1.5 at the author's request. The Introduction now identifies both papers collectively as related work by Pahl and co-authors and states that neither lists the candidate as an author. Strict citation audit and git diff check pass. PDF compilation deliberately omitted at the author's request, so the tracked PDF still contains the previous wording.
+- `19:16` **T-026** review -> in-progress - Shorten the companion-paper attribution in the Introduction at the author's request
 - `18:58` **T-026** in-progress -> review - Author-requested Introduction wording revised; audit and rebuild pass
 - `18:58` **T-026** Applied the author's requested simplification in Section 1.1: stated the permitted-transformations requirement directly, replaced the abstract closing theme sentence with the dissertation's two concrete evaluation activities, and corrected the preceding possessive. Strict citation audit and forced 151-page rebuild pass; no undefined citations/references or overfull boxes. Existing 48 underfull boxes and end-group notice remain. No visual review.
 - `18:58` **T-026** review -> in-progress - Apply the author's requested sentence-level simplifications in the Introduction

@@ -1,7 +1,7 @@
 ---
 id: T-026
 title: Apply the approved Chapter 1 scientific and readability revision
-status: review
+status: done
 priority: P1
 chapter: 1
 owner: codex
@@ -9,7 +9,7 @@ depends_on: []
 blocks: []
 tags: []
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 ---
 
 ## Goal
@@ -145,3 +145,10 @@ Core-source audit before drafting:
 
 - 2026-09-20 created
 - 2026-09-20 in-progress -> review (Approved Chapter 1 revision complete; source gates, preservation checks, strict audits and PDF rebuild pass)
+- 2026-09-22 review -> in-progress (Apply the author's requested sentence-level simplifications in the Introduction)
+- 2026-09-22 in-progress -> review (Author-requested Introduction wording revised; audit and rebuild pass)
+- 2026-09-22 review -> in-progress (Shorten the companion-paper attribution in the Introduction at the author's request)
+- 2026-09-22 in-progress -> review (Attribution wording shortened; source checks pass; compilation omitted by author request)
+- 2026-09-22 review -> in-progress (Separate the Hybroid and HGANN-Mal individual-contribution statements at the author's request)
+- 2026-09-22 in-progress -> review (Hybroid and HGANN-Mal contribution statements separated; source checks pass; compilation omitted by author request)
+- 2026-09-22 review -> done (Author-requested Chapter 1 clarifications applied: S7-300/SWaT and PROFINET explained, static-analysis and SAFAIR citations added; latexmk 151 pages, strict audit clean)

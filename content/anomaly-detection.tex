@@ -9,7 +9,7 @@ This chapter answers RQ1.1 and RQ1.2, the two subquestions of RQ1 stated in
 Section~\ref{sec:intro:rqs}, and takes up gap~\gapref{1}. Three pieces of work support the
 answer. The first represents service-to-service communication in an IoT middleware as a graph
 and flags relations absent from that graph. The second is \nadics{}, a learning framework for
-network and process data, together with its S7 and PROFINET extractor and its integration in
+network and process data, together with its S7comm and PROFINET extractor and its integration in
 IUNO. The third studies a multivariate reconstruction detector over SWaT process data by
 combining elements of MAD-GAN and TadGAN.
 
@@ -37,7 +37,7 @@ data \cite{pahl2016distributed}. It observes an inter-service message rather tha
 Vertices are service addresses, and an edge records an observed communication relation. The
 message also exposes metadata such as the operation performed \cite{pahl2018graphbased}.
 
-{\nadics{} receives tabular records. Its network path takes connection features derived from S7, PROFINET, 
+{\nadics{} receives tabular records. Its network path takes connection features derived from S7comm, PROFINET, 
 or conventional network traffic. The SWaT path does not model communication. It consumes the sensor and actuator
 values of a six-stage water-treatment process, sampled once per second
 \cite{goh2016swatdataset,mathur2016swat}.
@@ -168,7 +168,7 @@ deliverable additionally reports a deep neural network and a convolutional netwo
 \cite{iuno_ap4}, and the generative adversarial detector of Section~\ref{sec:anomaly:gan} was
 added later at the same interface for multivariate process data. Postprocessing carries the
 verdict to whoever acts on it. The released code leaves this stage open, because alarm handling
-depends on the security policy and the network layout of the individual site. The S7 and
+depends on the security policy and the network layout of the individual site. The S7comm and
 PROFINET extractor existed as a separate project artefact, so the released repository takes a
 feature table as its input.
 
@@ -194,10 +194,11 @@ Figure~\ref{fig:anomaly:nadics-arch} shows the pipeline as it was deployed in IU
 artefacts separate its three stages. The first stage produced the corpus. Attacks of five classes
 (authentication bypass, CPU stop and start, reconnaissance, denial of service and brute force)
 were executed in a real industrial environment against Siemens S7-300 controllers that exchanged
-S7comm traffic \cite{kleinmann2014accurate} with a control server, and the traces were labelled both in binary form and by
-attack class \cite{iuno_ap4}. In the second stage, the public analysers TShark, Bro-IDS and
-Argus were combined with dissectors written for S7 and PROFINET, and the TUM feature extractor
-reduced each network connection to one labelled feature vector, written as CSV or JSON
+S7comm traffic \cite{kleinmann2014accurate} with a control server, and the traces were labelled
+both in binary form and by attack class \cite{iuno_ap4}. In the second stage, the public analysers TShark, Bro-IDS and
+Argus were combined with dissectors written for S7comm and PROFINET
+\cite{akerberg2009exploring}, and the TUM feature extractor reduced each network connection to
+one labelled feature vector, written as CSV or JSON
 \cite{iuno2017d42,iuno_ap4}. The third stage is the framework proper. It reads that dataset, fits
 one of the registered estimators, applies the resamplers and the outlier tests, and reports which
 features carried the decision. Detections reached the visual security control room as JSON event
@@ -483,7 +484,7 @@ of this design follows the rate at which such events occur in the plant.
 The extractor was also exercised on a Raspberry Pi 3 Model B. The deliverable of June 2017
 names Raspberry Pi boards as the prototype platform \cite{iuno2017d42}. The board carries four
 cores at 1.2~GHz, 1~GB of RAM and 100~Mbit/s Ethernet. Only the extraction stage ran on it,
-comprising selected-field capture and dissection of S7 and PROFINET traffic, the bounded rolling
+comprising selected-field capture and dissection of S7comm and PROFINET traffic, the bounded rolling
 feature computations and emission of CSV or JSON. Model fitting and inference remained on the
 server, and archival of full packet captures to the SD card was excluded. Each load replayed
 traffic over 100 configured communication channels with varying channel activity for about ten
@@ -962,7 +963,7 @@ baseline is reported for the GAN study or for the S7-300 evaluation, so neither 
 that its model outperforms a simple rule on the same data.
 
 \paragraph{Individual contribution.}
-The candidate designed and implemented \nadics{}, its model interface, and the S7 and PROFINET
+The candidate designed and implemented \nadics{}, its model interface, and the S7comm and PROFINET
 extractor. He produced the labelled S7-300 attack corpus. For the process study, he designed and
 implemented the multivariate GAN pipeline, its preprocessing variants, dynamic architecture,
 training, scoring, and evaluation on SWaT. He analysed the results and wrote the internal
