@@ -20,8 +20,8 @@ cited key to the reference vault.
 | 2.2 Graph Representations of Programs | CFGs and FCGs; dependence and backward slicing; hypergraph incidence, clique projection and operator-specific equivalence | Verified foundation sources below; Network Flows, Program Graphs, and Hypergraphs; Android Applications and Malware Analysis |
 | 2.3 Learning over Graphs | message passing, graph-level readout and permutation properties; attention and hypergraph propagation under stated assumptions | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
 | 2.4 Detection in Networked and Cyber-Physical Systems | observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
-| 2.5 Adversarial Machine Learning | goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Threat-Guided Evaluation |
-| 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Threat-Guided Evaluation |
+| 2.5 Adversarial Machine Learning | goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Evaluating Adversarial Robustness |
+| 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Evaluating Adversarial Robustness |
 | 2.7 Summary and Research Gaps | a short synthesis followed by G1-G4, using sources already cited in Sections 2.1-2.6 | no new source pool |
 
 ### Verified foundation additions and corrections (T-025, 20 September 2026)
@@ -81,7 +81,7 @@ new scores for any contribution chapter.
 | 3.x Ch.3 Anomaly Detection in IoT and Industrial Control Systems | 253 | 32 | 30 | 2026 |
 | 4.2 Ch.4 Hybroid related work | 95 | 20 | 1 | 2026 |
 | 5.2 Ch.5 HGANN-Mal related work | 93 | 22 | 0 | 2026 |
-| 6.x Ch.6 Threat-guided evaluation | 387 | 103 | 117 | 2026 |
+| 6.x Ch.6 Evaluating adversarial robustness | 387 | 103 | 117 | 2026 |
 
 ## 1.1 Research Context
 
@@ -488,7 +488,7 @@ Plus 75 further candidates in the pool at `keywords` matching this section.
 
 Plus 71 further candidates in the pool at `keywords` matching this section.
 
-## 6.x Ch.6 Threat-guided evaluation
+## 6.x Ch.6 Evaluating adversarial robustness
 
 **Must support:** Threat modelling for AI systems, contest and benchmark design, robustness measurement.
 
