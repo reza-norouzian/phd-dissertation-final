@@ -9,7 +9,7 @@ depends_on: []
 blocks: []
 tags: []
 created: 2026-09-20
-updated: 2026-09-20
+updated: 2026-09-22
 ---
 
 ## Goal
@@ -163,7 +163,36 @@ citations/references, biber warnings or overfull boxes. Existing template/end-gr
 remain; underfull vertical boxes rise from 42 to 43. No visual review or staging. Verification
 records are in `tmp/background-metrics-shortening-2026-09-20/`.
 
+### Follow-up: shorten Section 2.6.3
+
+The author requested a substantial reduction of the multiclass and multilabel aggregation
+subsection. The existing claim-to-source record for `grandini2020metrics`,
+`opitz2019macrof1`, and `sparta2022d76` remains applicable: it covers class aggregation,
+macro-$F_1$, and attribute accuracy, with inspected full texts and verified vault records.
+This revision adds no source or empirical claim. It will retain the definitions needed to
+interpret the contribution chapters, remove secondary exposition, and preserve the subsection
+label and citation set. A strict citation audit and thesis rebuild are required.
+
+- [x] Shorten Section 2.6.3 substantially without changing metric meanings.
+- [x] Check the revised text against the adjacent binary and ROC subsections.
+- [x] Run the strict reference audit, rebuild the tracked PDF, and inspect the log.
+
+The revision reduces Section 2.6.3 from 290 to 175 prose words according to `texcount`, a
+39.7% reduction. It removes the expanded one-versus-rest count display, the separate
+micro-average ratio display, the macro-$F_1$ inequality, and the majority-class aside. The
+remaining text retains classwise, macro, weighted and micro aggregation; the macro-$F_1$
+convention; the zero-denominator qualification; and multilabel attribute accuracy. The
+subsection label and its three citation keys are unchanged.
+
+The strict Chapter 2 citation audit passes with 120 cited keys and none requiring attention.
+`latexmk thesis.tex` succeeds and rebuilds the tracked 151-page PDF. The log contains no
+undefined citations or references, Biber warnings, or overfull boxes. Its 43 underfull
+vertical-box notices and the template/end-group warnings match the existing warning classes.
+No visual review, staging, commit, or push was performed.
+
 - 2026-09-20 created
 - 2026-09-20 in-progress -> review (Shared performance measures added, sources and formulas checked, citation audit and PDF rebuild pass; visual review left to author)
 - 2026-09-20 review -> in-progress (Shorten Section 2.6 at the author's request, preserving its measures, equations and qualifications)
 - 2026-09-20 in-progress -> review (Concise revision complete; metric definitions and equations preserved, citation audit and PDF rebuild pass)
+- 2026-09-22 review -> in-progress (Shorten Section 2.6.3 substantially at the author's request while preserving its core definitions and verified citations)
+- 2026-09-22 in-progress -> review (Section 2.6.3 shortened by 39.7%; core aggregation definitions retained; strict audit and 151-page rebuild pass)

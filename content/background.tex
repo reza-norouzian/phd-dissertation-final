@@ -610,77 +610,40 @@ data distributions can still change both recalls.
 \subsection{Multiclass and Multilabel Aggregation}
 \label{sec:background:metrics:aggregation}
 
-For $K$ mutually exclusive classes indexed by $1,\ldots,K$, let $n_k=\sum_b C_{kb}$ be the support of class $k$ and
-$\pi_k=n_k/N$. A one-versus-rest calculation treats class $k$ as positive and all other classes
-as negative:
-\begin{equation}
-  \begin{aligned}
-    \mathrm{TP}_k&=C_{kk},
-    &\mathrm{FN}_k&=n_k-C_{kk},\\
-    \mathrm{FP}_k&=\sum_a C_{ak}-C_{kk},
-    &\mathrm{TN}_k&=N-\mathrm{TP}_k-\mathrm{FP}_k-\mathrm{FN}_k.
-  \end{aligned}
-  \label{eq:background:one-vs-rest}
-\end{equation}
-The binary definitions then give $P_k$, $R_k$ and $F_{1,k}$. For any of these measures $M_k$,
-macro averaging assigns equal class weights, while support-weighted averaging assigns weights
-proportional to class size:
+For $K$ mutually exclusive classes, treating class $k$ as positive and the remainder as
+negative gives classwise measures $M_k$. Let $n_k$ denote the support of class $k$ and
+$\pi_k=n_k/N$. Macro and support-weighted averages are
 \begin{equation}
   M_{\mathrm{macro}}=\frac1K\sum_{k=1}^{K}M_k,
   \qquad
   M_{\mathrm{weighted}}=\sum_{k=1}^{K}\pi_k M_k.
   \label{eq:background:class-averages}
 \end{equation}
-Multiclass balanced accuracy is $R_{\mathrm{macro}}$. S7-300 results report both macro and
-weighted $F_1$ to account for the dominant normal class. A high macro average does not establish
-uniform per-class performance.
+Multiclass balanced accuracy is $R_{\mathrm{macro}}$. Macro $F_1$ gives each class equal
+weight, whereas weighted $F_1$ reflects the class distribution. Chapter~\ref{chap:anomaly}
+reports both because normal records dominate the S7-300 data.
 
-Micro averaging instead pools the one-versus-rest counts before calculating a ratio
-\cite{grandini2020metrics}:
-\begin{equation}
-  P_{\mathrm{micro}}=
-  \frac{\sum_k\mathrm{TP}_k}{\sum_k(\mathrm{TP}_k+\mathrm{FP}_k)},\qquad
-  R_{\mathrm{micro}}=
-  \frac{\sum_k\mathrm{TP}_k}{\sum_k(\mathrm{TP}_k+\mathrm{FN}_k)}.
-  \label{eq:background:micro-averages}
-\end{equation}
-Micro $F_1$ uses the same count formula as Equation~\ref{eq:background:f1}, after summing over
-classes. With one true and one predicted label per observation and all classes included,
-both denominators in Equation~\ref{eq:background:micro-averages} equal $N$. With defined class
-recalls, or an explicit zero-fill convention for classes of zero support, this gives
+Micro averaging pools the one-versus-rest counts. For a single-label task with one prediction
+per observation and all classes included, it reduces to
 \begin{equation}
   P_{\mathrm{micro}}=R_{\mathrm{micro}}=F_{1,\mathrm{micro}}
   =R_{\mathrm{weighted}}=A=\frac{\operatorname{tr}(\mathbf C)}{N}.
   \label{eq:background:micro-identity}
 \end{equation}
-Opitz and Burst distinguish the mean of class $F_1$ scores from the harmonic mean of macro
-precision and recall
-\cite{opitz2019macrof1}. For defined class ratios,
-\begin{equation}
-  F_{1,\mathrm{macro}}
-  =\frac1K\sum_k H(P_k,R_k)
-  \leq H(P_{\mathrm{macro}},R_{\mathrm{macro}})
-  \leq\frac{P_{\mathrm{macro}}+R_{\mathrm{macro}}}{2}.
-  \label{eq:background:macro-f1}
-\end{equation}
-Here, macro $F_1$ denotes the mean of class scores. Unspecified source conventions remain
-unresolved in Chapters~\ref{chap:hybroid} and~\ref{chap:hgann}. Reporting must identify the class
-set and any zero-denominator policy.
-
-Always predicting class $k$ gives accuracy $\pi_k$, while $\max_k\pi_k$ is the empirical
-majority-class reference. A deployable baseline must choose its label before test evaluation,
-for example from training labels, and may not match the test majority.
+This identity assumes defined class recalls or an explicit zero-fill rule
+\cite{grandini2020metrics}. Here, macro $F_1$ means the average of the classwise $F_1$ scores,
+which differs from the harmonic mean of macro precision and recall
+\cite{opitz2019macrof1}. Reports must therefore state the class set and zero-denominator rule.
 
 Multilabel prediction assigns several binary labels to each observation. In the facial-attribute
-task, $y_i,\widehat y_i\in\{0,1\}^{J}$ and the reported accuracy averages individual label
-decisions:
+task, the reported accuracy averages the $J$ label decisions for each observation:
 \begin{equation}
   A_{\mathrm{attr}}=\frac1{NJ}\sum_{i=1}^{N}\sum_{j=1}^{J}
     \mathbf1\{\widehat y_{ij}=y_{ij}\}.
   \label{eq:background:attribute-accuracy}
 \end{equation}
-Chapter~\ref{chap:advml} uses $J=40$ \cite{sparta2022d76}. Each attribute decision contributes
-separately; the score does not require all labels of an image to be correct.
+Chapter~\ref{chap:advml} uses $J=40$; the score does not require every attribute of an image
+to be correct \cite{sparta2022d76}.
 
 \subsection{ROC Curves and Area under the Curve}
 \label{sec:background:metrics:roc}

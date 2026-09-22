@@ -4,6 +4,8 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-22
 
+- `20:11` **T-023** in-progress -> review - Section 2.6.3 shortened by 39.7%; core aggregation definitions retained; strict audit and 151-page rebuild pass
+- `20:09` **T-023** review -> in-progress - Shorten Section 2.6.3 substantially at the author's request while preserving its core definitions and verified citations
 - `19:53` **T-025** in-progress -> review - Problem-level background orientation added; citations, source-stable rebuild and checks pass
 - `19:53` **T-025** Added concise Android malware task/pipeline background, moved and expanded anomaly foundations ahead of flow mechanics, and strengthened adversarial framing; reused nine verified vault sources. Strict chapter and whole-thesis audits pass. Source-stable isolated latexmk build produces 153 pages with no undefined citations/references, Biber warnings or overfull boxes; 44 underfull vboxes and existing template/end-group notices remain. Preserved the concurrent Figure 2.1 replacement and crop removal. No visual review.
 - `19:37` **T-025** review -> in-progress - Add author-approved problem-level orientation for Android malware detection, anomaly detection and adversarial machine learning
