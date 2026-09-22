@@ -152,9 +152,12 @@ and latency measurements. Detection accuracy against a labelled attack set was n
 
 \researchquestion[1.2]{RQ1.2}{Modular industrial anomaly detection}{\rqOneTwoText}
 
-The answer concerns a modular interface for network and process features. Supervised
-classification on S7-300 records and a multivariate detector on SWaT provide separate
-empirical cases.
+The answer concerns a modular interface for network and process features. Two separate
+empirical cases are examined. The first is supervised classification of connection records
+from a labelled corpus of S7comm network traffic, recorded in the \iuno{} project from
+Siemens S7-300 programmable logic controllers \cite{iuno_ap4}. The second is a multivariate
+detector over process measurements from the public Secure Water Treatment (SWaT) testbed
+\cite{goh2016swatdataset}.
 
 \researchquestion[2]{RQ2}{Multimodal Android malware analysis}{\rqTwoText}
 
@@ -211,8 +214,9 @@ the observation conditions of the middleware.
 \paragraph{Modular industrial anomaly detection.}
 \nadics{}, Network Anomaly Detection for Industrial Control Systems, separates feature
 preparation from interchangeable learners. Its protocol-specific extractor and model
-interface support the \iuno{} integration \cite{iuno_ap4,iuno_ap7}. Separate S7-300
-evaluations report attack classification and false-alarm episodes during benign operation.
+interface support the \iuno{} integration \cite{iuno_ap4,iuno_ap7}. Separate evaluations
+on S7comm network traffic \cite{kleinmann2014accurate} from Siemens S7-300 programmable logic
+controllers report attack classification and false-alarm episodes during benign operation.
 A generative adversarial network (GAN) extension compares representations of multivariate
 SWaT process data. Their different recall and false-positive profiles relate the
 representation choice to the operating objective (Section~\ref{sec:anomaly:gan}).
@@ -244,7 +248,6 @@ artefacts that support this dissertation, together with author-list positions an
 roles. The prose is revised for the monograph; reproduced or adapted figures and tables
 retain their source citations. Results are traced to published tables and figures or to
 surviving internal research records, as specified in each contribution chapter.
-Missing predictions or configuration records limit independent reproduction.
 
 \begin{table}[htbp]
   \caption{Previously disseminated work and project artefacts used in this dissertation.}
@@ -255,7 +258,7 @@ Missing predictions or configuration records limit independent reproduction.
     Item & Venue or type & Year & Position / role & Chapter \\
     \midrule
     Graph-based Anomaly Detection for IoT Microservices \cite{aubet2018graph}
-      & PAM, two pages         & 2018 & 4 of 4      & \ref{chap:anomaly} \\
+      & PAM         & 2018 & 4 of 4      & \ref{chap:anomaly} \\
     \iuno{} work package 4, visual security control room \cite{iuno_ap4}
       & Project deliverable    & 2018 & contributor & \ref{chap:anomaly} \\
     \iuno{} work package 7, security tools \cite{iuno_ap7}
@@ -291,10 +294,9 @@ Missing predictions or configuration records limit independent reproduction.
 
 The roles below combine the source author lists with the candidate's account of the work.
 He contributed the service-graph concept and measurement design to the PAM study
-\cite{aubet2018graph}. The related full paper by Pahl and Aubet describes clustering-based
-anomaly detection \cite{pahl2018all}; Pahl, Aubet and Liebald report graph-based access
-control \cite{pahl2018graphbased}. The candidate is not an author of either companion
-paper, which Chapter~\ref{chap:anomaly} cites as related work.
+\cite{aubet2018graph}. Chapter~\ref{chap:anomaly} cites two companion studies by Pahl and
+co-authors as related work; neither paper lists the candidate as an author
+\cite{pahl2018all,pahl2018graphbased}.
 
 Within \iuno{}, the candidate designed and implemented \nadics{} and its S7 and PROFINET
 extractor. He produced the labelled S7-300 attack corpus, with binary labels and five attack

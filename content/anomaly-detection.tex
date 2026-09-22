@@ -194,7 +194,7 @@ Figure~\ref{fig:anomaly:nadics-arch} shows the pipeline as it was deployed in IU
 artefacts separate its three stages. The first stage produced the corpus. Attacks of five classes
 (authentication bypass, CPU stop and start, reconnaissance, denial of service and brute force)
 were executed in a real industrial environment against Siemens S7-300 controllers that exchanged
-S7comm traffic with a control server, and the traces were labelled both in binary form and by
+S7comm traffic \cite{kleinmann2014accurate} with a control server, and the traces were labelled both in binary form and by
 attack class \cite{iuno_ap4}. In the second stage, the public analysers TShark, Bro-IDS and
 Argus were combined with dissectors written for S7 and PROFINET, and the TUM feature extractor
 reduced each network connection to one labelled feature vector, written as CSV or JSON
