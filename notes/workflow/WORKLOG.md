@@ -4,6 +4,9 @@ Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the 
 
 ## 2026-09-22
 
+- `18:58` **T-026** in-progress -> review - Author-requested Introduction wording revised; audit and rebuild pass
+- `18:58` **T-026** Applied the author's requested simplification in Section 1.1: stated the permitted-transformations requirement directly, replaced the abstract closing theme sentence with the dissertation's two concrete evaluation activities, and corrected the preceding possessive. Strict citation audit and forced 151-page rebuild pass; no undefined citations/references or overfull boxes. Existing 48 underfull boxes and end-group notice remain. No visual review.
+- `18:58` **T-026** review -> in-progress - Apply the author's requested sentence-level simplifications in the Introduction
 - `15:36` **T-033** Author request: replaced the old Chapter 6 label 'Threat-guided evaluation of adversarial defences' in the Chapter 1 contribution heading with the current Chapter 6 title in sentence case, reworded the matching 'threat-guided evaluation design' phrase in Section 8.2, and renamed the Chapter 6 labels in notes/literature-map.md. latexmk 151 pages, Ch8 pp. 113-114.
 - `15:28` **T-033** in-progress -> review - Revised RQ2 applied thesis-wide; audits and rebuild pass; visual review left to the author
 - `15:28` **T-033** Applied D-008 across Chapters 1, 2, 4 and 8 and structure v0.3; abstracts, Chapters 3/5/6/7 checked and unchanged. Strict audits pass; latexmk 151 pages with chapter starts unchanged after tightening the Chapter 4 opening; underfull vboxes 44 -> 48, no other new warnings. No visual review.
