@@ -1,13 +1,6 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-% Revised under T-026 and D-006, 20 September 2026.
-% Claim-to-source evidence is recorded in the writing ticket before drafting.
-% Retain the six sections, question macros and existing labels. The Android
-% comparisons are predictive evaluations; the SAFAIR evidence concerns other tasks.
-% Individual roles follow the author-confirmed accounts in Chapters 3 to 6.
-% RQ3 revised to a problem-level question under T-031 and D-007, 21 September 2026.
-
 \section{Research Context}
 \label{sec:intro:context}
 
@@ -80,7 +73,7 @@ have reported benefits from combining static and dynamic observations
 on the observations: a feature that separates malware from benign applications need not
 separate malicious categories. A joint representation must also describe both observations
 at a common unit, because code is recovered from the package while traffic is recorded as
-individual flows. RQ2 asks how program structure and network behaviour can be represented
+individual flows. RQ1 asks how program structure and network behaviour can be represented
 together, and how their combination compares with each source alone on the same applications,
 separately for binary detection and malware-category classification.
 
@@ -92,7 +85,7 @@ constructs hyperedges from call neighbourhoods and shared permissions
 \cite{zhang2023android}, and hypergraph attention already provides a mechanism for learned
 membership weighting \cite{bai2021hypergraphattention}. Group construction determines which
 methods can exchange information through a hyperedge; membership weights then control their
-influence within that structure. RQ3 asks how such group relations can be represented and
+influence within that structure. RQ2 asks how such group relations can be represented and
 learned, and what they add over pairwise graph representations. The distinction between the information retained
 by a representation and the operations applied to it is developed in
 Section~\ref{sec:background:graphs:hypergraphs}.
@@ -102,7 +95,7 @@ A service-communication model must accommodate new legitimate partners as servic
 or removed \cite{aubet2018graph}. Sensor and actuator series instead describe the physical
 process \cite{mathur2016swat}. Network records and process time series require different
 feature preparation, while a modular learning interface permits estimators to be exchanged
-\cite{iuno_ap4}. RQ1 concerns how these observations can support anomaly
+\cite{iuno_ap4}. RQ3 concerns how these observations can support anomaly
 detection and how monitored relations or learning components can be revised. Its separate
 studies examine communication graphs and a modular framework for network and process features.
 
@@ -140,23 +133,39 @@ for those subsequent experiments.
 \section{Research Questions}
 \label{sec:intro:rqs}
 
-Four research questions specify the two themes. The first has two subquestions for
-networked and industrial settings. The Android questions concern cross-modal and
-higher-order representations; the fourth concerns adversarial evaluation.
+Four research questions specify the two themes. The first two concern cross-modal and
+higher-order Android representations. The third has two subquestions for networked and
+industrial settings; the fourth concerns adversarial evaluation.
 Section~\ref{sec:background:summary} develops their literature-based motivation as gaps
 G1 to G4.
 
-\researchquestion[1]{RQ1}{Behaviour in networked and industrial systems}{\rqOneText}
+\researchquestion[1]{RQ1}{Multimodal Android malware analysis}{\rqOneText}
 
-RQ1 addresses gap~\gapref{1} through service relations and industrial observations.
+Gap~\gapref{1} is examined through \hybroid{}, which summarises program graphs and recorded
+flows per application and concatenates the two feature groups. On a common retained cohort of
+CICAndMal2017 applications, the joint input is compared with each source alone, separately for
+each learner and prediction task. The category task includes Benign as one of five classes.
+
+\researchquestion[2]{RQ2}{Higher-order Android malware analysis}{\rqTwoText}
+
+Gap~\gapref{2} is examined through \hgann{}, which learns membership weights over constructed
+groups of methods, and its comparison with pairwise graph models. Against non-attentive
+hypergraph models, construction and weighting change together, so an attention-only effect
+remains unresolved. The tasks are binary detection and dataset-specific
+classification: \familyclassification{} on Drebin, and \categoryclassification{} on
+CICMalDroid, with Benign as one category.
+
+\researchquestion[3]{RQ3}{Behaviour in networked and industrial systems}{\rqThreeText}
+
+RQ3 addresses gap~\gapref{3} through service relations and industrial observations.
 The two subquestions concern distinct mechanisms and experimental settings.
 
-\researchquestion[1.1]{RQ1.1}{Communication graphs}{\rqOneOneText}
+\researchquestion[3.1]{RQ3.1}{Communication graphs}{\rqThreeOneText}
 
 The answer covers node-local relations and operator-approved updates, supported by memory
 and latency measurements. Detection accuracy against a labelled attack set was not measured.
 
-\researchquestion[1.2]{RQ1.2}{Modular industrial anomaly detection}{\rqOneTwoText}
+\researchquestion[3.2]{RQ3.2}{Modular industrial anomaly detection}{\rqThreeTwoText}
 
 The answer concerns a modular interface for network and process features. Two separate
 empirical cases are examined. The first is supervised classification of connection records
@@ -164,22 +173,6 @@ from a labelled corpus of S7comm network traffic, recorded in the \iuno{} projec
 Siemens S7-300 programmable logic controllers \cite{iuno_ap4}. The second is a multivariate
 detector over process measurements from the public Secure Water Treatment (SWaT) testbed
 \cite{goh2016swatdataset}.
-
-\researchquestion[2]{RQ2}{Multimodal Android malware analysis}{\rqTwoText}
-
-Gap~\gapref{2} is examined through \hybroid{}, which summarises program graphs and recorded
-flows per application and concatenates the two feature groups. On a common retained cohort of
-CICAndMal2017 applications, the joint input is compared with each source alone, separately for
-each learner and prediction task. The category task includes Benign as one of five classes.
-
-\researchquestion[3]{RQ3}{Higher-order Android malware analysis}{\rqThreeText}
-
-Gap~\gapref{3} is examined through \hgann{}, which learns membership weights over constructed
-groups of methods, and its comparison with pairwise graph models. Against non-attentive
-hypergraph models, construction and weighting change together, so an attention-only effect
-remains unresolved. The tasks are binary detection and dataset-specific
-classification: \familyclassification{} on Drebin, and \categoryclassification{} on
-CICMalDroid, with Benign as one category.
 
 \researchquestion[4]{RQ4}{Adversarial robustness evaluation}{\rqFourText}
 
@@ -263,16 +256,16 @@ surviving internal research records, as specified in each contribution chapter.
     \toprule
     Item & Venue or type & Year & Position / role & Chapter \\
     \midrule
+    \hybroid{} \cite{norouzian2021hybroid}
+      & ISC, Springer LNCS     & 2021 & 1 of 4      & \ref{chap:hybroid} \\
+    \hgann{} \cite{norouzian2025hgannmal}
+      & ISC, Springer LNCS     & 2025 & 1 of 2      & \ref{chap:hgann} \\
     Graph-based Anomaly Detection for IoT Microservices \cite{aubet2018graph}
       & PAM         & 2018 & 4 of 4      & \ref{chap:anomaly} \\
     \iuno{} work package 4, visual security control room \cite{iuno_ap4}
       & Project deliverable    & 2018 & contributor & \ref{chap:anomaly} \\
     \iuno{} work package 7, security tools \cite{iuno_ap7}
       & Project deliverable    & 2018 & contributor & \ref{chap:anomaly} \\
-    \hybroid{} \cite{norouzian2021hybroid}
-      & ISC, Springer LNCS     & 2021 & 1 of 4      & \ref{chap:hybroid} \\
-    \hgann{} \cite{norouzian2025hgannmal}
-      & ISC, Springer LNCS     & 2025 & 1 of 2      & \ref{chap:hgann} \\
     SPARTA D7.1, AI systems threat analysis \cite{sparta2021d71}
       & Public deliverable     & 2021 & contributor & \ref{chap:advml} \\
     SPARTA D7.2, preliminary security mechanisms \cite{sparta2020d72}
@@ -299,7 +292,16 @@ surviving internal research records, as specified in each contribution chapter.
 \subsection*{Individual contribution}
 
 The roles below combine the source author lists with the candidate's account of the work.
-He contributed the service-graph concept and measurement design to the PAM study
+For \hybroid{}, the candidate shares first authorship with Peng Xu
+\cite{norouzian2021hybroid}. He designed the overall pipeline and its traffic-analysis
+component, and developed the preprocessing and evaluation framework. He conducted the
+experiments and wrote the paper. His contribution to graph processing was partial.
+
+\hgann{} is a joint publication with the candidate's supervisor
+\cite{norouzian2025hgannmal}. The candidate designed and implemented the method. He
+conducted the experiments and wrote the paper.
+
+The candidate contributed the service-graph concept and measurement design to the PAM study
 \cite{aubet2018graph}. Chapter~\ref{chap:anomaly} cites two companion studies by Pahl and
 co-authors as related work; neither paper lists the candidate as an author
 \cite{pahl2018all,pahl2018graphbased}.
@@ -312,15 +314,6 @@ An internal deliverable of June 2017 names him among its authors and records the
 version of the tool \cite{iuno2017d42}. For SWaT, he designed and implemented the
 multivariate GAN pipeline and its preprocessing and scoring procedures, performed the
 experiments and wrote the internal research report.
-
-For \hybroid{}, the candidate shares first authorship with Peng Xu
-\cite{norouzian2021hybroid}. He designed the overall pipeline and its traffic-analysis
-component, and developed the preprocessing and evaluation framework. He conducted the
-experiments and wrote the paper. His contribution to graph processing was partial.
-
-\hgann{} is a joint publication with the candidate's supervisor
-\cite{norouzian2025hgannmal}. The candidate designed and implemented the method. He
-conducted the experiments and wrote the paper.
 
 Within SPARTA, the candidate contributed to the threat analysis and organisation of the
 SAFAIR contest, and developed the evaluation software. He wrote Chapter~5 of D7.5 and the
@@ -341,8 +334,8 @@ performance measures, and closes with gaps G1 to G4. Study-specific methods and 
 with competing systems remain in the contribution chapters.
 
 Table~\ref{tab:intro:map} maps the research questions to the evidence in
-Chapters~\ref{chap:anomaly} to~\ref{chap:advml}. The two Android chapters carry the main
-empirical contribution. Chapter~\ref{chap:discussion} relates the studies through their
+Chapters~\ref{chap:hybroid} to~\ref{chap:advml}. The two Android chapters come first and carry
+the main empirical contribution. Chapter~\ref{chap:discussion} relates the studies through their
 observation requirements and evaluation principles. Chapter~\ref{chap:conclusion} answers
 the research questions within the available evidence and specifies future work.
 Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-importance ranking.
@@ -356,14 +349,14 @@ Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-impo
     \toprule
     Question & Chapter & Evidence \\
     \midrule
-    RQ1.1 & \ref{chap:anomaly}
-      & Service-graph updates and resource measurements; detection accuracy unmeasured. \\
-    RQ1.2 & \ref{chap:anomaly}
-      & Session-disjoint S7-300 classification and benign monitoring; SWaT input-representation comparison at timestamp level. \\
-    RQ2 & \ref{chap:hybroid}
+    RQ1 & \ref{chap:hybroid}
       & Application-level joint representation; within-system comparisons with each source alone on a common retained CICAndMal2017 cohort. \\
-    RQ3 & \ref{chap:hgann}
+    RQ2 & \ref{chap:hgann}
       & Hypergraph construction and operator analysis; common-input comparisons with pairwise and non-attentive hypergraph models on Drebin and CICMalDroid. \\
+    RQ3.1 & \ref{chap:anomaly}
+      & Service-graph updates and resource measurements; detection accuracy unmeasured. \\
+    RQ3.2 & \ref{chap:anomaly}
+      & Session-disjoint S7-300 classification and benign monitoring; SWaT input-representation comparison at timestamp level. \\
     RQ4 & \ref{chap:advml}
       & Contest and partner-benchmark records; mathematical analysis of scoring and detector responses. \\
     \bottomrule

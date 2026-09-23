@@ -1,14 +1,6 @@
 \chapter{Background}
 \label{chap:background}
 
-% Revised under T-025 and D-005, 20 September 2026.
-% Claim-to-source records: notes/chapter2-source-records/README.md and the T-025 ticket.
-% Retain seven main sections, Android-first ordering and the two approved figure assets.
-% D-004 / T-023 supplies the 18 shared metric equations in Section 2.6.
-% The incidence and degree notation is introduced here; operator-specific derivations stay
-% in Chapter 5. G1-G4 have stable labels used by Chapters 1 and 8.
-% The original 15-page allocation predates the approved D-004 metric expansion.
-
 Learning-based security analysis converts observations into representations and evaluates a
 fitted decision rule on a stated population. Its interpretation depends on the evidence
 available to the analyser and on the experimental protocol \cite{arp2022dos}. This chapter
@@ -491,7 +483,7 @@ Section~\ref{sec:background:metrics:adversarial} defines for the present dissert
 \section{Performance Measures and Evaluation Methodology}
 \label{sec:background:evaluation}
 
-This section defines the measures used in Chapters~\ref{chap:anomaly} to~\ref{chap:advml}, with
+This section defines the measures used in Chapters~\ref{chap:hybroid} to~\ref{chap:advml}, with
 explicit observation units and aggregation rules. Dimensionless scores are proportions:
 $m$ corresponds to $100m$ per cent, and $m_1-m_2$ to $100(m_1-m_2)$ percentage points.
 
@@ -540,11 +532,11 @@ between those types into correct binary detections (Section~\ref{sec:anomaly:iun
     \toprule
     Study (chapter) & Decision unit & Target \\
     \midrule
+    \hybroid{} (\ref{chap:hybroid}) & Application & Binary or category label \\
+    \hgann{} (\ref{chap:hgann}) & Application & Binary label; family or category \\
     Service graphs (\ref{chap:anomaly}) & Service interaction & Known or unexpected relation \\
     S7-300 (\ref{chap:anomaly}) & Connection record & Normal or attack type \\
     SWaT (\ref{chap:anomaly}) & Timestamp & Normal or anomalous \\
-    \hybroid{} (\ref{chap:hybroid}) & Application & Binary or category label \\
-    \hgann{} (\ref{chap:hgann}) & Application & Binary label; family or category \\
     SAFAIR contest (\ref{chap:advml}) & Image & Identity or binary attributes \\
     Partner benchmark (\ref{chap:advml}) & Histopathology patch & Binary tissue class \\
     \bottomrule
@@ -735,32 +727,32 @@ to permitted adversarial modifications. The following gaps connect these foundat
 research questions in Section~\ref{sec:intro:rqs}.
 
 \phantomsection
-\paragraph{G1. Representations for network and process observations.}\label{gap:1}
-Communication whitelists and host-pair models use relations observed between devices
-\cite{barbosa2013flow,yoon2014communication}, while process detectors use sensor and actuator
-measurements \cite{goh2016swatdataset}. The design question is how to match the representation
-to the available observations and accommodate changes to the monitored relations or learning
-method. RQ1 addresses representation and maintenance through service communication graphs
-and modular analysis of network and process features.
-
-\phantomsection
-\paragraph{G2. Combining program structure with observed behaviour.}\label{gap:2}
+\paragraph{G1. Combining program structure with observed behaviour.}\label{gap:1}
 MARVIN and the study by Onwuzurike et al.\ report benefits from combining static and dynamic
 features in within-system comparisons \cite{lindorfer2015marvin, onwuzurike2018family}.
 Those results concern particular observation types and prediction tasks. A different pair
 first needs a joint representation at a common unit of analysis. Whether the benefit persists
 then requires comparison of that representation with each modality alone on the same samples.
-RQ2 addresses both steps for program structure and network behaviour in binary detection and
+RQ1 addresses both steps for program structure and network behaviour in binary detection and
 malware-category classification.
 
 \phantomsection
-\paragraph{G3. The empirical value of higher-order program representations.}\label{gap:3}
+\paragraph{G2. The empirical value of higher-order program representations.}\label{gap:2}
 Prior Android work uses call-neighbour and permission-based hyperedges for application
 classification \cite{zhang2023android}. It remains open how program groups should be
 constructed and weighted for malware analysis, and how much such representations add over
 pairwise graphs under a common protocol. Attributing a gain to construction or to
-weighting would further require varying them separately. RQ3 addresses this question for
+weighting would further require varying them separately. RQ2 addresses this question for
 binary detection and dataset-specific malware classification.
+
+\phantomsection
+\paragraph{G3. Representations for network and process observations.}\label{gap:3}
+Communication whitelists and host-pair models use relations observed between devices
+\cite{barbosa2013flow,yoon2014communication}, while process detectors use sensor and actuator
+measurements \cite{goh2016swatdataset}. The design question is how to match the representation
+to the available observations and accommodate changes to the monitored relations or learning
+method. RQ3 addresses representation and maintenance through service communication graphs
+and modular analysis of network and process features.
 
 \phantomsection
 \paragraph{G4. Reproducible and interpretable adversarial evaluation.}\label{gap:4}

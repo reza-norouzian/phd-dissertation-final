@@ -1,23 +1,10 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-% Written under T-016 from the current text of Chapters 3 to 8. Every number is restated from a
-% contribution chapter, and no citation is added. Each text is limited to one page at the
-% author's request of 13 September 2026.
-% T-031: HGANN-Mal sentences state the pairwise margin; the equivalence wording is removed.
-
 This dissertation examines two questions in learning-based security analysis. The first concerns
 representation: which observations of a program or a network a detector should receive, and how
 they should be structured. The second concerns evaluation, namely how a defence can be measured
 when an adversary may choose the test data.
-
-In a collaborative study of IoT microservices, each node stores the service relations observed
-at start-up as a whitelist that the site owner can revise; detection added about 6~ms to a round
-trip of 24~ms. In industrial control systems, the modular framework \nadics{} places the learning
-stage behind fixed interfaces. A random forest trained on an S7-300 corpus from the \iuno{}
-project reached an attack $F_1$ of 94.50 per cent at a false-positive rate of 0.484 per cent
-under a session-disjoint split. A GAN-based detector at the same interface flagged 92.00 per cent
-of anomalous SWaT timestamps at a false-positive rate of 5.12 per cent on later test data.
 
 Two Android systems form the main contribution. \hybroid{} combines an embedding of the
 function-call graph with \netfeatures{} features of the network flows that an application
@@ -31,6 +18,14 @@ and corpus combinations. \hgann{} led the
 non-attentive hypergraph operators by 1.2 to 4.1 points in three combinations and scored 0.1
 point lower in the fourth. Since
 construction and attention changed together, an ablation that isolates attention remains open.
+
+In a collaborative study of IoT microservices, each node stores the service relations observed
+at start-up as a whitelist that the site owner can revise; detection added about 6~ms to a round
+trip of 24~ms. In industrial control systems, the modular framework \nadics{} places the learning
+stage behind fixed interfaces. A random forest trained on an S7-300 corpus from the \iuno{}
+project reached an attack $F_1$ of 94.50 per cent at a false-positive rate of 0.484 per cent
+under a session-disjoint split. A GAN-based detector at the same interface flagged 92.00 per cent
+of anomalous SWaT timestamps at a false-positive rate of 5.12 per cent on later test data.
 
 Within the SPARTA project, an adversary model was translated into a contest on a hidden test set
 and then into a modular benchmark that combines attacks and defences by configuration. The
@@ -49,15 +44,6 @@ betrifft die Repräsentation: Welche Beobachtungen eines Programms oder Netzwerk
 Detektor erhalten, und wie sollen sie strukturiert sein? Die zweite betrifft die Evaluation, also
 die Messung eines Abwehrverfahrens, wenn ein Angreifer die Testdaten wählen kann.
 
-In einer kollaborativen Studie zu IoT-Microservices speichert jeder Knoten die beim Start
-beobachteten Dienstbeziehungen als vom Betreiber anpassbare Positivliste; die Erkennung kostete
-etwa 6~ms bei einer Umlaufzeit von 24~ms. In industriellen Steuerungssystemen kapselt das
-modulare Framework \nadics{} die Lernstufe hinter festen Schnittstellen. Ein Random Forest
-erreichte auf einem S7-300-Korpus aus dem Projekt \iuno{} unter sitzungsdisjunkter Aufteilung
-einen $F_1$-Wert der Angriffsklasse von 94,50\,\% bei einer Falsch-Positiv-Rate von 0,484\,\%.
-Ein GAN-basierter Detektor an derselben Schnittstelle erkannte auf späteren Testdaten
-92,00\,\% der anomalen SWaT-Zeitstempel bei einer Falsch-Positiv-Rate von 5,12\,\%.
-
 Den Hauptbeitrag bilden zwei Android-Systeme. \hybroid{} kombiniert eine Einbettung des
 Funktionsaufrufgraphen mit \netfeatures{} Merkmalen der Netzwerkflüsse einer Anwendung. Auf
 CICAndMal2017 erhöhte die Fusion den $F_1$-Wert der Erkennung um ein bis zwei Prozentpunkte
@@ -71,6 +57,15 @@ Prozentpunkte über der stärkeren paarweisen Baseline.
 \hgann{} lag in drei Kombinationen um 1,2 bis 4,1 Prozentpunkte vor den Hypergraphoperatoren
 ohne Attention und in der vierten um 0,1 Prozentpunkte darunter. Da Konstruktion und Attention gemeinsam verändert wurden, fehlt noch eine Ablation,
 welche die Attention isoliert.
+
+In einer kollaborativen Studie zu IoT-Microservices speichert jeder Knoten die beim Start
+beobachteten Dienstbeziehungen als vom Betreiber anpassbare Positivliste; die Erkennung kostete
+etwa 6~ms bei einer Umlaufzeit von 24~ms. In industriellen Steuerungssystemen kapselt das
+modulare Framework \nadics{} die Lernstufe hinter festen Schnittstellen. Ein Random Forest
+erreichte auf einem S7-300-Korpus aus dem Projekt \iuno{} unter sitzungsdisjunkter Aufteilung
+einen $F_1$-Wert der Angriffsklasse von 94,50\,\% bei einer Falsch-Positiv-Rate von 0,484\,\%.
+Ein GAN-basierter Detektor an derselben Schnittstelle erkannte auf späteren Testdaten
+92,00\,\% der anomalen SWaT-Zeitstempel bei einer Falsch-Positiv-Rate von 5,12\,\%.
 
 Im Projekt SPARTA wurde ein Angreifermodell in einen Wettbewerb mit verdecktem Testdatensatz und
 dann in einen modularen Benchmark überführt, der Angriffe und Abwehrverfahren per Konfiguration

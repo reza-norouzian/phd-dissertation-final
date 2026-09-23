@@ -32,24 +32,26 @@
 
 % A measured value the author has not yet supplied (D-018). The argument names the
 % quantity, so the marker doubles as the request. Every occurrence must be gone
-% before Chapter 3 leaves in-progress: grep for \pending before every build.
+% before the anomaly-detection chapter leaves in-progress: grep for \pending before every build.
 \newcommand{\pending}[1]{\textcolor{ctcoloraccessory}{\textbf{[pending: #1]}}}
 
 % ---------------------------------------------------------------- questions --
 
-\newcommand{\rqOneText}{How can behaviour in networked and industrial systems be
-  represented to support anomaly detection?}
-\newcommand{\rqOneOneText}{How can service relationships be represented as
-  communication graphs to identify unexpected interactions?}
-\newcommand{\rqOneTwoText}{How can a modular learning framework analyse network and
-  process features for anomaly detection in industrial control systems?}
-\newcommand{\rqTwoText}{How can static program structure and observed network behaviour
+% D-009 (23 September 2026): the questions follow the chapter order. RQ1 and RQ2 are
+% the Android questions; RQ3 with RQ3.1 and RQ3.2 is the former RQ1 with RQ1.1 and RQ1.2.
+\newcommand{\rqOneText}{How can static program structure and observed network behaviour
   be jointly represented for Android malware detection and category classification, and
   how does their combination affect predictive performance compared with either source
   alone?}
-\newcommand{\rqThreeText}{How can higher-order relations within static Android program
+\newcommand{\rqTwoText}{How can higher-order relations within static Android program
   structure be represented and learned, and to what extent do they improve malware
   detection and classification over pairwise graph representations?}
+\newcommand{\rqThreeText}{How can behaviour in networked and industrial systems be
+  represented to support anomaly detection?}
+\newcommand{\rqThreeOneText}{How can service relationships be represented as
+  communication graphs to identify unexpected interactions?}
+\newcommand{\rqThreeTwoText}{How can a modular learning framework analyse network and
+  process features for anomaly detection in industrial control systems?}
 \newcommand{\rqFourText}{How can an explicit adversary model be translated into a
   reproducible benchmark for adversarial attacks and defences, and what does such a
   benchmark reveal about the relation between clean predictive performance and
@@ -83,7 +85,7 @@
 % System names are written as their source publications write them. Small caps were
 % tried and rejected: \textsc{HGANN-Mal} renders as HGANN-Mal with the trailing
 % "al" in small caps, which misreads as part of the acronym.
-% The size of the retained network-flow feature set in Chapter 4. It is quoted in
+% The size of the retained network-flow feature set in Chapter 3. It is quoted in
 % five places there, so it is fixed once here rather than retyped.
 \newcommand{\netfeatures}{13}
 

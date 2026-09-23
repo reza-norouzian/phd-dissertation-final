@@ -2,6 +2,14 @@
 
 Newest first. A decision recorded here is not reopened without a superseding entry.
 
+### D-009 Place the Android chapters before the anomaly-detection chapter
+
+- **Date:** 2026-09-23
+- **Status:** accepted
+- **Context:** On 23 September 2026 the author asked to move the anomaly-detection chapter after the two Android chapters, because the Android publications carry the main contribution, and to reorder the research questions, Introduction, Background and all later references so that the thesis reads in that order from start to end, with minimal text changes.
+- **Decision:** The contribution chapters are ordered Hybroid (Chapter 3), HGANN-Mal (Chapter 4), anomaly detection in IoT and industrial control systems (Chapter 5), adversarial evaluation (Chapter 6). The research questions follow the chapter order: RQ1 is the former RQ2 (Hybroid), RQ2 the former RQ3 (HGANN-Mal), RQ3 with RQ3.1 and RQ3.2 the former RQ1 with RQ1.1 and RQ1.2, and RQ4 is unchanged. Gaps G1-G3 are renumbered to match; G4 is unchanged. Question and gap wording is unchanged.
+- **Consequence:** Implement under T-034: reorder the chapter input list, the question macros, RQ boxes, gaps, tables, contribution and individual-contribution paragraphs, Discussion, Conclusion answers and both abstracts; renumber RQ and gap references; update structure v0.3. No empirical value, method specification or question wording changes. Tickets and records dated before this decision use the former chapter and question numbers. The author should inform the supervisor of the renumbered questions.
+
 ### D-008 Revise RQ2 to a problem-level question on joint representation
 
 - **Date:** 2026-09-22

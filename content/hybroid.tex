@@ -1,20 +1,11 @@
 \chapter{Multimodal Android Malware Analysis with \hybroid{}}
 \label{chap:hybroid}
 
-% Drafted under T-020 from notes/chapter4-source-records/. Governing decisions:
-% D-022 the released repository is out of evidence and the paper governs;
-% D-023 the corrected CICAndMal2017 category counts; D-024; D-025 the individual
-% contribution; D-026 the two published claims the chapter declines to repeat.
-% Classifier and ROC figures restored under T-002 from Hybroid Section 3.5.
-% Revised under T-021 after approval of T-019: scientific corrections, supported
-% mathematical definitions and a readability pass. Empirical values are preserved.
-% T-033 and D-008: framing and summary map both parts of the revised RQ2.
-
 \section{Research Problem and Contribution}
 \label{sec:hybroid:1}
 
-This chapter addresses RQ2, stated in Section~\ref{sec:intro:rqs}: \rqTwoText{}
-It examines gap~\gapref{2} on one application cohort, separately for each prediction task and
+This chapter addresses RQ1, stated in Section~\ref{sec:intro:rqs}: \rqOneText{}
+It examines gap~\gapref{1} on one application cohort, separately for each prediction task and
 learner.
 
 \hybroid{} combines program structure recovered from an Android application package with
@@ -37,7 +28,7 @@ pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
 The contribution comprises the multimodal pipeline and its within-system evaluation. The network
 branch aggregates bidirectional flow records into \netfeatures{} features per application. The
 code branch uses learned instruction embeddings and program graphs to represent static structure.
-Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} answer the first part of RQ2 with this
+Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} answer the first part of RQ1 with this
 joint representation; Section~\ref{sec:hybroid:11} answers the second by comparing the fused
 input with each branch alone.
 
@@ -98,7 +89,7 @@ and fusion mechanisms \cite{jain2026hybrid}. MARVIN compares static, dynamic and
 features, while the study by Onwuzurike et al.\ compares the modalities through a common
 behavioural model \cite{lindorfer2015marvin, onwuzurike2018family}. Both report advantages for
 the combination in their evaluated settings. The benefit for a particular representation pair
-and task still requires a within-system comparison, which motivates RQ2.
+and task still requires a within-system comparison, which motivates RQ1.
 
 HGDetector later combines static network-related call-graph features with graphs derived from
 network traffic \cite{feng2025hgdetector}. Its experiments use CICAndMal2017 and a filtered
@@ -142,7 +133,7 @@ traffic \cite{lashkari2018toward}. Benign applications were collected from Googl
 was captured on three physical handsets with scripted user behaviour and live accounts on
 messaging and social platforms. The capture scenarios cover installation and periods before
 and after a reboot \cite{cicandmal2017dataset}. These paired observations support the
-comparison of static and dynamic representations required by RQ2.
+comparison of static and dynamic representations required by RQ1.
 
 \begin{table}
   \caption{CICAndMal2017 source-corpus composition before extraction failures are excluded.
@@ -622,7 +613,7 @@ the aggregate score of 0.94 therefore does not establish equal performance acros
 \section{Modality Comparison}
 \label{sec:hybroid:11}
 
-The second part of RQ2 is evaluated through the within-system contrasts in
+The second part of RQ1 is evaluated through the within-system contrasts in
 Figures~\ref{fig:hybroid:detection-classifiers} and~\ref{fig:hybroid:categorisation-classifiers}
 \cite{norouzian2021hybroid}. For a fixed learner and task, let $\overline M_s$, $\overline M_d$
 and $\overline M_f$ be the reported mean scores for static, dynamic and fused inputs. The
@@ -723,7 +714,7 @@ joint classifier under a specified attacker model.
 \section{Chapter Summary}
 \label{sec:hybroid:13}
 
-\hybroid{} answers the first part of RQ2 with an application-level joint representation.
+\hybroid{} answers the first part of RQ1 with an application-level joint representation.
 A learned 64-dimensional vector of static program structure is concatenated with
 \netfeatures{} features averaged over the recorded network flows of the same application.
 The joint input supports separate binary and five-class prediction tasks. On CICAndMal2017,

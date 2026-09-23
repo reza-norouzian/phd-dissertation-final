@@ -1,45 +1,37 @@
 \chapter{Conclusion and Future Work}
 \label{chap:conclusion}
 
-% Revised under T-007 following the author's approval of T-018 on 20 September 2026.
-% Retain three sections and the two-page limit. Questions use dissertationmacros.tex;
-% gaps are referenced without reprinting their wording. Detailed limitations remain in
-% Chapters 3 to 6; brief qualifications specify the scope of each answer. The HGANN-Mal
-% ablation opens the future work, as Section 5.15 promises.
-% T-031 and D-007: the RQ3 answer covers both parts of the revised question.
-% T-033 and D-008: the RQ2 answer likewise covers both parts.
-
 \section{Answers to the Research Questions}
 \label{sec:conclusion:1}
 
-\paragraph{RQ1.} \emph{\rqOneText} Communication graphs represent service relationships,
-while protocol records and process windows support industrial anomaly detection.
-Chapter~\ref{chap:anomaly} addresses gap~\gapref{1} through these implementations.
-
-\paragraph{RQ1.1.} \emph{\rqOneOneText} A node-local graph stores relations observed during
-service start-up. Unexpected relations trigger an alert and can be approved by the site owner
-as the deployment changes.
-
-\paragraph{RQ1.2.} \emph{\rqOneTwoText} \nadics{} separates feature preparation from
-interchangeable learning components. On the session-disjoint S7-300 evaluation, a random forest
-achieved 94.50 per cent attack $F_1$ at a record-level false-positive rate of 0.484 per cent.
-The GAN-based extension with 24 PCA components achieved 92.00 per cent timestamp recall at a
-false-positive rate of 5.12 per cent on later SWaT test data.
-
-\paragraph{RQ2.} \emph{\rqTwoText} \hybroid{} represents both sources at application level:
+\paragraph{RQ1.} \emph{\rqOneText} \hybroid{} represents both sources at application level:
 a 64-dimensional program-structure vector is concatenated with \netfeatures{} flow features
 averaged per application. On CICAndMal2017, this fusion improved reported detection $F_1$ by one
 or two percentage points over the better single source. For category
 classification, the difference ranged from minus two to plus three points across learners.
-These matched comparisons address gap~\gapref{2} within the evaluated corpus and protocol.
+These matched comparisons address gap~\gapref{1} within the evaluated corpus and protocol.
 
-\paragraph{RQ3.} \emph{\rqThreeText} \hgann{} groups methods by call neighbourhood, semantic
+\paragraph{RQ2.} \emph{\rqTwoText} \hgann{} groups methods by call neighbourhood, semantic
 similarity and security-sensitive slices, and learns membership weights by attention.
 On Drebin and CICMalDroid, five-run mean accuracy exceeded the stronger pairwise baseline by
 3.1 to 10.8 points for every hypergraph configuration under common inputs and fixed splits.
 \hgann{} led the strongest non-attentive baseline in three of four settings by 1.2 to 4.1
 points; its CICMalDroid binary accuracy was 97.6 against 97.7 per cent. These complete-system
-comparisons address gap~\gapref{3}; attention attribution requires a controlled ablation.
+comparisons address gap~\gapref{2}; attention attribution requires a controlled ablation.
+
+\paragraph{RQ3.} \emph{\rqThreeText} Communication graphs represent service relationships,
+while protocol records and process windows support industrial anomaly detection.
+Chapter~\ref{chap:anomaly} addresses gap~\gapref{3} through these implementations.
+
+\paragraph{RQ3.1.} \emph{\rqThreeOneText} A node-local graph stores relations observed during
+service start-up. Unexpected relations trigger an alert and can be approved by the site owner
+as the deployment changes.
+
+\paragraph{RQ3.2.} \emph{\rqThreeTwoText} \nadics{} separates feature preparation from
+interchangeable learning components. On the session-disjoint S7-300 evaluation, a random forest
+achieved 94.50 per cent attack $F_1$ at a record-level false-positive rate of 0.484 per cent.
+The GAN-based extension with 24 PCA components achieved 92.00 per cent timestamp recall at a
+false-positive rate of 5.12 per cent on later SWaT test data.
 
 \paragraph{RQ4.} \emph{\rqFourText} SAFAIR translated attacker assumptions into a contest
 protocol and a benchmark with task-specific interfaces. The implementation and scoring analysis

@@ -5,8 +5,8 @@
 \label{sec:anomaly:scope}
 \label{sec:anomaly:1}
 
-This chapter answers RQ1.1 and RQ1.2, the two subquestions of RQ1 stated in
-Section~\ref{sec:intro:rqs}, and takes up gap~\gapref{1}. Three pieces of work support the
+This chapter answers RQ3.1 and RQ3.2, the two subquestions of RQ3 stated in
+Section~\ref{sec:intro:rqs}, and takes up gap~\gapref{3}. Three pieces of work support the
 answer. The first represents service-to-service communication in an IoT middleware as a graph
 and flags relations absent from that graph. The second is \nadics{}, a learning framework for
 network and process data, together with its S7comm and PROFINET extractor and its integration in
@@ -149,7 +149,7 @@ detection but no legitimation by the site owner.
 No labelled attack set was used, and that interval holds a previously unseen connection rather
 than an executed attack, so the study reports no detection rate and no false-positive rate. A
 whitelist emits a verdict, so even a labelled trace yields no threshold curve without a change of
-method. RQ1.1 is answered here at the level of representation, update procedure, and measured
+method. RQ3.1 is answered here at the level of representation, update procedure, and measured
 overhead.
 
 \section{The NADICS Framework and IUNO Integration}
@@ -925,11 +925,11 @@ configuration records limit independent reproduction of the experiment.
 \label{sec:anomaly:limitations}
 
 \paragraph{Scope of the service-graph evidence.}
-The artefact behind RQ1.1 is a two-page contribution to PAM 2018 on which the candidate is the
+The artefact behind RQ3.1 is a two-page contribution to PAM 2018 on which the candidate is the
 fourth of four authors. The peer-reviewed anomaly-detection paper from the same group uses clustering rather
 than a graph, and the short paper that does use a graph is framed as access control
 \cite{pahl2018all,pahl2018graphbased}. The portable service model was proposed but not
-implemented. RQ1.1 therefore carries no measured detection result.
+implemented. RQ3.1 therefore carries no measured detection result.
 
 \paragraph{Scope of the industrial evaluation.}
 The S7-300 result rests on 25 attack episodes recorded in one plant over 24 hours, and the
@@ -975,12 +975,12 @@ surviving artefacts rather than on passage-level attribution.
 \section{Chapter Summary}
 \label{sec:anomaly:summary}
 
-RQ1.1 asks how service relationships can be represented as communication graphs. The reported
+RQ3.1 asks how service relationships can be represented as communication graphs. The reported
 design stores observed service relations as a node-local whitelist and permits a site owner to
 revise it as the deployment changes. Its memory and latency costs were measured. Detection
 quality was not.
 
-RQ1.2 asks how a modular framework can analyse network and process features for anomaly
+RQ3.2 asks how a modular framework can analyse network and process features for anomaly
 detection in industrial systems. \nadics{} separates dataset layout, preprocessing, and learners
 behind fixed interfaces. On the S7-300 corpus recorded inside IUNO the framework reaches 94.50
 per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
@@ -991,6 +991,6 @@ components. The full input gives the highest recall and five components the lowe
 false-positive rate, so the preferred representation depends on the relative cost of missed
 anomalies and false alarms.
 
-Together, these mechanisms close gap~\gapref{1} at the implementation level. No study shows
+Together, these mechanisms close gap~\gapref{3} at the implementation level. No study shows
 transfer across time, sites, or adaptive attacks, which motivates Chapters~\ref{chap:advml}
 and~\ref{chap:discussion}.

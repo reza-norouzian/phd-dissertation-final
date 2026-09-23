@@ -5,16 +5,24 @@ Date: 2026-08-12
 This planning document incorporates the author's second answer set. It does not alter the
 compiled LaTeX thesis.
 
+Revised on 23 September 2026 under D-009 and T-034: the two Android chapters come first.
+Hybroid is Chapter 3, HGANN-Mal Chapter 4 and anomaly detection Chapter 5; Chapters 6 to 8 keep
+their numbers. The research questions and gaps follow the chapter order: RQ1/G1 is Hybroid
+(formerly RQ2/G2), RQ2/G2 is HGANN-Mal (formerly RQ3/G3), and RQ3/G3 with RQ3.1 and RQ3.2 is
+anomaly detection (formerly RQ1/G1 with RQ1.1 and RQ1.2). RQ4/G4 is unchanged, and no question
+or gap wording changes. The headings, section lists and undated statements below use the new
+numbers. Dated revision notes written before 23 September 2026 keep the former numbers.
+
 ## Decisions fixed in this version
 
 - The dissertation is an integrated monograph.
 - Android malware analysis forms the scientific centre.
 - The anomaly-detection work is an early original contribution and receives a research
   question, although its chapter remains short.
-- RQ1 uses one umbrella question and two subquestions. RQ1.1 concerns communication graphs
-  for IoT services. RQ1.2 concerns the modular NADICS/IUNO learning framework for industrial
-  control systems.
-- The graph and framework studies provide complementary answers to RQ1. The dissertation
+- RQ3 (RQ1 before D-009) uses one umbrella question and two subquestions. RQ3.1 concerns
+  communication graphs for IoT services. RQ3.2 concerns the modular NADICS/IUNO learning
+  framework for industrial control systems.
+- The graph and framework studies provide complementary answers to RQ3. The dissertation
   will not claim that they were integrated or compared in one experiment.
 - The IoT microservice graph work did not influence Hybroid. The dissertation will not
   present a historical progression between them.
@@ -56,29 +64,7 @@ research chronology.
 
 ## Research questions
 
-### RQ1: Behaviour in networked and industrial systems
-
-**How can behaviour in networked and industrial systems be represented to support anomaly
-detection?**
-
-#### RQ1.1: Communication graphs
-
-**How can service relationships be represented as communication graphs to identify
-unexpected interactions?**
-
-The graph-based study answers RQ1.1 through its relation model, graph-update process, and
-overhead measurements. It does not report detection accuracy against a labelled attack set.
-
-#### RQ1.2: Modular industrial anomaly detection
-
-**How can a modular learning framework analyse network and process features for anomaly
-detection in industrial control systems?**
-
-NADICS and IUNO answer RQ1.2 through packet and flow processing, feature representation,
-and modular learning components. The chapter must document the candidate's design,
-implementation, and evaluation roles before it assigns originality to individual elements.
-
-### RQ2: Multimodal Android malware analysis
+### RQ1: Multimodal Android malware analysis
 
 **How can static program structure and observed network behaviour be jointly represented for
 Android malware detection and category classification, and how does their combination affect
@@ -86,38 +72,60 @@ predictive performance compared with either source alone?**
 
 Revised on 22 September 2026 under D-008 and T-033. The earlier wording asked only to what
 extent fusing static code-graph representations with dynamic network-flow features improves
-performance over either modality alone. Chapter 4 answers RQ2 through Hybroid. Sections 4.5-4.8
+performance over either modality alone. Chapter 3 answers RQ1 through Hybroid. Sections 3.5-3.8
 answer the first part: a 64-dimensional code vector and 13 flow features averaged per
-application are concatenated at application level. Section 4.11 answers the second through the
+application are concatenated at application level. Section 3.11 answers the second through the
 reported within-system comparison: fusion adds one to two points of detection F1 over the
 better single modality, and minus two to plus three points in category classification,
 depending on the learner. Fold-level scores are unavailable, so these are descriptive
 differences between rounded means. The chapter uses corrected dataset counts and precise graph
 terminology.
 
-### RQ3: Higher-order Android malware analysis
+### RQ2: Higher-order Android malware analysis
 
 **How can higher-order relations within static Android program structure be represented and
 learned, and to what extent do they improve malware detection and classification over pairwise
 graph representations?**
 
 Revised on 21 September 2026 under D-007 and T-031. The earlier wording asked for the benefit
-of attention over non-attentive hypergraph models, which Chapter 5 cannot isolate (HG-01).
-Sections 5.4-5.8 answer the first part through the construction, learned membership weights and
-operator analysis. Sections 5.9-5.13 answer the second: every hypergraph configuration exceeds
+of attention over non-attentive hypergraph models, which Chapter 4 cannot isolate (HG-01).
+Sections 4.4-4.8 answer the first part through the construction, learned membership weights and
+operator analysis. Sections 4.9-4.13 answer the second: every hypergraph configuration exceeds
 the stronger pairwise baseline by 3.1-10.8 points of mean accuracy over five training seeds
 on fixed partitions (author-confirmed under T-032). Individual run scores are unavailable.
 The non-attentive
 comparison is a complete-system finding; attention-only attribution stays a declared limitation.
 
-Chapter 5 will report the multiclass tasks with dataset-specific terminology:
+Chapter 4 will report the multiclass tasks with dataset-specific terminology:
 
 - Drebin: malware-family classification.
 - CICMalDroid: malware-category classification, including Benign.
 
-Binary detection remains a separate evaluation task. Chapter 5 now documents the AndroZoo
+Binary detection remains a separate evaluation task. Chapter 4 now documents the AndroZoo
 benign cohort used for Drebin binary detection. Its remaining label-curation and temporal
 qualifications are stated in that chapter.
+
+### RQ3: Behaviour in networked and industrial systems
+
+**How can behaviour in networked and industrial systems be represented to support anomaly
+detection?**
+
+#### RQ3.1: Communication graphs
+
+**How can service relationships be represented as communication graphs to identify
+unexpected interactions?**
+
+The graph-based study answers RQ3.1 through its relation model, graph-update process, and
+overhead measurements. It does not report detection accuracy against a labelled attack set.
+
+#### RQ3.2: Modular industrial anomaly detection
+
+**How can a modular learning framework analyse network and process features for anomaly
+detection in industrial control systems?**
+
+NADICS and IUNO answer RQ3.2 through packet and flow processing, feature representation,
+and modular learning components. The chapter must document the candidate's design,
+implementation, and evaluation roles before it assigns originality to individual elements.
 
 ### RQ4: Adversarial robustness evaluation
 
@@ -163,9 +171,9 @@ The full PDF should remain between 120 and 170 pages; 170 is a maximum, set by D
 | Front matter | 10 |
 | 1. Introduction | 9 |
 | 2. Background | 15 |
-| 3. Anomaly Detection in IoT and Industrial Control Systems | 15 |
-| 4. Multimodal Android Malware Analysis with Hybroid | 23 |
-| 5. Higher-Order Android Malware Analysis with HGANN-Mal | 27 |
+| 3. Multimodal Android Malware Analysis with Hybroid | 23 |
+| 4. Higher-Order Android Malware Analysis with HGANN-Mal | 27 |
+| 5. Anomaly Detection in IoT and Industrial Control Systems | 15 |
 | 6. Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis | 15 |
 | 7. Cross-Contribution Discussion | 4 |
 | 8. Conclusion and Future Work | 2 |
@@ -372,18 +380,18 @@ sections and all 18 numbered metric equations remain unchanged.
   Chapter 8 can close them. An implicit gap statement, carried only by the wording of the
   research questions, would leave the questions looking chosen rather than derived.
 - The chapter is background rather than a survey. Comparison against competing systems stays
-  in the contribution chapters (4.2, 5.2, and the related-work passages of Chapters 3 and 6).
+  in the contribution chapters (3.2, 4.2, and the related-work passages of Chapters 5 and 6).
   Section 2.4 and Section 2.5 therefore describe method families and their measurement
   problems; they do not rank published systems.
 - The old Learning-Based Security Analysis section is dissolved. Its framing material (the
   observation-to-decision procedure and the assumptions needed to interpret an evaluation)
   sits in the chapter preamble and Section 2.6.
 - Network-flow representation, previously grouped with program graphs, now sits in Section 2.4
-  next to the detection methods that consume it. Chapter 4 needs both flow features and program
-  graphs, so Section 4.7 must state the flow feature set itself rather than rely on Chapter 2.
-- Section ordering differs from contribution-chapter ordering: Chapter 3 draws on Section 2.4,
-  which appears after the Android sections but still precedes Chapter 3. The Chapter 2
-  preamble and decision-unit table provide the navigation; Section 3.3 retains its direct
+  next to the detection methods that consume it. Chapter 3 needs both flow features and program
+  graphs, so Section 3.7 must state the flow feature set itself rather than rely on Chapter 2.
+- Since D-009 the section ordering matches the contribution-chapter ordering: the Android
+  sections support Chapters 3 and 4, and Section 2.4 supports Chapter 5. The Chapter 2
+  preamble and decision-unit table provide the navigation; Section 5.3 retains its direct
   background reference.
 
 #### Alignment with `notes/literature-map.md`
@@ -393,28 +401,99 @@ routes each section to one or more thematic candidate pools. The pools retain th
 harvest counts because several topics contribute to more than one section. Section 2.7 adds
 no new literature; it derives G1-G4 from sources already discussed in Sections 2.1-2.6.
 
-### 3. Anomaly Detection in IoT and Industrial Control Systems
+### 3. Multimodal Android Malware Analysis with Hybroid
 
-3.1 Scope, Research Question, and Contributions
+3.1 Research Problem and Contribution
 
-3.2 Observation Models and Datasets
+3.2 Related Work
 
-3.3 Communication Graphs for IoT Services
+3.3 Observation and Threat Model
 
-3.4 The NADICS Framework and IUNO Integration
+3.4 Dataset and Experimental Protocol
 
-3.5 A GAN-Based Multivariate Detector for SWaT
+3.5 Opcode and Basic-Block Representation
 
-    3.5.1 Model and Training
-    3.5.2 Input Representations and Settings
-    3.5.3 Detection Results
-    3.5.4 Interpretation and Evaluation Scope
+3.6 Program-Graph Representation
 
-3.6 Limitations, Validity, and Individual Contribution
+3.7 Network-Flow Representation
 
-3.7 Chapter Summary
+3.8 Multimodal Fusion and Classification
 
-Chapter 3 reports IoT and industrial evidence only. Under D-040 (10 September 2026) the former
+3.9 Binary Detection Results
+
+3.10 Malware-Category Classification
+
+3.11 Modality Comparison
+
+3.12 Limitations and Threats to Validity
+
+3.13 Chapter Summary
+
+Revised on 20 September 2026 under T-021 after approval of the T-019 review. The thirteen-section
+structure is retained, with the Section 4.5 title aligned to the outline above. The chapter now
+defines the skip-gram objective, CFG readout and flow preprocessing, and formalises the fusion
+contrast. The scientific explanations and citation placement are corrected; repeated source
+commentary is consolidated. Empirical table values and figure assets are unchanged, and the
+undocumented weighting/composition steps remain qualified. Chapter 2 receives only the related
+operand and G2 consistency corrections. Main prose decreases from 6,226 to 3,838 words, with
+nine displayed equations instead of three. The rebuilt chapter occupies pp. 45-60, Chapter 5
+starts on p. 61, and the complete thesis has 151 pages. The 23-page planning allowance is unchanged.
+
+### 4. Higher-Order Android Malware Analysis with HGANN-Mal
+
+4.1 Research Problem and Relation to Hybroid
+
+4.2 Related Work
+
+4.3 Observation and Threat Model
+
+4.4 APK Processing and Function-Call Graph Extraction
+
+4.5 Security-Sensitive API Identification and Program Slicing
+
+4.6 Node Features
+
+4.7 Hyperedge Construction
+
+4.8 Hypergraph Attention Model
+
+4.9 Datasets, Tasks, and Split Policy
+
+4.10 Binary Detection Results
+
+4.11 Malware-Family Classification on Drebin
+
+4.12 Malware-Category Classification on CICMalDroid
+
+4.13 Ablation, Efficiency, and Interpretability Analysis
+
+4.14 Limitations and Threats to Validity
+
+4.15 Chapter Summary
+
+### 5. Anomaly Detection in IoT and Industrial Control Systems
+
+5.1 Scope, Research Question, and Contributions
+
+5.2 Observation Models and Datasets
+
+5.3 Communication Graphs for IoT Services
+
+5.4 The NADICS Framework and IUNO Integration
+
+5.5 A GAN-Based Multivariate Detector for SWaT
+
+    5.5.1 Model and Training
+    5.5.2 Input Representations and Settings
+    5.5.3 Detection Results
+    5.5.4 Interpretation and Evaluation Scope
+
+5.6 Limitations, Validity, and Individual Contribution
+
+5.7 Chapter Summary
+
+Chapter 5 reports IoT and industrial evidence only; it was Chapter 3 before D-009, and the
+dated notes below use that numbering. Under D-040 (10 September 2026) the former
 Section 3.6, Framework Generality on Non-Industrial Corpora (UNSW-NB15 and CICAndMal2017), and
 the former Section 3.7, Clean-Data Results, including its classical SWaT column, are removed.
 RQ1.2 rests on the S7-300 evaluation in IUNO and on the SWaT GAN study. CICAndMal2017 remains
@@ -429,76 +508,6 @@ D-039 no longer appears in the thesis.
 
 Under D-055 (12 September 2026) the GAN study uses all 449,919 attack-period timestamps. The
 first 56,240 support training and validation, while the later 393,679 form the test set.
-
-### 4. Multimodal Android Malware Analysis with Hybroid
-
-4.1 Research Problem and Contribution
-
-4.2 Related Work
-
-4.3 Observation and Threat Model
-
-4.4 Dataset and Experimental Protocol
-
-4.5 Opcode and Basic-Block Representation
-
-4.6 Program-Graph Representation
-
-4.7 Network-Flow Representation
-
-4.8 Multimodal Fusion and Classification
-
-4.9 Binary Detection Results
-
-4.10 Malware-Category Classification
-
-4.11 Modality Comparison
-
-4.12 Limitations and Threats to Validity
-
-4.13 Chapter Summary
-
-Revised on 20 September 2026 under T-021 after approval of the T-019 review. The thirteen-section
-structure is retained, with the Section 4.5 title aligned to the outline above. The chapter now
-defines the skip-gram objective, CFG readout and flow preprocessing, and formalises the fusion
-contrast. The scientific explanations and citation placement are corrected; repeated source
-commentary is consolidated. Empirical table values and figure assets are unchanged, and the
-undocumented weighting/composition steps remain qualified. Chapter 2 receives only the related
-operand and G2 consistency corrections. Main prose decreases from 6,226 to 3,838 words, with
-nine displayed equations instead of three. The rebuilt chapter occupies pp. 45-60, Chapter 5
-starts on p. 61, and the complete thesis has 151 pages. The 23-page planning allowance is unchanged.
-
-### 5. Higher-Order Android Malware Analysis with HGANN-Mal
-
-5.1 Research Problem and Relation to Hybroid
-
-5.2 Related Work
-
-5.3 Observation and Threat Model
-
-5.4 APK Processing and Function-Call Graph Extraction
-
-5.5 Security-Sensitive API Identification and Program Slicing
-
-5.6 Node Features
-
-5.7 Hyperedge Construction
-
-5.8 Hypergraph Attention Model
-
-5.9 Datasets, Tasks, and Split Policy
-
-5.10 Binary Detection Results
-
-5.11 Malware-Family Classification on Drebin
-
-5.12 Malware-Category Classification on CICMalDroid
-
-5.13 Ablation, Efficiency, and Interpretability Analysis
-
-5.14 Limitations and Threats to Validity
-
-5.15 Chapter Summary
 
 ### 6. Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis
 
@@ -593,9 +602,9 @@ Chapter 3 remains a separate unresolved question.
 
 ## Structure status
 
-The author accepted the RQ1 hierarchy on 12 August 2026. The Chapter 2 section list was
+The author accepted the RQ1 hierarchy on 12 August 2026; it is RQ3 since D-009. The Chapter 2 section list was
 replaced on 13 August 2026 by the seven-section Background outline recorded above; the
-15-page budget was kept. The main chapter architecture is stable. RQ2-RQ4 and the chapter titles remain working formulations until the author and
+15-page budget was kept. The main chapter architecture is stable. RQ1, RQ2, RQ4 and the chapter titles remain working formulations until the author and
 supervisor approve their exact wording. Detailed subchapter design can continue later.
 Authorship and experimental questions remain assigned to their contribution chapters in
 `notes/known-issues-to-fix.md`.

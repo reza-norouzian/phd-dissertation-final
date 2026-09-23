@@ -2,6 +2,14 @@
 
 Append-only. Newest first. Written by `wf.py`; hand edits are fine but keep the shape.
 
+## 2026-09-23
+
+- `09:21` **T-034** in-progress -> review - Reorder and renumbering applied end to end; audits and isolated 151-page build pass; visual review left to the author
+- `09:21` **T-034** Reordered the thesis under D-009: Hybroid Ch3, HGANN-Mal Ch4, anomaly detection Ch5; RQs and gaps renumbered to follow (RQ1/G1 Hybroid, RQ2/G2 HGANN-Mal, RQ3/G3 with RQ3.1/3.2 anomaly). Introduction, Background gaps and task table, Discussion 7.1/7.3, Conclusion answers, both abstracts and structure v0.3 follow the new order with no new claims. A VS Code latexmk started at 09:15 on save is stalled at page 4 and left a 42 KB PDF and partial auxiliaries in output/pdf. Biber 2.21 also fails via the universal launcher (lipo usage error) and silently with the default PAR cache; an arm64 slice extracted with lipo plus a fresh PAR_GLOBAL_TMPDIR works. The isolated clean build (151 pages; Ch3 p.25, Ch4 p.41, Ch5 p.67, Ch6 p.91) has no undefined references/citations, overfull boxes or Biber warnings; 21 template warnings and 43 underfull vboxes as before. Strict audits pass. No visual review.
+- `09:15` **T-034** backlog -> in-progress - Author requested the reorder in chat (D-009)
+- `09:15` **T-034** created: Move the anomaly-detection chapter after the Android chapters and renumber the research questions
+- `09:15` decision **D-009**: Place the Android chapters before the anomaly-detection chapter
+
 ## 2026-09-22
 
 - `21:52` **T-023** in-progress -> review - Opening sentence simplified; strict audit and isolated PDF rebuild pass

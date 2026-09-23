@@ -1,12 +1,7 @@
 \chapter{Cross-Contribution Discussion}
 \label{chap:discussion}
 
-% Revised under T-004 and D-003 as a contribution-led, four-section synthesis.
-% Comparisons between the Android systems are conceptual; empirical contrasts stay within
-% each study. The original section labels remain as aliases, including sec:discussion:3,
-% which Chapter 5 cites for observation requirements. Length target: at most four pages.
-
-Chapters~\ref{chap:anomaly} to~\ref{chap:advml} contribute methods for representing
+Chapters~\ref{chap:hybroid} to~\ref{chap:advml} contribute methods for representing
 security-relevant context and procedures for evaluating learning-based decisions. This
 discussion relates their design choices to the evidence each study provides. The comparison
 between \hybroid{} and \hgann{} is conceptual; empirical comparisons remain within the
@@ -16,13 +11,6 @@ corpus and protocol of each study.
 \label{sec:discussion:representations}
 \label{sec:discussion:1}
 \label{sec:discussion:2}
-
-The IoT service-graph design makes communication partners part of the detection decision.
-Each node stores observed relations as its reference and permits an operator to approve
-new legitimate interactions \cite{aubet2018graph}. In the industrial work, \nadics{}
-represents network connections through protocol features, while the SWaT detector analyses
-process measurements in multivariate time windows. Chapter~\ref{chap:anomaly} thus
-connects representation design to the unit of observation available in each setting.
 
 \hybroid{} studies context across evidence sources. Its static graph describes program
 structure, and its flow features summarise network behaviour observed during execution
@@ -48,6 +36,13 @@ propagation even when they produce the same fixed propagation matrix. This capac
 on the grouping retained during construction: attention adjusts existing memberships. The
 distinction connects the model's mathematical properties to the program relations made
 available by static analysis.
+
+The IoT service-graph design makes communication partners part of the detection decision.
+Each node stores observed relations as its reference and permits an operator to approve
+new legitimate interactions \cite{aubet2018graph}. In the industrial work, \nadics{}
+represents network connections through protocol features, while the SWaT detector analyses
+process measurements in multivariate time windows. Chapter~\ref{chap:anomaly} thus
+connects representation design to the unit of observation available in each setting.
 
 The SWaT comparison adds an operating-objective perspective. Full process inputs gave the
 highest reported recall, while the PCA configurations reduced the false-positive rate
@@ -95,6 +90,15 @@ decisions when an attacker deliberately modifies the input. The SAFAIR contest a
 in Chapter~\ref{chap:advml} contribute a procedure for investigating this second question
 under explicit attacker assumptions.
 
+The Android studies provide matched, within-system comparisons under their own protocols.
+\hybroid{} holds the applications and learner fixed when comparing input modalities. The
+\hgann{} evaluation uses common call graphs and node features across its relational
+configurations and reports five-seed means for each fixed partition. These controls provide a
+consistent basis for comparing input modalities and relational structures.
+Time-ordered evaluation addresses performance on later observations
+\cite{pendlebury2019tesseract}. Each protocol examines a distinct evaluation
+question under stated conditions.
+
 Reusable software provides a second connection between the contribution chapters.
 \nadics{} places estimators behind a common interface, so that researchers can change
 learning methods without rewriting the surrounding pipeline \cite{iuno_ap4}.
@@ -104,15 +108,6 @@ execution procedure, while task-specific components define the model and data in
 demonstrates reuse on a prediction task outside the facial-image contest
 \cite[Section~3.1.3.1]{sparta2022d76}. Both frameworks separate components that researchers
 can vary within one configured procedure.
-
-The Android studies provide matched, within-system comparisons under their own protocols.
-\hybroid{} holds the applications and learner fixed when comparing input modalities. The
-\hgann{} evaluation uses common call graphs and node features across its relational
-configurations and reports five-seed means for each fixed partition. These controls provide a
-consistent basis for comparing input modalities and relational structures.
-Time-ordered evaluation addresses performance on later observations
-\cite{pendlebury2019tesseract}. Each protocol examines a distinct evaluation
-question under stated conditions.
 
 Chapter~\ref{chap:advml} adds analytical criteria for interpreting evaluation scores. A
 constant predictor has zero accuracy loss under label-preserving attacks

@@ -1,28 +1,11 @@
 \chapter{Higher-Order Android Malware Analysis with \hgann{}}
 \label{chap:hgann}
 
-% Drafted under T-021 from notes/chapter5-source-records/. Governing decisions:
-% D-027 and D-058 the Drebin binary corpus and empirical matrix; D-028 no ablation, the confound
-% is declared and Chapter 1 carries no isolation claim; D-029 the individual contribution;
-% D-008 the split of hypergraph formalism between Chapter 2 and this chapter;
-% D-010 the qualified duplication wording. Revised under T-005 and D-046 from
-% notes/chapter5-source-records/mathematical-revision-proposal.md: restored construction
-% algorithm, operator analysis, complexity bounds, metric-consistency findings.
-% The five figures are the author's own, supplied on 11 September 2026 (T-006, D-047); see
-% figures/hgann-mal/README.md. They replace the earlier TikZ pipeline and hyperedge diagrams.
-% T-022: priorities 1, 4 and 5 of T-020 only, approved on 20 September 2026.
-% Reconcile published/matrix-derived F1, refine prose and bound literature claims.
-% Preserve method specifications, equations, table bodies and figure assets.
-% T-024: approved priority-3 interpretation passages, 20 September 2026.
-% Method specifications remain unchanged; numerical results retain their provenance.
-% T-031 and D-007: RQ3 framing, results statement and summary aligned with the revised question.
-% T-032: author-corrected five-run macro means on fixed splits.
-
 \section{Research Problem and Relation to Hybroid}
 \label{sec:hgann:1}
 
-This chapter answers RQ3, stated in Section~\ref{sec:intro:rqs}: \rqThreeText{} It addresses
-gap~\gapref{3}. Studies have quantified the information lost when group relations are projected
+This chapter answers RQ2, stated in Section~\ref{sec:intro:rqs}: \rqTwoText{} It addresses
+gap~\gapref{2}. Studies have quantified the information lost when group relations are projected
 onto pairwise edges \cite{kang2024low, wang2024graphs}, while other work establishes conditions
 under which hypergraph propagation is equivalent to propagation on a graph
 \cite{agarwal2006higherorder, chitra2019randomwalks}. Zhang et al.\ evaluated hypergraph
@@ -48,7 +31,7 @@ The chapter retains the source publication's eleven pipeline stages. Stages 0 to
 and unpack the packages and recover the call graph and slices; Stage 3 computes node features.
 Stages 4 to 6 construct and assemble the hypergraph, followed by mini-batching in Stage 7 and
 attention in Stage 8. Stages 9 and 10 perform read-out and classification.
-Sections~\ref{sec:hgann:4} to~\ref{sec:hgann:8} answer the first part of RQ3 through the
+Sections~\ref{sec:hgann:4} to~\ref{sec:hgann:8} answer the first part of RQ2 through the
 method, and Sections~\ref{sec:hgann:9} to~\ref{sec:hgann:13} answer the second through the
 evaluation and analysis.
 
@@ -1112,7 +1095,7 @@ this chapter makes no robustness claim.
 \section{Chapter Summary}
 \label{sec:hgann:15}
 
-For the first part of RQ3, the chapter lifted a method-level function-call graph to a
+For the first part of RQ2, the chapter lifted a method-level function-call graph to a
 hypergraph. Three rules of different kinds join its methods into groups, and attention learns how
 strongly each method participates in each group. The operator analysis in
 Section~\ref{sec:hgann:8} shows that attention reweights the memberships that the construction
