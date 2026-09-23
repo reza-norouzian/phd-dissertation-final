@@ -56,16 +56,17 @@ such as the DOI registry, publisher, DBLP, or arXiv, and inspect the full text b
 source to support a claim. The bibliography and `notes/literature-map.md` are discovery tools;
 their presence alone does not verify a source.
 
-Before drafting a dissertation section, add a claim-to-source record to its writing ticket.
-The record must name the core citekeys, state what each source supports, and record its
-full-text and reference-vault status. Add every cited source to `references/MANIFEST.tsv`, then
-run `references/refcheck.py audit <chapter-file> --strict` before the ticket leaves
-`in-progress`. Do not draft a section until its core sources have passed this check.
+Add every newly cited source to `references/MANIFEST.tsv` and run
+`references/refcheck.py audit <chapter-file> --strict` on the edited chapter.
 
-## Latex
+## Editing and compiling
 
-The toolchain is installed locally. See "Repository facts" below for the build command,
-the bibliography backend, and the output path.
+Edit the LaTeX files directly. There is no ticketing system: do not create tickets, boards,
+work logs, decision logs, or other bookkeeping files for a task.
+
+**After every change to a `.tex` or `.bib` file, compile the thesis to PDF** with
+`latexmk thesis.tex` from the repository root, and read the log for new errors or warnings
+before reporting the work as done. See "Repository facts" below for the toolchain details.
 
 ## Critical Review Mode
 
@@ -144,13 +145,9 @@ If two files or sections contradict each other, flag the inconsistency.
 `notes/` holds the working state of the dissertation and takes precedence over the compiled
 LaTeX, which is still largely skeleton.
 
-- `notes/workflow/README.md` is the ticketing protocol and must be read first, before any other
-  planning document, at the start of every session: run `wf.py recent -n 50`, then
-  `wf.py list --open`, then read `DECISIONS.md` in full if the task touches structure, scope,
-  or attribution.
 - `notes/dissertation-structure-v0.3.md` is the **current** plan: monograph, Android malware
   analysis at the centre, RQ1 with two subquestions, 120-170 pages inclusive of front matter
-  and references (170 is a maximum, D-045; the planning target stays at 142). `v0.2` is superseded and is kept only for history. When the two disagree,
+  and references (170 is a maximum; the planning target stays at 142). `v0.2` is superseded and is kept only for history. When the two disagree,
   v0.3 wins, and the disagreement should be flagged.
 - `notes/known-issues-to-fix.md` is the defect ledger for the source publications. Every issue
   is either corrected in the chapter or declared in that chapter's Limitations section. Check it

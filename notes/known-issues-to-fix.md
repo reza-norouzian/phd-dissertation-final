@@ -54,8 +54,8 @@ Only mark an empirical issue corrected when the supporting record warrants it.
 - [Chapter 5 review](chapter5-critical-review-2026-09-20.md) and T-020/T-022/T-024.
 - [Chapter 7 review](chapter7-critical-review-2026-09-19.md) and
   [Chapter 8 review](chapter8-critical-review-2026-09-20.md).
-- [Chapter 6 revision ticket](workflow/tickets/T-003-revise-chapter-6-evaluation-methods-mathematical-ana.md).
-- [Chapter 2 revision ticket](workflow/tickets/T-025-apply-the-approved-chapter-2-scientific-and-readabil.md).
+- Chapter 6 revision ticket T-003 and Chapter 2 revision ticket T-025 (the ticket system was
+  removed on 23 September 2026; both remain in git history).
 
 Consult the original publications and internal research records before resolving an empirical
 entry. This index records where the current dissertation handles a problem; it is not itself

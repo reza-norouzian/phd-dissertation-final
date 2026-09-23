@@ -7,13 +7,16 @@ those missing records.
 
 ## Current records
 
+The ticket system was removed on 23 September 2026. Tickets T-023 and T-025 remain in git
+history (for example, `git show d3288fa:notes/workflow/tickets/`).
+
 - **Scientific and readability revision:**
-  [T-025](../workflow/tickets/T-025-apply-the-approved-chapter-2-scientific-and-readabil.md)
+  T-025
   contains the pre-drafting claim-to-source table for all seven sections, source versions and
   verification limits. It also records the scope of the read-only review and the subsequent
   author approval.
 - **Shared performance measures:**
-  [T-023](../workflow/tickets/T-023-add-dissertation-wide-performance-measures-to-chapte.md)
+  T-023
   records the metric inventory, source passages and checks for the 18 equations retained in
   the revision.
 - **Physical source inventory:** [reference manifest](../../references/MANIFEST.tsv).

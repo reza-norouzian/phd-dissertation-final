@@ -8,9 +8,8 @@ Column `n` is the number of independent harvests that found the entry (1-10). Co
 the metadata-verification tier: `doi`, `publisher`, `dblp`, `arxiv` and similar are
 independent; `src` means it was copied from a colleague's bibliography and still needs
 checking; `no` means existence could not be confirmed at all. A verified metadata record does
-not replace reading the source. Before drafting a section, record its core sources and the
-claims they support in the writing ticket, inspect the full text where available, and add each
-cited key to the reference vault.
+not replace reading the source. Inspect the full text where available before citing, and add
+each cited key to the reference vault.
 
 ## Chapter 2 source plan
 
@@ -90,8 +89,8 @@ sources and within program structure; scoped evidence about predictive evaluatio
 adversarial measurement. Research examples do not establish universal operational adoption
 or a uniform protocol across the field.
 
-The approved T-026 revision records the Introduction's claim-to-source mapping in
-[its writing ticket](workflow/tickets/T-026-apply-the-approved-chapter-1-scientific-and-readabil.md).
+The approved T-026 revision recorded the Introduction's claim-to-source mapping in its
+writing ticket (the ticket system was removed on 23 September 2026; see git history).
 Section 1.2 acknowledges prior hybrid comparison and Android hypergraph construction, together
 with existing attention and attack-library/competition infrastructure. Chapter 2 retains the
 detailed foundations and G1-G4. The Introduction distinguishes the Android predictive studies
