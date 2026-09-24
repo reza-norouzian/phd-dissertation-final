@@ -771,40 +771,40 @@ are calculated from integer confusion counts and rounded to two decimal places.
     \toprule
     Input representation & Precision (\%) & Recall (\%) & $F_1$ (\%) & False-positive rate (\%) \\
     \midrule
-    All 51 variables           & 70.00 & 94.50 & 80.43 & 6.09 \\
-    PCA: 5 components          & 75.00 & 86.50 & 80.34 & 4.34 \\
-    PCA: 24 components         & 73.00 & 92.00 & 81.41 & 5.12 \\
-    Autoencoder representation & 72.00 & 86.50 & 78.59 & 5.06 \\
-    Selected feature subset    & 71.00 & 84.00 & 76.96 & 5.16 \\
+    All 51 variables           & 70.22 & 94.34 & 80.51 & 6.02 \\
+    PCA: 5 components          & 75.20 & 86.54 & 80.47 & 4.29 \\
+    PCA: 24 components         & 73.11 & 91.89 & 81.43 & 5.08 \\
+    Autoencoder representation & 72.05 & 86.32 & 78.54 & 5.03 \\
+    Selected feature subset    & 70.91 & 84.10 & 76.94 & 5.19 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-The complete representation has the highest recall, at 94.50\%, together with the
-highest false-positive rate, at 6.09\%. This profile represents a detector that identifies a
+The complete representation has the highest recall, at 94.34\%, together with the
+highest false-positive rate, at 6.02\%. This profile represents a detector that identifies a
 larger proportion of anomalous observations while also flagging more normal observations. The
-five-component PCA configuration has the highest precision, at 75.00\%, and the lowest
-false-positive rate, at 4.34\%, accompanied by lower recall of 86.50\%. In these results,
+five-component PCA configuration has the highest precision, at 75.20\%, and the lowest
+false-positive rate, at 4.29\%, accompanied by lower recall of 86.54\%. In these results,
 stronger compression therefore corresponds to fewer false-positive timestamps and more
 missed anomalous timestamps.
 
-The 24-component PCA configuration provides an intermediate balance, with precision of 73.00\%,
-recall of 92.00\% and an $F_1$ score of 81.41\%. Relative to the complete representation, its
-precision is 3.00 percentage points higher and its recall is 2.50 percentage points lower. Its
-$F_1$ score is approximately 0.98 percentage points higher. This configuration has the highest
+The 24-component PCA configuration provides an intermediate balance, with precision of 73.11\%,
+recall of 91.89\% and an $F_1$ score of 81.43\%. Relative to the complete representation, its
+precision is 2.89 percentage points higher and its recall is 2.45 percentage points lower. Its
+$F_1$ score is approximately 0.92 percentage points higher. This configuration has the highest
 reported $F_1$ and is used for the detailed analysis below. The numerical difference does not
 establish a statistically reliable advantage or a preference under every operational cost model.
 
-The autoencoder representation has a precision of 72.00\% and recall of 86.50\%,
-corresponding to an $F_1$ score of 78.59\%. The selected feature subset has precision of
-71.00\%, recall of 84.00\% and $F_1$ of 76.96\%. These values show lower detection coverage
+The autoencoder representation has a precision of 72.05\% and recall of 86.32\%,
+corresponding to an $F_1$ score of 78.54\%. The selected feature subset has precision of
+70.91\%, recall of 84.10\% and $F_1$ of 76.94\%. These values show lower detection coverage
 for the two configurations. They do not identify a causal mechanism: loss of
 relevant input information, differences in representation learning and changes in model
 capacity would require separate investigation.
 
 The final 24-component PCA evaluation produced the confusion matrix in
-Table~\ref{tab:anomaly:gan-confusion}: 47,337 of the 51,453 anomalous timestamps are detected
-and 17,508 of the 342,226 normal timestamps are flagged as anomalous.
+Table~\ref{tab:anomaly:gan-confusion}: 47,279 of the 51,453 anomalous timestamps are detected
+and 17,391 of the 342,226 normal timestamps are flagged as anomalous.
 
 \begin{table}[tbp]
   \centering
@@ -816,10 +816,10 @@ and 17,508 of the 342,226 normal timestamps are flagged as anomalous.
     \toprule
     Actual class & Predicted anomalous & Predicted normal & Total \\
     \midrule
-    Anomalous & 47,337 (TP) &   4,116 (FN) &  51,453 \\
-    Normal    & 17,508 (FP) & 324,718 (TN) & 342,226 \\
+    Anomalous & 47,279 (TP) &   4,174 (FN) &  51,453 \\
+    Normal    & 17,391 (FP) & 324,835 (TN) & 342,226 \\
     \midrule
-    Total     & 64,845      & 328,834      & \textbf{393,679} \\
+    Total     & 64,670      & 329,009      & \textbf{393,679} \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -827,24 +827,24 @@ and 17,508 of the 342,226 normal timestamps are flagged as anomalous.
 The performance measures follow directly from these counts and are calculated from the
 unrounded values:
 \begin{alignat*}{3}
-  \mathrm{Precision} &= TP/(TP+FP)          &&= 47{,}337/64{,}845   &&= 73.00\%,\\
-  \mathrm{Recall}    &= TP/(TP+FN)          &&= 47{,}337/51{,}453   &&= 92.00\%,\\
-  F_1                &= 2TP/(2TP+FP+FN)     &&= 94{,}674/116{,}298  &&= 81.41\%,\\
-  \mathrm{FPR}       &= FP/(FP+TN)          &&= 17{,}508/342{,}226  &&= 5.12\%,\\
-  \mathrm{Accuracy}  &= (TP+TN)/(TP+FN+FP+TN) &&= 372{,}055/393{,}679 &&= 94.51\%.
+  \mathrm{Precision} &= TP/(TP+FP)          &&= 47{,}279/64{,}670   &&= 73.11\%,\\
+  \mathrm{Recall}    &= TP/(TP+FN)          &&= 47{,}279/51{,}453   &&= 91.89\%,\\
+  F_1                &= 2TP/(2TP+FP+FN)     &&= 94{,}558/116{,}123  &&= 81.43\%,\\
+  \mathrm{FPR}       &= FP/(FP+TN)          &&= 17{,}391/342{,}226  &&= 5.08\%,\\
+  \mathrm{Accuracy}  &= (TP+TN)/(TP+FN+FP+TN) &&= 372{,}114/393{,}679 &&= 94.52\%.
 \end{alignat*}
 
-The recall of 92.00\% means that the detector flags approximately 92 of every 100 anomalous
+The recall of 91.89\% means that the detector flags approximately 92 of every 100 anomalous
 timestamps. It does not mean that 92\% of attack episodes are detected. Long attacks contribute
 more timestamps than short attacks, so the same timestamp-level recall could arise from
-different distributions of detection across attack episodes. Precision of 73.00\% means that
+different distributions of detection across attack episodes. Precision of 73.11\% means that
 approximately 27\% of flagged timestamps fall within recorded normal periods. This proportion
-differs from the false-positive rate of 5.12\%, whose denominator includes all normal
+differs from the false-positive rate of 5.08\%, whose denominator includes all normal
 timestamps.
 
 Accuracy is interpreted alongside the class distribution. Since normal observations account for
 86.93\% of the cohort, a rule assigning every observation to the normal class would achieve
-86.93\% accuracy while detecting no anomalous timestamps. The measured accuracy of 94.51\%
+86.93\% accuracy while detecting no anomalous timestamps. The measured accuracy of 94.52\%
 therefore provides supplementary information, whereas recall, precision and $F_1$ directly
 describe the balance relevant to identifying the anomalous class.
 
@@ -859,12 +859,12 @@ matrix.
 \label{sec:anomaly:gan-scope}
 
 The measured results describe a detector with high coverage of anomalous timestamps and a
-substantial false-positive burden. At the nominal one-second cadence, 17,508 false-positive
-observations correspond to approximately 4.86 hours of normal observations being
+substantial false-positive burden. At the nominal one-second cadence, 17,391 false-positive
+observations correspond to approximately 4.83 hours of normal observations being
 flagged. This duration does not identify the number of alarms presented to an operator. A
 sustained interval and many isolated detections could contribute the same number of
-false-positive timestamps while requiring very different responses. Likewise, the 4,116 missed
-anomalous timestamps correspond to 68.6 minutes of anomalous observations, but their
+false-positive timestamps while requiring very different responses. Likewise, the 4,174 missed
+anomalous timestamps correspond to 69.6 minutes of anomalous observations, but their
 operational significance depends on which attacks and phases of process disruption they
 represent.
 
@@ -960,7 +960,7 @@ inside IUNO the framework reaches 94.50
 per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
 rate of 0.484 per cent, and a benign day with four active PLCs raised nine alarm episodes, all of
 them false. For SWaT process windows, the GAN evaluation reports
-92.00 per cent timestamp recall at a false-positive rate of 5.12 per cent with 24 PCA
+91.89 per cent timestamp recall at a false-positive rate of 5.08 per cent with 24 PCA
 components. The full input gives the highest recall and five components the lowest
 false-positive rate, so the preferred representation depends on the relative cost of missed
 anomalies and false alarms.
