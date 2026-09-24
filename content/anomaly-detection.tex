@@ -8,7 +8,8 @@
 This chapter answers RQ3, which asks how a modular learning framework can analyse network and
 process features for anomaly detection in industrial control systems
 (Section~\ref{sec:intro:rqs}), and addresses gap~\gapref{3}. The framework, \nadics{}, separates
-feature preparation from interchangeable learning components. In IUNO, its network application
+feature preparation from interchangeable learning components. In the German Industrie~4.0
+security project IUNO (Section~\ref{sec:anomaly:nadics}), its network application
 uses a protocol-specific extractor for S7comm and PROFINET. A GAN-based extension analyses
 multivariate SWaT process windows with elements of MAD-GAN and TadGAN.
 
@@ -118,10 +119,8 @@ pipeline being rewritten: the released repository contains the scikit-learn esti
 deliverable additionally reports a deep neural network and a convolutional network
 \cite{iuno_ap4}, and the generative adversarial detector of Section~\ref{sec:anomaly:gan} was
 added later at the same interface for multivariate process data. Postprocessing carries the
-verdict to whoever acts on it. The released code leaves this stage open, because alarm handling
-depends on the security policy and the network layout of the individual site. The S7comm and
-PROFINET extractor existed as a separate project artefact, so the released repository takes a
-feature table as its input.
+verdict to whoever acts on it. The S7comm and PROFINET extractor existed as a separate project 
+artefact, so the released repository takes a feature table as its input.
 
 The design follows from the data situation in industrial control. No public corpus of labelled
 traffic from a real industrial network was available \cite{iuno_ap4}, so the estimator that
@@ -141,20 +140,30 @@ false-positive rate can be reduced.
   \label{fig:anomaly:nadics-arch}
 \end{figure}
 
-Figure~\ref{fig:anomaly:nadics-arch} shows the pipeline as it was deployed in IUNO. Two data
-artefacts separate its three stages. The first stage produced the corpus. Attacks of five classes
-(authentication bypass, CPU stop and start, reconnaissance, denial of service and brute force)
-were executed in a real industrial environment against Siemens S7-300 controllers that exchanged
-S7comm traffic \cite{kleinmann2014accurate} with a control server, and the traces were labelled
-both in binary form and by attack class \cite{iuno_ap4}. In the second stage, the public analysers TShark, Bro-IDS and
-Argus were combined with dissectors written for S7comm and PROFINET
-\cite{akerberg2009exploring}, and the TUM feature extractor reduced each network connection to
+IUNO, the German national reference project for IT security in Industrie~4.0, ran from 2015 to
+2018. Its consortium joined industrial companies such as Volkswagen with research institutes,
+among them Fraunhofer AISEC, Fraunhofer SIT, DFKI and TUM \cite{iuno2017d42}. The partners
+built security tools and tested them in four use cases \cite{iuno_ap7}. \nadics{} was developed
+for the use case \emph{Visual Security Control Room}. This control room captured data streams
+from production in real time and displayed the security state of the production network in one
+view, so that operators could act on a deviation before the process came to a halt
+\cite{iuno_ap4}.
+
+Figure~\ref{fig:anomaly:nadics-arch} shows the pipeline as it was deployed in that use case. Two
+data artefacts separate its three stages. The first stage produced the corpus. Attacks of five
+classes (authentication bypass, CPU stop and start, reconnaissance, denial of service and brute
+force) were executed in a real industrial environment against Siemens S7-300 controllers that
+exchanged S7comm traffic \cite{kleinmann2014accurate} with a control server. The traces were
+labelled both in binary form and by attack class \cite{iuno_ap4}. In the second stage, the
+public analysers TShark, Bro-IDS and Argus were combined with dissectors written for S7comm and
+PROFINET
+\cite{akerberg2009exploring}, and the feature extractor reduced each network connection to
 one labelled feature vector, written as CSV or JSON
 \cite{iuno2017d42,iuno_ap4}. The third stage is the framework proper. It reads that dataset, fits
 one of the registered estimators, applies the resamplers and the outlier tests, and reports which
-features carried the decision. Detections reached the visual security control room as JSON event
-messages over the authenticated message bus of the IUNO aggregation system \cite{iuno_ap4}, and
-acting on them belonged to the control room \cite{iuno_ap7}.
+features carried the decision. Detections reached the control room as JSON event messages over
+the authenticated message bus of the IUNO aggregation system \cite{iuno_ap4}. The response to
+an alert was left to the control room operators \cite{iuno_ap7}.
 
 The modules map onto these stages at the dataset. Preprocessing spans the second stage and the
 input side of the third, where encoding, scaling and resampling are applied to the table, while
