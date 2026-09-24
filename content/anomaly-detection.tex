@@ -37,8 +37,10 @@ data \cite{pahl2016distributed}. It observes an inter-service message rather tha
 Vertices are service addresses, and an edge records an observed communication relation. The
 message also exposes metadata such as the operation performed \cite{pahl2018graphbased}.
 
-{\nadics{} receives tabular records. Its network path takes connection features derived from S7comm, PROFINET, 
-or conventional network traffic. The SWaT path does not model communication. It consumes the sensor and actuator
+\nadics{} (Network Anomaly Detection for Industrial Control Systems) is the detection framework
+described in Section~\ref{sec:anomaly:nadics} \cite{iuno_ap4}. It receives tabular records. Its
+network path takes connection features derived from the industrial protocols S7comm and PROFINET,
+or from conventional network traffic. The SWaT path does not model communication. It consumes the sensor and actuator
 values of a six-stage water-treatment process, sampled once per second
 \cite{goh2016swatdataset,mathur2016swat}.
 
@@ -69,16 +71,15 @@ values of a six-stage water-treatment process, sampled once per second
   \end{tabularx}
 \end{table}
 
-The studies use different decision rules. The service-graph method stores the inter-service
-relations observed during its learning phase and flags a later relation that is absent from the
-graph. The GAN study uses mixed normal and attack windows for fitting, combines reconstruction
-and critic scores, and applies an adaptive threshold that assigns a binary prediction to each
-timestamp. Both methods depend on representative fitting data: an attack present during learning
-may be incorporated into the learned
-representation. The \nadics{} evaluation on the S7-300 corpus uses labelled classification
-instead, so it addresses a different decision problem. It holds out whole capture sessions. Its
-attack share of 4.54 per cent was set by the executed attacks and does not reproduce the class
-ratio of routine operation.
+The studies use different decision rules. The service-graph method
+(Section~\ref{sec:anomaly:service-graphs}) stores the inter-service relations observed during its
+learning phase and flags a later relation that is absent from the graph. The GAN study
+(Section~\ref{sec:anomaly:gan}) uses mixed normal and attack windows for fitting, combines
+reconstruction and critic scores, and applies an adaptive threshold that assigns a binary
+prediction to each timestamp. Both methods depend on representative fitting data: an attack
+present during learning may be incorporated into the learned representation. The \nadics{}
+evaluation on the S7-300 corpus (Section~\ref{sec:anomaly:iuno-corpus}) uses labelled
+classification instead, so it addresses a different decision problem.
 
 \section{Communication Graphs for IoT Services}
 \label{sec:anomaly:service-graphs}
