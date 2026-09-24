@@ -295,9 +295,7 @@ The extraction schema has 63 fields in five groups: 18 flow fields, 13 timing fi
 protocol fields, nine relational fields and five process fields. Forty-six are numerical, eleven
 categorical and six binary, and encoding of the categorical fields expands the input
 dimensionality of the model. The flow group follows the output of Argus and Bro-IDS, which the
-extractor wrapped. The UNSW-NB15 intrusion-detection corpus derives most of its features from
-the same two tools \cite{moustafa2015unsw}, so this group coincides with the flow columns of
-that corpus. Protocol fields cover S7 message and function codes,
+extractor wrapped. Protocol fields cover S7 message and function codes,
 addressed memory areas, address entropy and error codes, together with COTP and OPC~UA fields.
 Relational fields describe the communication partners, the age of an edge, and the number of
 distinct destinations and ports observed in the preceding minute. The process group reads one
@@ -455,8 +453,7 @@ minutes.
   \caption{Extraction workloads on the Raspberry Pi 3 prototype. Input frames are the frames
   presented to the extraction pipeline, and processed frames exclude those dropped before
   processing. Rates and CPU utilisation are averages over the replay, and CPU utilisation refers
-  to the capacity of the whole device. The emission delay runs from the close of a window to the
-  emission of its record.}
+  to the capacity of the whole device.}
   \label{tab:anomaly:iuno-pi}
   \small
   \begin{tabular}{@{}lrrr@{}}
