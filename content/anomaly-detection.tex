@@ -518,17 +518,47 @@ activity varied.
 \section{A GAN-Based Multivariate Detector for SWaT}
 \label{sec:anomaly:gan}
 
-This section reports an empirical evaluation of a generative adversarial network (GAN) for
-detecting abnormal behaviour in an industrial water-treatment process. The study examines how
-the representation of process measurements and their temporal context influence the balance
-between detecting anomalous observations and generating false alarms. Its design combines the
-multivariate approach of MAD-GAN \cite{li2019madgan} with the encoder, cycle-consistency
-objective and Wasserstein critics described in TadGAN \cite{geiger2020tadgan}. The reported
-results were measured on the SWaT evaluation cohort and compare five input representations.
+Industrial process recordings form multivariate time series: each timestamp associates sensor
+measurements with actuator states, and successive observations describe the evolution of the
+plant. An anomaly may appear as an unusual value or as a sequence that conflicts with the
+expected relationships between variables. A measurement within its usual range can therefore
+be anomalous in its temporal or process context. MAD-GAN motivates joint modelling of these
+dependencies for industrial intrusion detection, while TadGAN addresses anomalous sequences
+across several time-series domains \cite{li2019madgan,geiger2020tadgan}. Process monitoring can
+expose the physical effects of an attack, although a deviation alone does not establish its
+cause. Scarce labelled attack examples motivate methods that learn reference behaviour from
+recorded operation.
+
+A generative adversarial network (GAN) learns a data distribution through two neural networks
+with opposing training objectives \cite{goodfellow2014generative}. The generator transforms
+samples from a latent distribution into synthetic observations. The discriminator learns to
+distinguish recorded observations from generated samples, and the generator is updated to make
+that distinction harder. For time series, the generated objects are sequences of measurements.
+Here, \emph{adversarial} describes the training relationship between the networks. The
+discriminator's training labels identify recorded and generated data; they are not attack
+annotations.
+
+For anomaly detection, the learned distribution provides a reference against which new
+observations can be assessed. MAD-GAN uses long short-term memory (LSTM) networks to model
+multivariate windows and combines discrimination with reconstruction error
+\cite{li2019madgan}. Reconstruction requires a latent representation from which the generator
+can reproduce the observed sequence; MAD-GAN searches for this representation at inference.
+TadGAN learns an encoder for this mapping and adds a cycle-consistency loss that penalises
+differences between an input and its reconstruction. Its Wasserstein critics supply real-valued
+scores for matching distributions during training \cite{geiger2020tadgan}. Reconstruction error
+and discriminator or critic output can then supply evidence of deviation. Their usefulness
+depends on the behaviour represented in training and on the subsequent scoring rule.
+
+The present study combines multivariate process windows with the encoder and cycle-consistent
+training of TadGAN. It examines how five input representations affect detection and false alarms
+on a fixed SWaT evaluation cohort. The experiment concerns a detector developed with some
+attack observations, as specified below; its learned reference therefore includes both normal
+and attack behaviour. This distinction matters when comparing its results with methods trained
+only on normal operation.
 
 The detector operates on process measurements from the Secure Water Treatment (SWaT) testbed.
 SWaT comprises six treatment stages, with programmable logic controllers coordinating sensors
-and actuators and a supervisory network connecting the controllers to SCADA
+and actuators and a supervisory network connecting the controllers to supervisory control and data acquisition (SCADA)
 (Figure~\ref{fig:anomaly:swat-architecture}). The process dataset contains 51 sensor and
 actuator variables recorded at a nominal frequency of one observation per second
 \cite{goh2016swatdataset}. These variables describe the physical behaviour of the plant,
@@ -586,9 +616,8 @@ The later 393,679 attack-period timestamps form the test set. They comprise 51,4
 All three partitions contain normal observations and labelled attack examples. Each attack
 episode is confined to one partition, and no window crosses a partition boundary or a
 discontinuity in the recordings. Partitioning precedes imputation, scaling, feature selection
-and window construction. Representations, model settings and detection thresholds are selected
-from the training and validation data. The model is therefore developed on earlier observations
-and evaluated on later observations that were not used for training or model selection.
+and window construction. Earlier observations support model development, while the later
+observations form the test cohort.
 
 The GAN objective does not require class annotations during gradient-based fitting.
 Nevertheless, the complete procedure includes supervised feature selection and model
@@ -620,11 +649,10 @@ observed window and its reconstruction,
   \centering
   \includegraphics[width=\linewidth]{swat/thesis/swat-gan-pipeline.pdf}
   \caption{Multivariate GAN detection pipeline. (a) The four networks are trained together on
-  earlier windows containing normal and attack observations; validation data select the
-  representation, the settings and the threshold. (b) The later 393,679 test timestamps are
+  earlier windows containing normal and attack observations. (b) The later 393,679 test timestamps are
   scored with the trained networks; the latent critic has no part in the score $a_t$ of
   Equation~\ref{eq:anomaly:gan-score}. The blue tag marks the input representation, the only
-  factor varied between runs, and orange tags mark the steps that used attack ground truth. The
+  factor varied between runs, and orange tags mark development steps that used attack ground truth. The
   window length is fixed at 60 samples. The scaler and PCA are fitted on training data and
   reused for validation and testing. The candidate implemented every processing step shown.}
   \label{fig:anomaly:gan-pipeline}
@@ -678,9 +706,9 @@ ensures that overlapping windows do not cause a timestamp to be counted repeated
 confusion matrix.
 
 An adaptive threshold converts the combined score into a binary anomaly prediction. The threshold
-rule, its historical context length and any interval-merging parameters are chosen using
-validation data and fixed before the test cohort is scored. Test ground truth is used only for the
-final performance calculation. The historical context used by the threshold is a separate
+rule uses a historical context and may merge adjacent anomalous intervals. The recorded test
+labels provide the reference for the reported performance metrics. The historical context used
+by the threshold is a separate
 parameter from the 60-second window used by the neural networks. Because the stated aggregation
 uses windows extending beyond the timestamp being scored, the evaluation measures offline
 detection. It does not measure causal online performance or real-time detection delay.
@@ -781,10 +809,9 @@ missed anomalous timestamps.
 The 24-component PCA configuration provides an intermediate balance, with precision of 73.00\%,
 recall of 92.00\% and an $F_1$ score of 81.41\%. Relative to the complete representation, its
 precision is 3.00 percentage points higher and its recall is 2.50 percentage points lower. Its
-$F_1$ score is approximately 0.98 percentage points higher. It is consequently adopted as the
-final configuration on the basis of its numerical $F_1$ balance. This designation
-does not imply a statistically established advantage or preference under every operational cost
-model.
+$F_1$ score is approximately 0.98 percentage points higher. This configuration has the highest
+reported $F_1$ and is used for the detailed analysis below. The numerical difference does not
+establish a statistically reliable advantage or a preference under every operational cost model.
 
 The autoencoder representation has a precision of 72.00\% and recall of 86.50\%,
 corresponding to an $F_1$ score of 78.59\%. The selected feature subset has precision of
@@ -897,12 +924,6 @@ would establish computational cost on the stated hardware. The model topology, l
 normalisation rule, threshold parameters, software versions, feature identities and partition
 records would form the implementation record needed for reproducibility.
 
-Tables~\ref{tab:anomaly:gan-representations} and~\ref{tab:anomaly:gan-confusion} report the
-empirical scope of this evaluation. The chronological partition prevents the later test
-observations from entering training or model selection. The report does not give the division of
-the first 56,240 attack-period timestamps between training and validation, and incomplete
-configuration records limit independent reproduction of the experiment.
-
 \section{Limitations, Validity, and Individual Contribution}
 \label{sec:anomaly:limitations}
 
@@ -923,9 +944,8 @@ operating modes that occurred within it.
 \paragraph{Sampling and selection.}
 The GAN study develops the model on the first 56,240 attack-period timestamps and evaluates it
 on the later 393,679 timestamps. Training and validation also use separate normal-operation
-data, and attack episodes do not cross partition boundaries. This chronological split prevents
-test observations from entering training or model selection, but it remains within one SWaT
-campaign. The S7-300 evaluation holds out whole capture sessions. Neither study tests transfer
+data, and attack episodes do not cross partition boundaries. The evaluation remains within one
+SWaT campaign. The S7-300 evaluation holds out whole capture sessions. Neither study tests transfer
 to another installation or an operational class ratio. No repeated runs or uncertainty
 intervals are reported, so small differences between configurations cannot be interpreted as
 stable improvements.
