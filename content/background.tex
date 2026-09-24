@@ -337,7 +337,8 @@ of complete configurations.
 
 Network and industrial detectors operate on several observation units. Traffic can be
 represented by flow records or service interactions; a process detector instead receives
-measurements of the physical system. Chapter~\ref{chap:anomaly} uses each of these forms.
+measurements of the physical system. Chapter~\ref{chap:anomaly} evaluates network records and
+process measurements, with service interactions retained as an exploratory example.
 
 \subsection{Anomaly Detection as a Security Task}
 \label{sec:background:networks:families}
@@ -352,8 +353,8 @@ The unit and context of the decision define what constitutes a deviation. A poin
 unusual as an individual observation. A contextual anomaly is unusual under a particular
 condition, such as an operating state, while a collective anomaly arises from a related group
 whose individual elements need not be unusual \cite{chandola2009anomaly}. These distinctions
-matter for the contribution studies: the SWaT method derives timestamp decisions from
-multivariate windows (Section~\ref{sec:anomaly:gan}), and the service-graph method evaluates a
+matter for the studies in Chapter~\ref{chap:anomaly}: the SWaT method derives timestamp decisions from
+multivariate windows (Section~\ref{sec:anomaly:gan}), and the exploratory service-graph method evaluates a
 relation against learned communication structure
 (Section~\ref{sec:anomaly:service-graphs}).
 
@@ -386,8 +387,9 @@ Their distribution can still change with protocols or execution conditions.
 Flow records are an observation choice, not a universal unit of network behaviour. Service
 messages and layer-2 industrial traffic require other identifiers.
 Section~\ref{sec:hybroid:7} defines how \hybroid{} aggregates bidirectional flow records into
-an application-level vector. Chapter~\ref{chap:anomaly} separately defines its service
-relations and windowed industrial connection records.
+an application-level vector. Section~\ref{sec:anomaly:iuno-corpus} defines the windowed industrial
+connection records used by \nadics{}; Section~\ref{sec:anomaly:service-graphs} illustrates
+service relations in the exploratory IoT study.
 
 \subsection{Communication Structure in Industrial and IoT Networks}
 \label{sec:background:networks:industrial}
@@ -520,8 +522,7 @@ between those types into correct binary detections (Section~\ref{sec:anomaly:iun
 
 \begin{table}[tbp]
   \centering
-  \caption[Decision units and prediction targets]{Decision units and targets in the contribution chapters. The service-graph study
-  reports graph updates and overhead; its detection accuracy was not measured. Attribute
+  \caption[Decision units and prediction targets]{Decision units and targets in the evaluated classification and detection tasks. Attribute
   accuracy counts the individual label decisions defined in
   Section~\ref{sec:background:metrics:aggregation}.}
   \label{tab:background:tasks}
@@ -534,7 +535,6 @@ between those types into correct binary detections (Section~\ref{sec:anomaly:iun
     \midrule
     \hybroid{} (\ref{chap:hybroid}) & Application & Binary or category label \\
     \hgann{} (\ref{chap:hgann}) & Application & Binary label; family or category \\
-    Service graphs (\ref{chap:anomaly}) & Service interaction & Known or unexpected relation \\
     S7-300 (\ref{chap:anomaly}) & Connection record & Normal or attack type \\
     SWaT (\ref{chap:anomaly}) & Timestamp & Normal or anomalous \\
     SAFAIR contest (\ref{chap:advml}) & Image & Identity or binary attributes \\
@@ -746,13 +746,13 @@ weighting would further require varying them separately. RQ2 addresses this ques
 binary detection and dataset-specific malware classification.
 
 \phantomsection
-\paragraph{G3. Representations for network and process observations.}\label{gap:3}
+\paragraph{G3. Representations for modular industrial anomaly detection.}\label{gap:3}
 Communication whitelists and host-pair models use relations observed between devices
 \cite{barbosa2013flow,yoon2014communication}, while process detectors use sensor and actuator
-measurements \cite{goh2016swatdataset}. The design question is how to match the representation
-to the available observations and accommodate changes to the monitored relations or learning
-method. RQ3 addresses representation and maintenance through service communication graphs
-and modular analysis of network and process features.
+measurements \cite{goh2016swatdataset}. These observation types require different feature
+preparation and decision units. The design question is how a modular learning framework can
+accommodate both forms without tying the surrounding pipeline to one estimator. RQ3 examines
+this question through \nadics{} and its separate network and process evaluations.
 
 \phantomsection
 \paragraph{G4. Reproducible and interpretable adversarial evaluation.}\label{gap:4}

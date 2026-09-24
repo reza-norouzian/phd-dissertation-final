@@ -19,19 +19,13 @@ On Drebin and CICMalDroid, five-run mean accuracy exceeded the stronger pairwise
 points; its CICMalDroid binary accuracy was 97.6 against 97.7 per cent. These complete-system
 comparisons address gap~\gapref{2}; attention attribution requires a controlled ablation.
 
-\paragraph{RQ3.} \emph{\rqThreeText} Communication graphs represent service relationships,
-while protocol records and process windows support industrial anomaly detection.
-Chapter~\ref{chap:anomaly} addresses gap~\gapref{3} through these implementations.
-
-\paragraph{RQ3.1.} \emph{\rqThreeOneText} A node-local graph stores relations observed during
-service start-up. Unexpected relations trigger an alert and can be approved by the site owner
-as the deployment changes.
-
-\paragraph{RQ3.2.} \emph{\rqThreeTwoText} \nadics{} separates feature preparation from
+\paragraph{RQ3.} \emph{\rqThreeText} \nadics{} separates feature preparation from
 interchangeable learning components. On the session-disjoint S7-300 evaluation, a random forest
 achieved 94.50 per cent attack $F_1$ at a record-level false-positive rate of 0.484 per cent.
 The GAN-based extension with 24 PCA components achieved 92.00 per cent timestamp recall at a
-false-positive rate of 5.12 per cent on later SWaT test data.
+false-positive rate of 5.12 per cent on later SWaT test data. These separate evaluations address
+gap~\gapref{3} through a modular framework and observation-specific analysis within the tested
+industrial settings.
 
 \paragraph{RQ4.} \emph{\rqFourText} SAFAIR translated attacker assumptions into a contest
 protocol and a benchmark with task-specific interfaces. The implementation and scoring analysis
@@ -55,8 +49,7 @@ attentive propagation even when their fixed propagation matrices coincide.
 
 The industrial contribution is a modular framework for network and process observations,
 supported by the candidate's extractor and labelled corpus, with a GAN-based extension for
-SWaT. His contribution to the IoT study concerns the communication-graph concept and measurement
-design.
+SWaT.
 SAFAIR contributes a benchmark design for adversarial robustness evaluation and reusable
 software with task-specific interfaces. Chapter~\ref{chap:advml} analyses accuracy-loss scoring and the effect of binary
 label reversal after an alarm. Partner defences provide applications of the framework.

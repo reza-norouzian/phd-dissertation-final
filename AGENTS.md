@@ -158,7 +158,8 @@ If two files or sections contradict each other, flag the inconsistency.
 LaTeX, which is still largely skeleton.
 
 - `notes/dissertation-structure-v0.3.md` is the **current** plan: monograph, Android malware
-  analysis at the centre, RQ1 with two subquestions, 120-170 pages inclusive of front matter
+  analysis at the centre, four research questions with modular industrial anomaly detection
+  as RQ3 (no subquestions), 120-170 pages inclusive of front matter
   and references (170 is a maximum; the planning target stays at 142). `v0.2` is superseded and is kept only for history. When the two disagree,
   v0.3 wins, and the disagreement should be flagged.
 - `notes/known-issues-to-fix.md` is the defect ledger for the source publications. Every issue

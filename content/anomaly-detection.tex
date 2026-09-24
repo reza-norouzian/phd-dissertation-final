@@ -1,53 +1,46 @@
-\chapter{Anomaly Detection in IoT and Industrial Control Systems}
+\chapter{Anomaly Detection in Industrial Control Systems}
 \label{chap:anomaly}
 
 \section{Scope, Research Question, and Contributions}
 \label{sec:anomaly:scope}
 \label{sec:anomaly:1}
 
-This chapter answers RQ3.1 and RQ3.2, the two subquestions of RQ3 stated in
-Section~\ref{sec:intro:rqs}, and takes up gap~\gapref{3}. Three pieces of work support the
-answer. The first represents service-to-service communication in an IoT middleware as a graph
-and flags relations absent from that graph. The second is \nadics{}, a learning framework for
-network and process data, together with its S7comm and PROFINET extractor and its integration in
-IUNO. The third studies a multivariate reconstruction detector over SWaT process data by
-combining elements of MAD-GAN and TadGAN.
+This chapter answers RQ3, which asks how a modular learning framework can analyse network and
+process features for anomaly detection in industrial control systems
+(Section~\ref{sec:intro:rqs}), and addresses gap~\gapref{3}. The framework, \nadics{}, separates
+feature preparation from interchangeable learning components. In IUNO, its network application
+uses a protocol-specific extractor for S7comm and PROFINET. A GAN-based extension analyses
+multivariate SWaT process windows with elements of MAD-GAN and TadGAN.
 
-Each contribution observes its own setting. The service-graph study represents inter-service
-messages as graph relations. In the industrial work, the \nadics{} extractor reduces packet
-captures to connection records, while the SWaT study represents process measurements as
-multivariate time windows. No common protocol evaluates all three settings, so the chapter
-treats them as related but separate experimental strands.
+The two industrial applications use different datasets and decision units. The network
+evaluation classifies packet-derived connection records, while the SWaT study derives timestamp
+decisions from process windows. They share a learning interface, but their results are assessed
+under separate experimental protocols.
 
-The evidence also differs in kind. The service-graph contribution was disseminated at the 2018
-Passive and Active Measurement Conference (PAM)
-\cite{aubet2018graph}. The original industrial framework is supported by released code and
-IUNO deliverables \cite{iuno_ap4,iuno_ap7}. The SWaT study is recorded in an unpublished
-internal report written by the candidate. Because that report is a research record, it is not a
-bibliography item. The candidate designed the method, implemented the experimental pipeline, ran
-and analysed the experiments, and wrote the report. Section~\ref{sec:anomaly:gan} reports the
-empirical evaluation of the SWaT detector.
+Released code and IUNO deliverables document the original framework \cite{iuno_ap4,iuno_ap7}.
+The SWaT study is recorded in an unpublished internal report written by the candidate. Because
+that report is a research record, it is not a bibliography item. The candidate designed the
+method, implemented the experimental pipeline, ran and analysed the experiments, and wrote the
+report. Section~\ref{sec:anomaly:gan} presents its empirical evaluation.
+
+Section~\ref{sec:anomaly:service-graphs} retains a short exploratory IoT study as an example of
+relation-based monitoring \cite{aubet2018graph}. It was separate from \nadics{} and provides
+supporting context; the answer to RQ3 rests on the industrial framework and its evaluations.
 
 \section{Observation Models and Datasets}
 \label{sec:anomaly:observation}
 
-The contribution strands observe different events. In the IoT middleware, the monitor sits at
-the Knowledge Agent, the entry point of the Virtual State Layer through which services exchange
-data \cite{pahl2016distributed}. It observes an inter-service message rather than a packet.
-Vertices are service addresses, and an edge records an observed communication relation. The
-message also exposes metadata such as the operation performed \cite{pahl2018graphbased}.
-
 \nadics{} (Network Anomaly Detection for Industrial Control Systems) is the detection framework
 described in Section~\ref{sec:anomaly:nadics} \cite{iuno_ap4}. It receives tabular records. Its
 network path takes connection features derived from the industrial protocols S7comm and PROFINET,
-or from conventional network traffic. The SWaT path does not model communication. It consumes the sensor and actuator
-values of a six-stage water-treatment process, sampled once per second
+or from conventional network traffic. The SWaT path consumes the sensor and actuator values of
+a six-stage water-treatment process, sampled once per second
 \cite{goh2016swatdataset,mathur2016swat}.
 
 \begin{table}[tbp]
   \centering
-  \caption{Observation units used in Chapter~\ref{chap:anomaly}. The rows are not numerically
-  comparable because their labels, sampling processes, and validation protocols differ.}
+  \caption{Observation units in the industrial evaluations and the exploratory IoT study.
+  Labels, sampling processes, and validation protocols differ between the studies.}
   \label{tab:anomaly:observations}
   \small
   \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.5cm}
@@ -55,10 +48,6 @@ values of a six-stage water-treatment process, sampled once per second
     \toprule
     Study & Unit observed & Representation & Decision \\
     \midrule
-    IoT service graph &
-      inter-service message &
-      vertices and whitelisted relations &
-      known or unknown relation \\
     \nadics{} in IUNO &
       packet-derived connection record &
       protocol and flow features &
@@ -67,98 +56,52 @@ values of a six-stage water-treatment process, sampled once per second
       sensor and actuator sample &
       multivariate time window &
       anomalous or normal timestamp \\
+    IoT service graph (exploratory) &
+      inter-service message &
+      vertices and whitelisted relations &
+      known or unknown relation \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-The studies use different decision rules. The service-graph method
-(Section~\ref{sec:anomaly:service-graphs}) stores the inter-service relations observed during its
-learning phase and flags a later relation that is absent from the graph. The GAN study
-(Section~\ref{sec:anomaly:gan}) uses mixed normal and attack windows for fitting, combines
-reconstruction and critic scores, and applies an adaptive threshold that assigns a binary
-prediction to each timestamp. Both methods depend on representative fitting data: an attack
-present during learning may be incorporated into the learned representation. The \nadics{}
-evaluation on the S7-300 corpus (Section~\ref{sec:anomaly:iuno-corpus}) uses labelled
-classification instead, so it addresses a different decision problem.
+The industrial evaluations use different decision rules. The S7-300 evaluation
+(Section~\ref{sec:anomaly:iuno-corpus}) uses labelled classification. The GAN study
+(Section~\ref{sec:anomaly:gan}) fits mixed normal and attack windows, combines reconstruction
+and critic scores, and applies an adaptive threshold to assign a binary prediction to each
+timestamp. An attack present during fitting may enter its learned reference distribution.
+Table~\ref{tab:anomaly:observations} also includes the service-relation unit of the exploratory
+study below.
 
-\section{Communication Graphs for IoT Services}
+\section{Exploratory Study: Communication Graphs for IoT Services}
 \label{sec:anomaly:service-graphs}
 
-An IoT site consists of distributed computing nodes, and the devices on these nodes are
-managed by microservices. The services cooperate to implement a use case. A heating controller,
-for example, reads temperatures from distributed meters and sets the valves of the heating
-devices \cite{aubet2018graph}. IoT data exchange is usually protected by access policies such as
-OAuth tokens or group-based access control, and such policies hold only if every service
-implements them correctly. Services also cooperate ad hoc on heterogeneous nodes. A site owner
-therefore cannot keep track of the communication relations between services by hand
-\cite{aubet2018graph}.
+The collaborative study presented at PAM 2018 examined communication whitelisting for IoT
+microservices \cite{aubet2018graph}. Its monitor operates at the Knowledge Agent, the entry
+point of the Virtual State Layer middleware through which services exchange data
+\cite{pahl2016distributed}. Each computing node stores a graph whose vertices are service
+addresses and whose edges record observed communication partners. This observation model
+captures service relations at the middleware level, in contrast to the packet-derived records
+used in the industrial evaluation.
 
-The problem addressed here has two parts: to build a model of these relations without manual
-configuration, and to use it to detect anomalous traffic. Communication whitelisting is the
-established approach in control networks (Section~\ref{sec:background:networks:industrial}).
-Flow whitelists were built for SCADA networks \cite{barbosa2013flow}, and communication
-patterns were later modelled per host pair \cite{yoon2014communication}. Both assume that the
-topology stays stable after a single learning period. An IoT deployment changes whenever a
-service is added or removed, so its model must allow revision during operation
-\cite{aubet2018graph}.
+A learning phase begins when a service starts and treats the relations observed during that
+period as normal. A later relation absent from the graph raises a notification. The site owner
+can approve it, after which the monitor adds it to the allowed relations. This update procedure
+permits new legitimate partners during operation, subject to the assumption that the initial
+learning period represents benign behaviour. The prototype uses concrete local addresses;
+site-independent service models remained a proposed extension \cite{aubet2018graph}.
 
-The proposed model is compact. Services are vertices, observed relations are edges, and each
-node maintains its own graph. A learning phase runs when a service starts and labels every
-relation observed during that period as normal. A relation absent from the model later raises a
-notification. The site owner may legitimate it, after which the system relabels the edge as
-normal. Detection runs on the node hosting the service, so no central collection is needed
-\cite{aubet2018graph}. The design also aimed to store the learned relations in the service
-metadata, so that a service moved to another node would carry its model with it. Because the
-implementation identifies services by concrete local addresses, this portability was not
-reached; site-independent identities would have required semantic service discovery.
+The source reports a data-structure memory estimate of 33.7~KB for twenty services with ten
+relations each. Measurements with ten to forty services give an added latency of about 6~ms
+over an inter-service round trip of 24~ms, although the repetition count and the summary
+statistic behind these values are unspecified. A short graph-update trace records service
+start-up and the addition of a service, followed by a notification for a previously unseen
+connection \cite{aubet2018graph}.
 
-Two costs were reported. Memory per vertex is 100 bytes plus 88 bytes for every incident edge,
-and a factor of 1.33 for the stacked hash tables enters once per vertex and once over the vertex
-set. Twenty services with ten relations each thus occupy 33.7~KB. Detection adds about 6~ms to
-an inter-service round trip of 24~ms, measured over ten to forty services \cite{aubet2018graph}.
-
-\begin{figure}[tbp]
-  \centering
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{servicegraph-latency.pdf}
-    \caption{Added latency.}
-    \label{fig:anomaly:servicegraph-latency}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[b]{0.49\linewidth}
-    \centering
-    \includegraphics[width=\linewidth]{servicegraph-changes.pdf}
-    \caption{Graph changes over time.}
-    \label{fig:anomaly:servicegraph-changes}
-  \end{subfigure}
-  \caption{The two measurements reported for the service-graph design. Panel~(a) gives the
-  inter-service round-trip time with and without detection for ten to forty services. Panel~(b)
-  gives the vertex and edge counts of one node's graph over a single run, with the learning
-  phases and the interval of anomalous behaviour shaded. Reproduced from
-  \cite{aubet2018graph}, to whose measurement design the candidate contributed.}
-  \label{fig:anomaly:servicegraph}
-\end{figure}
-
-Figure~\ref{fig:anomaly:servicegraph} reproduces both measurements. In the latency panel the two
-distributions overlap heavily. Medians without detection rise from roughly 14~ms at ten services
-to roughly 27~ms at forty, and every configuration has a long upper tail past the 160~ms axis
-limit. The study states neither the repetition count nor the statistic behind the 6~ms and
-24~ms values, which are best read as an aggregate over the four configurations. The added cost
-does not grow between ten and forty services. Panel~(b) covers one run of about fourteen
-minutes. Learning phases cluster in the first three minutes as services start, and another
-follows at minute seven when a service is added. The graph then settles at fourteen vertices and
-ten edges. One anomalous interval appears shortly after minute ten, and the edge count returns
-to its earlier value once it ends, so the trace records the detection but no legitimation.
-
-To summarise, the study shows that a node-local communication graph can be built without manual
-configuration and revised by the site owner at run time, at a latency cost of about 6~ms and a
-memory cost of some tens of kilobytes. Detection quality was not measured. No labelled attack
-set was used, and the anomalous interval holds a previously unseen connection rather than an
-executed attack, so the study reports no detection rate and no false-positive rate. A whitelist
-also emits a verdict rather than a score, so even a labelled trace would yield no threshold
-curve. RQ3.1 is therefore answered at the level of representation, update procedure, and
-measured overhead.
+The evidence documents prototype operation and resource costs. Detection quality was not
+measured against a labelled attack set, so the study provides neither attack recall nor a
+false-positive rate. The decision rule identifies unfamiliar communication partners. A new
+legitimate relation may therefore raise an alert, while malicious activity that preserves the
+permitted relations remains outside the rule's scope.
 
 \section{The NADICS Framework and IUNO Integration}
 \label{sec:anomaly:nadics}
@@ -932,13 +875,6 @@ configuration records limit independent reproduction of the experiment.
 \section{Limitations, Validity, and Individual Contribution}
 \label{sec:anomaly:limitations}
 
-\paragraph{Scope of the service-graph evidence.}
-The artefact behind RQ3.1 is a two-page contribution to PAM 2018 on which the candidate is the
-fourth of four authors. The peer-reviewed anomaly-detection paper from the same group uses clustering rather
-than a graph, and the short paper that does use a graph is framed as access control
-\cite{pahl2018all,pahl2018graphbased}. The portable service model was proposed but not
-implemented. RQ3.1 therefore carries no measured detection result.
-
 \paragraph{Scope of the industrial evaluation.}
 The S7-300 result rests on 25 attack episodes recorded in one plant over 24 hours, and the
 held-out partition holds a single episode of each class. Records taken from one episode are
@@ -975,7 +911,7 @@ The candidate designed and implemented \nadics{}, its model interface, and the S
 extractor. He produced the labelled S7-300 attack corpus. For the process study, he designed and
 implemented the multivariate GAN pipeline, its preprocessing variants, dynamic architecture,
 training, scoring, and evaluation on SWaT. He analysed the results and wrote the internal
-report. His contribution to the service-graph study was the
+report. His contribution to the exploratory service-graph study was the
 concept and the measurement design. The IUNO deliverables attribute authorship at document level
 \cite{iuno_ap4,iuno_ap7}, so this account rests on the candidate's attestation and on the
 surviving artefacts rather than on passage-level attribution.
@@ -983,12 +919,7 @@ surviving artefacts rather than on passage-level attribution.
 \section{Chapter Summary}
 \label{sec:anomaly:summary}
 
-RQ3.1 asks how service relationships can be represented as communication graphs. The reported
-design stores observed service relations as a node-local whitelist and permits a site owner to
-revise it as the deployment changes. Its memory and latency costs were measured. Detection
-quality was not.
-
-RQ3.2 asks how a modular framework can analyse network and process features for anomaly
+RQ3 asks how a modular framework can analyse network and process features for anomaly
 detection in industrial systems. \nadics{} separates dataset layout, preprocessing, and learners
 behind fixed interfaces. On the S7-300 corpus recorded inside IUNO the framework reaches 94.50
 per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
@@ -999,6 +930,8 @@ components. The full input gives the highest recall and five components the lowe
 false-positive rate, so the preferred representation depends on the relative cost of missed
 anomalies and false alarms.
 
-Together, these mechanisms close gap~\gapref{3} at the implementation level. No study shows
-transfer across time, sites, or adaptive attacks, which motivates Chapters~\ref{chap:advml}
-and~\ref{chap:discussion}.
+The framework and its two industrial applications address the representation and modular-analysis
+aspects of gap~\gapref{3}. Their results remain specific to the evaluated installation or SWaT
+campaign; transfer to other installations and robustness against adaptive attacks remain
+untested. Chapters~\ref{chap:advml} and~\ref{chap:discussion} examine requirements for broader
+evaluation.

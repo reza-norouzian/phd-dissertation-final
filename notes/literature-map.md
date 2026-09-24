@@ -18,9 +18,9 @@ each cited key to the reference vault.
 | 2.1 Android Applications and Their Analysis | Detection and family/category classification; observation--representation--decision pipeline; APK/DEX artefacts, component lifecycles, permission grants and mapping; analysis modes, obfuscation and packaging | Android Applications and Malware Analysis; Static, Dynamic, and Hybrid Observation |
 | 2.2 Graph Representations of Programs | CFGs and FCGs; dependence and backward slicing; hypergraph incidence, clique projection and operator-specific equivalence | Verified foundation sources below; Network Flows, Program Graphs, and Hypergraphs; Android Applications and Malware Analysis |
 | 2.3 Learning over Graphs | message passing, graph-level readout and permutation properties; attention and hypergraph propagation under stated assumptions | Network Flows, Program Graphs, and Hypergraphs; Learning-Based Security Analysis |
-| 2.4 Detection in Networked and Cyber-Physical Systems | anomaly definitions, types, scores and thresholds; observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
+| 2.4 Detection in Networked and Cyber-Physical Systems | anomaly definitions, types, scores and thresholds; observation units, label regimes and reconstruction; industrial settings and scoped measurement evidence | Network Anomaly and Intrusion Detection; Ch.5 Anomaly Detection in Industrial Control Systems; Network Flows, Program Graphs, and Hypergraphs |
 | 2.5 Adversarial Machine Learning | strategic manipulation and threat-model-relative robustness; goals, knowledge and capabilities; valid problem-space changes; adaptive evaluation and existing infrastructure | Adversarial Machine Learning; Ch.6 Evaluating Adversarial Robustness |
-| 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.3 Anomaly Detection in IoT and Industrial Control Systems; Ch.6 Evaluating Adversarial Robustness |
+| 2.6 Performance Measures and Evaluation Methodology | decision units and prediction targets; shared metrics and denominators; temporal/spatial bias, leakage and reporting criteria | Verified performance-measures sources below; Evaluation Methodology and Threats to Validity; Ch.5 Anomaly Detection in Industrial Control Systems; Ch.6 Evaluating Adversarial Robustness |
 | 2.7 Summary and Research Gaps | a short synthesis followed by G1-G4, using sources already cited in Sections 2.1-2.6 | no new source pool |
 
 ### Verified foundation additions and corrections (T-025, 20 September 2026)
@@ -77,9 +77,9 @@ new scores for any contribution chapter.
 | Network Flows, Program Graphs, and Hypergraphs | 277 | 58 | 8 | 2026 |
 | Adversarial Machine Learning | 314 | 86 | 95 | 2026 |
 | Evaluation Methodology and Threats to Validity | 317 | 54 | 56 | 2026 |
-| 3.x Ch.3 Anomaly Detection in IoT and Industrial Control Systems | 253 | 32 | 30 | 2026 |
-| 4.2 Ch.4 Hybroid related work | 95 | 20 | 1 | 2026 |
-| 5.2 Ch.5 HGANN-Mal related work | 93 | 22 | 0 | 2026 |
+| 5.x Ch.5 Anomaly Detection in Industrial Control Systems | 253 | 32 | 30 | 2026 |
+| 3.2 Ch.3 Hybroid related work | 95 | 20 | 1 | 2026 |
+| 4.2 Ch.4 HGANN-Mal related work | 93 | 22 | 0 | 2026 |
 | 6.x Ch.6 Evaluating adversarial robustness | 387 | 103 | 117 | 2026 |
 
 ## 1.1 Research Context
@@ -390,9 +390,12 @@ Plus 286 further candidates in the pool at `keywords` matching this section.
 
 Plus 289 further candidates in the pool at `keywords` matching this section.
 
-## 3.x Ch.3 Anomaly Detection in IoT and Industrial Control Systems
+## 5.x Ch.5 Anomaly Detection in Industrial Control Systems
 
-**Must support:** Chapter 3 related work. Must include the prior art that anticipates the service-graph approach and the measurement work that contradicts the reported scores.
+**Must support:** Chapter 5 related work for modular analysis of industrial network and process
+observations, including representation choices and evaluation limits. Communication-whitelisting
+sources support the short exploratory IoT account; that study carries no separate research
+question or measured attack-detection claim.
 
 | n | v | year | key | title |
 | ---: | --- | ---: | --- | --- |
@@ -427,7 +430,7 @@ Plus 289 further candidates in the pool at `keywords` matching this section.
 
 Plus 225 further candidates in the pool at `keywords` matching this section.
 
-## 4.2 Ch.4 Hybroid related work
+## 3.2 Ch.3 Hybroid related work
 
 **Must support:** Multimodal and hybrid Android detection: what fusing code with traffic was already known to buy.
 
@@ -456,7 +459,7 @@ Plus 225 further candidates in the pool at `keywords` matching this section.
 
 Plus 75 further candidates in the pool at `keywords` matching this section.
 
-## 5.2 Ch.5 HGANN-Mal related work
+## 4.2 Ch.4 HGANN-Mal related work
 
 **Must support:** Graph and hypergraph learning on program structure, and attention. Must confront the GAT static-attention result and clique-expansion lossiness.
 

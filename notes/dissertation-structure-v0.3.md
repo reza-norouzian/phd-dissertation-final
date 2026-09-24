@@ -13,17 +13,22 @@ anomaly detection (formerly RQ1/G1 with RQ1.1 and RQ1.2). RQ4/G4 is unchanged, a
 or gap wording changes. The headings, section lists and undated statements below use the new
 numbers. Dated revision notes written before 23 September 2026 keep the former numbers.
 
+The current scope supersedes the two-subquestion hierarchy: RQ3 concerns modular industrial
+anomaly detection. The IoT service-graph study is retained as a short exploratory section,
+with its publication and individual contribution attributed, but carries no separate research
+question. Historical revision notes below retain the wording and numbering used at the time.
+
 ## Decisions fixed in this version
 
 - The dissertation is an integrated monograph.
 - Android malware analysis forms the scientific centre.
 - The anomaly-detection work is an early original contribution and receives a research
   question, although its chapter remains short.
-- RQ3 (RQ1 before D-009) uses one umbrella question and two subquestions. RQ3.1 concerns
-  communication graphs for IoT services. RQ3.2 concerns the modular NADICS/IUNO learning
-  framework for industrial control systems.
-- The graph and framework studies provide complementary answers to RQ3. The dissertation
-  will not claim that they were integrated or compared in one experiment.
+- RQ3 concerns the modular NADICS/IUNO framework for industrial control systems, with separate
+  network and SWaT process evaluations. It has no subquestions.
+- The IoT communication-graph study provides supporting context in Section 5.3. Its evidence
+  concerns prototype operation and resource costs, with no measured attack-detection performance.
+  It was separate from NADICS and does not support the empirical answer to RQ3.
 - The IoT microservice graph work did not influence Hybroid. The dissertation will not
   present a historical progression between them.
 - Hybroid and HGANN-Mal will be compared as two approaches to contextual Android malware
@@ -46,8 +51,8 @@ are approved by the supervisor.
 ## Dissertation argument
 
 The dissertation examines the representation and evaluation of context in learning-based
-security analysis. The early anomaly-detection work represents communication behaviour in
-IoT and industrial networks. The Android chapters form the main contribution. Hybroid
+security analysis. The industrial anomaly-detection work analyses network records and process
+windows through a modular learning framework. The Android chapters form the main contribution. Hybroid
 combines program structure with observed network behaviour, whereas HGANN-Mal represents
 higher-order relations within static program structure. The SPARTA work addresses the
 assessment of ML defences under adversarial input.
@@ -57,10 +62,10 @@ security-relevant behaviour. RQ4 concerns evaluation under explicit adversary as
 The themes meet in the cross-contribution discussion, where representation quality and
 evaluation validity are examined together.
 
-The dissertation will compare the graph-based IoT work with the later Android
-representations at a methodological level. It will state that the IoT study did not motivate
-Hybroid. This distinction prevents a retrospective narrative from being presented as
-research chronology.
+The exploratory IoT study illustrates a service-relation observation model. Its short account
+and the background retain this methodological context; the research-question map and
+contribution synthesis focus on the Android systems, industrial framework and adversarial
+evaluation. The IoT study did not motivate Hybroid.
 
 ## Research questions
 
@@ -105,27 +110,17 @@ Binary detection remains a separate evaluation task. Chapter 4 now documents the
 benign cohort used for Drebin binary detection. Its remaining label-curation and temporal
 qualifications are stated in that chapter.
 
-### RQ3: Behaviour in networked and industrial systems
-
-**How can behaviour in networked and industrial systems be represented to support anomaly
-detection?**
-
-#### RQ3.1: Communication graphs
-
-**How can service relationships be represented as communication graphs to identify
-unexpected interactions?**
-
-The graph-based study answers RQ3.1 through its relation model, graph-update process, and
-overhead measurements. It does not report detection accuracy against a labelled attack set.
-
-#### RQ3.2: Modular industrial anomaly detection
+### RQ3: Modular industrial anomaly detection
 
 **How can a modular learning framework analyse network and process features for anomaly
 detection in industrial control systems?**
 
-NADICS and IUNO answer RQ3.2 through packet and flow processing, feature representation,
-and modular learning components. The chapter must document the candidate's design,
-implementation, and evaluation roles before it assigns originality to individual elements.
+NADICS answers RQ3 through protocol-specific feature extraction and a modular learning
+interface. The S7-300 evaluation in IUNO tests connection-record classification and benign
+alarm burden; the GAN-based SWaT extension compares process-window representations at timestamp
+level. Their protocols and empirical limits remain separate. Chapter 5 documents the
+candidate's design, implementation and evaluation roles. The exploratory IoT account is
+supporting material outside the research-question evidence map.
 
 ### RQ4: Adversarial robustness evaluation
 
@@ -173,7 +168,7 @@ The full PDF should remain between 120 and 170 pages; 170 is a maximum, set by D
 | 2. Background | 15 |
 | 3. Multimodal Android Malware Analysis with Hybroid | 23 |
 | 4. Higher-Order Android Malware Analysis with HGANN-Mal | 27 |
-| 5. Anomaly Detection in IoT and Industrial Control Systems | 15 |
+| 5. Anomaly Detection in Industrial Control Systems | 15 |
 | 6. Evaluating Adversarial Robustness: Benchmark Design and Metric Analysis | 15 |
 | 7. Cross-Contribution Discussion | 4 |
 | 8. Conclusion and Future Work | 2 |
@@ -471,13 +466,13 @@ starts on p. 61, and the complete thesis has 151 pages. The 23-page planning all
 
 4.15 Chapter Summary
 
-### 5. Anomaly Detection in IoT and Industrial Control Systems
+### 5. Anomaly Detection in Industrial Control Systems
 
 5.1 Scope, Research Question, and Contributions
 
 5.2 Observation Models and Datasets
 
-5.3 Communication Graphs for IoT Services
+5.3 Exploratory Study: Communication Graphs for IoT Services
 
 5.4 The NADICS Framework and IUNO Integration
 
@@ -492,8 +487,15 @@ starts on p. 61, and the complete thesis has 151 pages. The 23-page planning all
 
 5.7 Chapter Summary
 
-Chapter 5 reports IoT and industrial evidence only; it was Chapter 3 before D-009, and the
-dated notes below use that numbering. Under D-040 (10 September 2026) the former
+Chapter 5 answers RQ3 through the industrial framework and its separate network and process
+evaluations. Section 5.3 retains approximately half a page to one page on the exploratory IoT
+study, with the mechanism, resource costs and unmeasured detection performance stated together.
+Its former figure and separate research-question treatment are removed. The publication listing
+and the candidate's concept and measurement-design contribution remain attributed. G3 concerns
+modular industrial analysis; the abstract and contribution summaries follow that scope.
+
+The chapter was Chapter 3 before D-009, and the dated notes below use that numbering.
+Under D-040 (10 September 2026) the former
 Section 3.6, Framework Generality on Non-Industrial Corpora (UNSW-NB15 and CICAndMal2017), and
 the former Section 3.7, Clean-Data Results, including its classical SWaT column, are removed.
 RQ1.2 rests on the S7-300 evaluation in IUNO and on the SWaT GAN study. CICAndMal2017 remains
@@ -602,7 +604,8 @@ Chapter 3 remains a separate unresolved question.
 
 ## Structure status
 
-The author accepted the RQ1 hierarchy on 12 August 2026; it is RQ3 since D-009. The Chapter 2 section list was
+RQ3 now uses the former industrial subquestion as a single question; the earlier hierarchy,
+accepted on 12 August 2026 and renumbered under D-009, is superseded. The Chapter 2 section list was
 replaced on 13 August 2026 by the seven-section Background outline recorded above; the
 15-page budget was kept. The main chapter architecture is stable. RQ1, RQ2, RQ4 and the chapter titles remain working formulations until the author and
 supervisor approve their exact wording. Detailed subchapter design can continue later.

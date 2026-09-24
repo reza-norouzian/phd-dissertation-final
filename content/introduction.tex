@@ -25,9 +25,10 @@ relations among program or system elements, and complementary observations combi
 prediction. \hybroid{} studies
 context across static code and recorded network traffic \cite{norouzian2021hybroid}; \hgann{}
 studies context within the application package through groups of related methods
-\cite{norouzian2025hgannmal}. Supporting work examines service relationships in the Internet of
-Things (IoT) \cite{aubet2018graph}. The industrial control studies use
-protocol-specific records and multivariate process windows.
+\cite{norouzian2025hgannmal}. The industrial control studies use
+protocol-specific records and multivariate process windows. A short exploratory study of
+service relationships in the Internet of Things (IoT) provides a further example of an
+observation model \cite{aubet2018graph}.
 
 Researchers must consider the test population when evaluating a model's predictive performance.
 Jordaney et al.\ document changes in malware that make previously trained classifiers
@@ -90,14 +91,12 @@ learned, and what they add over pairwise graph representations. The distinction 
 by a representation and the operations applied to it is developed in
 Section~\ref{sec:background:graphs:hypergraphs}.
 
-Networked and industrial systems require representations suited to other observation units.
-A service-communication model must accommodate new legitimate partners as services are added
-or removed \cite{aubet2018graph}. Sensor and actuator series instead describe the physical
-process \cite{mathur2016swat}. Network records and process time series require different
-feature preparation, while a modular learning interface permits estimators to be exchanged
-\cite{iuno_ap4}. RQ3 concerns how these observations can support anomaly
-detection and how monitored relations or learning components can be revised. Its separate
-studies examine communication graphs and a modular framework for network and process features.
+Industrial control systems provide network records and measurements of the physical process.
+Protocol-specific features describe communication activity \cite{iuno_ap4}, while sensor and
+actuator series record process behaviour \cite{mathur2016swat}. These observations require
+different feature preparation and decision units. RQ3 asks how a modular learning framework
+can analyse both forms through interchangeable learning components. The industrial studies
+examine this design through separate evaluations of network records and process windows.
 
 \subsection*{The evaluation problem}
 
@@ -134,8 +133,8 @@ for those subsequent experiments.
 \label{sec:intro:rqs}
 
 Four research questions specify the two themes. The first two concern cross-modal and
-higher-order Android representations. The third has two subquestions for networked and
-industrial settings; the fourth concerns adversarial evaluation.
+higher-order Android representations. The third concerns modular anomaly detection in
+industrial control systems; the fourth concerns adversarial evaluation.
 Section~\ref{sec:background:summary} develops their literature-based motivation as gaps
 G1 to G4.
 
@@ -155,20 +154,10 @@ remains unresolved. The tasks are binary detection and dataset-specific
 classification: \familyclassification{} on Drebin, and \categoryclassification{} on
 CICMalDroid, with Benign as one category.
 
-\researchquestion[3]{RQ3}{Behaviour in networked and industrial systems}{\rqThreeText}
+\researchquestion[3]{RQ3}{Modular industrial anomaly detection}{\rqThreeText}
 
-RQ3 addresses gap~\gapref{3} through service relations and industrial observations.
-The two subquestions concern distinct mechanisms and experimental settings.
-
-\researchquestion[3.1]{RQ3.1}{Communication graphs}{\rqThreeOneText}
-
-The answer covers node-local relations and operator-approved updates, supported by memory
-and latency measurements. Detection accuracy against a labelled attack set was not measured.
-
-\researchquestion[3.2]{RQ3.2}{Modular industrial anomaly detection}{\rqThreeTwoText}
-
-The answer concerns a modular interface for network and process features. Two separate
-empirical cases are examined. The first is supervised classification of connection records
+Gap~\gapref{3} is examined through a modular interface for network and process features,
+with two separate empirical cases. The first is supervised classification of connection records
 from a labelled corpus of S7comm network traffic, recorded in the \iuno{} project from
 Siemens S7-300 programmable logic controllers \cite{iuno_ap4}. The second is a multivariate
 detector over process measurements from the public Secure Water Treatment (SWaT) testbed
@@ -202,13 +191,6 @@ baselines on each task and corpus; \hgann{} exceeds the strongest non-attentive 
 task--corpus combinations. The operator analysis in Section~\ref{sec:hgann:8} also shows
 how attentive propagation can distinguish groupings with the same fixed propagation
 matrix. 
-
-\paragraph{Communication-graph modelling for IoT services.}
-The service-graph study represents observed communication partners as node-local
-relations and permits updates approved by the site owner \cite{aubet2018graph}.
-Graph traces and resource measurements document the maintenance of these relations as
-services change. The contribution addresses representation and update procedures under
-the observation conditions of the middleware.
 
 \paragraph{Modular industrial anomaly detection.}
 \nadics{}, Network Anomaly Detection for Industrial Control Systems, separates feature
@@ -302,8 +284,9 @@ experiments and wrote the paper. His contribution to graph processing was partia
 conducted the experiments and wrote the paper.
 
 The candidate contributed the service-graph concept and measurement design to the PAM study
-\cite{aubet2018graph}. Chapter~\ref{chap:anomaly} cites two companion studies by Pahl and
-co-authors as related work; neither paper lists the candidate as an author
+\cite{aubet2018graph}, retained as an exploratory study in
+Section~\ref{sec:anomaly:service-graphs}. Two companion studies by Pahl and co-authors remain
+related work; neither paper lists the candidate as an author
 \cite{pahl2018all,pahl2018graphbased}.
 
 Within \iuno{}, the candidate designed and implemented \nadics{} and its extractor for the
@@ -353,10 +336,8 @@ Appendix~\ref{app:nadics-importance} records the complete \nadics{} feature-impo
       & Application-level joint representation; within-system comparisons with each source alone on a common retained CICAndMal2017 cohort. \\
     RQ2 & \ref{chap:hgann}
       & Hypergraph construction and operator analysis; common-input comparisons with pairwise and non-attentive hypergraph models on Drebin and CICMalDroid. \\
-    RQ3.1 & \ref{chap:anomaly}
-      & Service-graph updates and resource measurements; detection accuracy unmeasured. \\
-    RQ3.2 & \ref{chap:anomaly}
-      & Session-disjoint S7-300 classification and benign monitoring; SWaT input-representation comparison at timestamp level. \\
+    RQ3 & \ref{chap:anomaly}
+      & Modular framework and protocol-specific extraction; session-disjoint S7-300 classification and benign monitoring; SWaT representation comparison at timestamp level. \\
     RQ4 & \ref{chap:advml}
       & Contest and partner-benchmark records; mathematical analysis of scoring and detector responses. \\
     \bottomrule
