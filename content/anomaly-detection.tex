@@ -710,44 +710,38 @@ subset. The full representation retains the original measurements and actuator s
 provides the broadest input coverage but also exposes the model to redundant relationships and
 normal operational variation across the process.
 
-PCA represents the measurements through orthogonal combinations of the original variables. The
-five-component configuration imposes stronger compression, whereas the 24-component
-configuration retains 99\% of the variance in the training data. Retained variance
-is a property of the fitted representation and does not measure the proportion of
-attack-relevant information preserved. A low-variance direction may still distinguish an attack
-from normal operation. The two PCA configurations therefore represent different balances between
-compression and retention of potentially informative changes.
+PCA projects the measurements onto $k$ orthogonal components. Let
+$\lambda_1\geq\cdots\geq\lambda_{51}\geq0$ denote the eigenvalues of the covariance matrix
+estimated from training data. The retained variance fraction is
+\[
+  \rho_k=\frac{\sum_{j=1}^{k}\lambda_j}{\sum_{j=1}^{51}\lambda_j}.
+\]
+The study compares $k=5$ and $k=24$, with $\rho_{24}\approx0.99$. Retained variance does not
+quantify attack-relevant information; low-variance directions may still distinguish attacks.
 
-The autoencoder provides a learned nonlinear representation before GAN processing. Its purpose
-is to retain relationships that support reconstruction while reducing the dimensionality of the
-input. The feature-selection branch combines correlation analysis with chi-squared selection,
-recursive feature elimination, LASSO and Random Forest importance. Supervised selectors use
-training ground truth only. Any non-negative transformation needed by chi-squared selection is fitted
-within the training partition, separately from the subsequent scaling used for GAN inputs. The
-identities of selected variables and the autoencoder bottleneck dimension remain implementation
-specifications; the aggregate performance results do not identify them.
+The autoencoder learns a nonlinear representation for reconstruction before GAN processing.
+Feature selection combines correlation analysis with chi-squared selection, recursive feature
+elimination, LASSO and Random Forest importance. Supervised selectors use training labels only.
+Any non-negative transformation required for chi-squared selection is fitted separately from GAN scaling.
+The aggregate results do not specify the selected variables or the autoencoder bottleneck dimension.
 
-Imputation and scaling are fitted on the training partition and applied consistently to
-validation and test observations. PCA and the preprocessing autoencoder are likewise fitted
-using training data. Features supplied to the GAN are scaled using a training-derived
-transformation with a reference range of $[-1,1]$. An observation outside the training range
-need not fall inside this interval. Automatic clipping is not applied because it could suppress
-an informative deviation. These transformations preserve the separation between model
-development and final evaluation.
+All preprocessing is fitted on training data and reused for validation and testing. GAN inputs
+use a training-derived scale with reference range $[-1,1]$. Values outside the training range
+remain unclipped to preserve deviations.
 
-For a representation with $d$ features, each input window contains 60 consecutive observations
-and has dimensions $60\times d$. The window advances by one observation. At the nominal sampling
-frequency, this corresponds to a 60-second context with a one-second stride. An uninterrupted
-sequence of 393,679 observations would yield 393,620 complete windows, but its performance
-denominator remains 393,679 timestamps after aggregation. The 60-second setting is adopted for
-the reported evaluation; no claim of optimality across other window lengths is made.
+For feature vectors $\mathbf{y}_t\in\mathbb{R}^{d}$, each window is
+\[
+  X_t=[\mathbf{y}_t,\ldots,\mathbf{y}_{t+59}]^{\mathsf T}
+  \in\mathbb{R}^{60\times d}.
+\]
+At the nominal sampling rate, this gives a 60-second context with a one-second stride.
+An uninterrupted sequence of $N\geq60$ observations yields
+$N-60+1$ windows; performance metrics count timestamps after aggregation.
 
-The final configuration uses Adam with a learning rate of 0.0005, a latent dimension of
-20, a batch size of 64 and 50 training epochs. All representation variants use the same
-evaluation cohort and counting convention. Their input dimensions vary, so comparison requires
-explicit control of the architecture and development procedure. A difference between variants
-cannot automatically be attributed to dimensionality reduction if network capacity or tuning
-effort also differs.
+The final configuration uses Adam with learning rate $5\times10^{-4}$, latent dimension 20,
+batch size 64 and 50 epochs. All variants share the evaluation cohort and counting convention.
+Attribution of performance differences to the input representation requires control of network
+capacity and tuning effort.
 
 The reference computing platform comprises an AMD EPYC 7551P processor with 32 cores, 125\,GB of
 RAM and a TITAN X GPU with 12\,GB of memory. These specifications describe the reported execution
