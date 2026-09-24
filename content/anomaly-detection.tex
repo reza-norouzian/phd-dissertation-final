@@ -653,8 +653,7 @@ observed window and its reconstruction,
   scored with the trained networks; the latent critic has no part in the score $a_t$ of
   Equation~\ref{eq:anomaly:gan-score}. The blue tag marks the input representation, the only
   factor varied between runs, and orange tags mark development steps that used attack ground truth. The
-  window length is fixed at 60 samples. The scaler and PCA are fitted on training data and
-  reused for validation and testing. The candidate implemented every processing step shown.}
+  window length is fixed at 60 samples.}
   \label{fig:anomaly:gan-pipeline}
 \end{figure}
 
@@ -681,37 +680,26 @@ components:
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{swat/report-originals/report-fig-4.15-reconstruction.png}
-  \caption{Observed signals (blue) and their reconstructions (orange) for two dimensions,
-  reproduced at the original embedded resolution from Figure 4.15 of the internal report. The
+  \caption{Observed signals (blue) and their reconstructions (orange) for two dimensions. The
   repeated red trace is the aggregate reconstruction discrepancy across dimensions, shared by
   the two displayed signals. It precedes the combination of
   Equation~\ref{eq:anomaly:gan-score}.}
   \label{fig:anomaly:gan-reconstruction}
 \end{figure}
 
-The transformation parameters are estimated from the development data and held fixed during
-evaluation. This scoring rule combines reconstruction discrepancy with the critic's assessment of
-the observed sequence. A high reconstruction discrepancy alone does not establish that an attack
-occurred, because changes during normal operation may also be difficult to reconstruct.
-Similarly, a critic score is interpreted through the fitted scoring and thresholding procedure
-rather than as a calibrated probability of attack.
+Score transformations are fitted on development data and fixed during evaluation. Reconstruction
+discrepancy and critic output jointly indicate deviation, without providing a calibrated attack
+probability. Normal operational changes can also produce high reconstruction error.
 
-Overlapping windows produce several reconstructions and critic assessments for some timestamps.
-For the offline evaluation, reconstructed values are averaged at each corresponding
-timestamp and variable before calculating the multivariate reconstruction discrepancy. Critic
-outputs from windows covering the same timestamp are also averaged. Each observation then
-receives one combined anomaly score and one final prediction. Observations near a sequence
-boundary are aggregated over the windows available within their own partition. This convention
-ensures that overlapping windows do not cause a timestamp to be counted repeatedly in the
-confusion matrix.
+For each timestamp, overlapping-window reconstructions are averaged per variable before
+calculating the multivariate reconstruction discrepancy; critic outputs are averaged separately.
+Only windows within the same partition contribute. Each timestamp receives one combined score
+and prediction and is counted once in the confusion matrix.
 
-An adaptive threshold converts the combined score into a binary anomaly prediction. The threshold
-rule uses a historical context and may merge adjacent anomalous intervals. The recorded test
-labels provide the reference for the reported performance metrics. The historical context used
-by the threshold is a separate
-parameter from the 60-second window used by the neural networks. Because the stated aggregation
-uses windows extending beyond the timestamp being scored, the evaluation measures offline
-detection. It does not measure causal online performance or real-time detection delay.
+An adaptive threshold converts scores into binary predictions and may merge adjacent anomalous
+intervals. Its historical context is distinct from the networks' 60-second input window.
+Because aggregation includes observations later than the timestamp being scored, the results
+describe offline detection; online performance and real-time detection delay remain unevaluated.
 
 \subsection{Input Representations and Settings}
 \label{sec:anomaly:gan-inputs}
