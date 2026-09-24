@@ -116,7 +116,12 @@ qualifications are stated in that chapter.
 detection in industrial control systems?**
 
 NADICS answers RQ3 through protocol-specific feature extraction and a modular learning
-interface. The S7-300 evaluation in IUNO tests connection-record classification and benign
+interface. Its researcher-facing purpose is semi-automated model development for a new
+environment or dataset: configurable preparation, candidate-algorithm comparison and bounded
+hyperparameter search support the choice of a suitable configuration. Researchers retain
+control over the task, validation protocol and selection criterion. The source contains a
+multi-model runner and a grid-search helper. Its `clustering` registry contains novelty and
+outlier detectors. The S7-300 evaluation in IUNO tests connection-record classification and benign
 alarm burden; the GAN-based SWaT extension compares process-window representations at timestamp
 level. Their protocols and empirical limits remain separate. Chapter 5 documents the
 candidate's design, implementation and evaluation roles. The exploratory IoT account is
@@ -493,6 +498,10 @@ study, with the mechanism, resource costs and unmeasured detection performance s
 Its former figure and separate research-question treatment are removed. The publication listing
 and the candidate's concept and measurement-design contribution remain attributed. G3 concerns
 modular industrial analysis; the abstract and contribution summaries follow that scope.
+
+Section 5.4 explains the framework's semi-automated model-development purpose and separates
+implemented components from the intended selection workflow. The industrial results evaluate
+configured detectors, not the benefit of automated pipeline search.
 
 The chapter was Chapter 3 before D-009, and the dated notes below use that numbering.
 Under D-040 (10 September 2026) the former

@@ -751,8 +751,10 @@ Communication whitelists and host-pair models use relations observed between dev
 \cite{barbosa2013flow,yoon2014communication}, while process detectors use sensor and actuator
 measurements \cite{goh2016swatdataset}. These observation types require different feature
 preparation and decision units. The design question is how a modular learning framework can
-accommodate both forms without tying the surrounding pipeline to one estimator. RQ3 examines
-this question through \nadics{} and its separate network and process evaluations.
+accommodate both forms and support researcher-guided comparison of candidate pipelines for a
+new dataset. This requires configurable data preparation and a common interface for learning
+methods, with model selection separated from final testing. RQ3 examines the framework design
+through \nadics{} and its separate network and process evaluations.
 
 \phantomsection
 \paragraph{G4. Reproducible and interpretable adversarial evaluation.}\label{gap:4}

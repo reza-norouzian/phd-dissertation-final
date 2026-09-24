@@ -7,8 +7,9 @@
 
 This chapter answers RQ3, which asks how a modular learning framework can analyse network and
 process features for anomaly detection in industrial control systems
-(Section~\ref{sec:intro:rqs}), and addresses gap~\gapref{3}. The framework, \nadics{}, separates
-feature preparation from interchangeable learning components. In the German Industrie~4.0
+(Section~\ref{sec:intro:rqs}), and addresses gap~\gapref{3}. The framework, \nadics{}, supports
+researcher-guided model development through configurable feature preparation and comparison of
+interchangeable learning components. In the German Industrie~4.0
 security project IUNO (Section~\ref{sec:anomaly:nadics}), its network application
 uses a protocol-specific extractor for S7comm and PROFINET. A GAN-based extension analyses
 multivariate SWaT process windows with elements of MAD-GAN and TadGAN.
@@ -110,24 +111,32 @@ permitted relations remains outside the rule's scope.
 
 \nadics{}, Network Anomaly Detection for Industrial Control Systems, is a Python framework
 built at the Chair of IT Security of the Technical University of Munich to detect attacks
-against PLC and SCADA installations from network traffic. By design, it was limited to
-detection. The framework is organised in three modules. Preprocessing turns recorded traffic
-into a labelled feature table, encodes the string columns, scales the numeric ones, and
-resamples a corpus whose classes are imbalanced. The learning module holds the estimators behind
+against PLC and SCADA installations from network traffic. The candidate developed it to help
+researchers construct a suitable detection pipeline for a new environment or dataset. Its
+design goal was semi-automated model development: researchers define the prediction task and
+candidate configurations, while the framework coordinates repeated training and comparison.
+The intended selection process includes data preparation and hyperparameter tuning alongside
+the choice of learning algorithm.
+
+The framework is organised in three modules. Preprocessing prepares the feature table through
+encoding and scaling, with optional resampling for class imbalance. Feature-importance analysis
+guides the researcher's choice of input variables. The learning module holds the estimators behind
 one interface, so that classical models and neural models can be exchanged by name without the
 pipeline being rewritten: the released repository contains the scikit-learn estimators, the IUNO
 deliverable additionally reports a deep neural network and a convolutional network
 \cite{iuno_ap4}, and the generative adversarial detector of Section~\ref{sec:anomaly:gan} was
-added later at the same interface for multivariate process data. Postprocessing carries the
-verdict to whoever acts on it. The S7comm and PROFINET extractor existed as a separate project 
+added later at the same interface for multivariate process data. Postprocessing produces
+evaluation reports and supplies detections to site-specific alarm handling. The S7comm and
+PROFINET extractor existed as a separate project
 artefact, so the released repository takes a feature table as its input.
 
-The design follows from the data situation in industrial control. No public corpus of labelled
-traffic from a real industrial network was available \cite{iuno_ap4}, so the estimator that
-performs well depends on the plant and on how its labels were produced. Fixed interfaces around
-the learning stage let the models be compared under a single protocol on whatever corpus a site
-can supply. They also let feature importances be inspected, so that dimensionality and the
-false-positive rate can be reduced.
+The IUNO deliverable records the need to produce labelled traffic from a real industrial
+environment \cite{iuno_ap4}. For a new dataset, researchers must establish its feature meanings
+and the available labels before choosing compatible methods. The layout and model registries
+allow these choices to change without a separate training and reporting script for each
+algorithm. The objective is to identify a configuration suited to that dataset and a stated
+criterion, such as attack recall subject to a tolerable false-positive rate. The preferred
+configuration is conditional on the candidates considered and the evaluation protocol.
 
 \begin{figure}[p]
   \centering
@@ -166,16 +175,32 @@ the authenticated message bus of the IUNO aggregation system \cite{iuno_ap4}. Th
 an alert was left to the control room operators \cite{iuno_ap7}.
 
 The modules map onto these stages at the dataset. Preprocessing spans the second stage and the
-input side of the third, where encoding, scaling and resampling are applied to the table, while
-learning and postprocessing both sit in the third stage. Corpus generation lies outside the
-framework and appears in the figure because the labels had to be produced somewhere. Inside the
-engine, a layout file declares the full columns, the feature subset, the label column, and the
-string features that require encoding. Learning methods sit in registries that map a name to an
-estimator. The original repository holds thirteen classifiers, four novelty or outlier
-detectors, fifteen resamplers, and two boosting meta-estimators. The framework calls only
-\texttt{fit} and \texttt{predict}, following the scikit-learn estimator protocol
-\cite{pedregosa2011scikit}. It fits min--max scaling on the training partition and applies the
-fitted transformation to the test partition.
+input side of the third, while learning and postprocessing both sit in the third stage. Corpus
+generation lies outside the framework. A layout file specifies the input columns and target
+labels, together with the feature subset and the string fields that require encoding. Model
+registries map names to estimators. The original repository contains thirteen classifiers and
+four novelty or outlier detectors, with fifteen resamplers and two boosting meta-estimators.
+The registry named \texttt{clustering} supplies the novelty and outlier methods. Supervised
+learners use \texttt{fit} and \texttt{predict}; the outlier routines also use score functions
+or \texttt{fit\_predict}, according to the estimator interface \cite{pedregosa2011scikit}.
+
+The archived runner accepts a researcher-specified list of classifiers and reports their
+predictive scores together with training and prediction times. Researchers can request
+feature-importance estimates from an Extra-Trees ensemble and revise the selected columns in
+the layout. The \texttt{learning.py} module defines a \texttt{GridSearchCV} helper with
+five-fold cross-validation over predefined parameter grids for decision trees, random forests
+and $k$-nearest neighbours, with scoring left at the estimator default. These components
+document the intended automation of experiment execution and bounded parameter search.
+% Source inspection: NADICS_repo/nadics/{main,models,selector,learning,parser,report}.py.
+
+Model selection for a new environment requires a development protocol separate from final
+testing. Each validation split must fit data-dependent preprocessing and feature selection on
+its training portion; resampling must leave validation observations unchanged. After selecting
+a configuration, researchers assess it on held-out data and define how its predictions should
+be converted into operational alerts. This workflow reuses the analysis components while
+retaining domain-specific decisions about labels and acceptable alarm burden. The industrial
+experiments below evaluate configured detectors; they do not measure an advantage of automated
+pipeline selection over manual development.
 
 \begin{sidewaysfigure}
   \centering
@@ -926,8 +951,10 @@ surviving artefacts rather than on passage-level attribution.
 \label{sec:anomaly:summary}
 
 RQ3 asks how a modular framework can analyse network and process features for anomaly
-detection in industrial systems. \nadics{} separates dataset layout, preprocessing, and learners
-behind fixed interfaces. On the S7-300 corpus recorded inside IUNO the framework reaches 94.50
+detection in industrial systems. \nadics{} provides a researcher-guided workflow for adapting
+data preparation and comparing candidate learners through fixed interfaces. Its modular design
+supports the selection of a configuration for a given dataset. On the S7-300 corpus recorded
+inside IUNO the framework reaches 94.50
 per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
 rate of 0.484 per cent, and a benign day with four active PLCs raised nine alarm episodes, all of
 them false. For SWaT process windows, the GAN evaluation reports

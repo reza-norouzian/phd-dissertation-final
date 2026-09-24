@@ -95,7 +95,8 @@ Industrial control systems provide network records and measurements of the physi
 Protocol-specific features describe communication activity \cite{iuno_ap4}, while sensor and
 actuator series record process behaviour \cite{mathur2016swat}. These observations require
 different feature preparation and decision units. RQ3 asks how a modular learning framework
-can analyse both forms through interchangeable learning components. The industrial studies
+can analyse both forms and help researchers compare candidate methods for a new dataset.
+Configurable preparation and a common learning interface support this model-development task. The industrial studies
 examine this design through separate evaluations of network records and process windows.
 
 \subsection*{The evaluation problem}
@@ -156,8 +157,8 @@ CICMalDroid, with Benign as one category.
 
 \researchquestion[3]{RQ3}{Modular industrial anomaly detection}{\rqThreeText}
 
-Gap~\gapref{3} is examined through a modular interface for network and process features,
-with two separate empirical cases. The first is supervised classification of connection records
+Gap~\gapref{3} is examined through a modular framework for researcher-guided model development
+on network and process features, with two separate empirical cases. The first is supervised classification of connection records
 from a labelled corpus of S7comm network traffic, recorded in the \iuno{} project from
 Siemens S7-300 programmable logic controllers \cite{iuno_ap4}. The second is a multivariate
 detector over process measurements from the public Secure Water Treatment (SWaT) testbed
@@ -194,7 +195,9 @@ matrix.
 
 \paragraph{Modular industrial anomaly detection.}
 \nadics{}, Network Anomaly Detection for Industrial Control Systems, separates feature
-preparation from interchangeable learners. Its protocol-specific extractor and model
+preparation from interchangeable learners to support semi-automated model development on new
+datasets. Researchers can compare candidate algorithms within a shared workflow and use
+feature-importance analysis to guide input selection. Its protocol-specific extractor and model
 interface support the \iuno{} integration \cite{iuno_ap4,iuno_ap7}. Separate evaluations
 on S7comm network traffic \cite{kleinmann2014accurate} from Siemens S7-300 programmable logic
 controllers report attack classification and false-alarm episodes during benign operation.
