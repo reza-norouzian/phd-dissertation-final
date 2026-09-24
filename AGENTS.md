@@ -116,6 +116,18 @@ If two files or sections contradict each other, flag the inconsistency.
   disagree. Never replace the root symlink with a regular file, and never delete it.
 - The bibliography backend is **biber** (biblatex, `style=numeric`, `sorting=none`). Do not run
   `bibtex`. `latexmk`, `pdflatex`, `biber` are installed at `/Library/TeX/texbin`.
+- The stock `/Library/TeX/texbin/biber` fails on this machine with a `lipo` error. The author's
+  `~/.latexmkrc` (outside the repository) points latexmk to `~/.local/bin/biber-arm64`, so a
+  plain `latexmk thesis.tex` works. Do not call `biber` directly. If biber fails after a TeX Live
+  update, re-extract that binary with the `lipo -thin arm64` command recorded in `~/.latexmkrc`.
+- Build safety. A clean build takes about 25 seconds.
+  - Before building, run `pgrep -fl latexmk`. If another build is running, wait for it to
+    finish. Two builds writing to `output/pdf` at the same time stall and corrupt the
+    intermediate files.
+  - Run the build with a timeout of at least 300 seconds.
+  - Never kill a build while it runs (`pkill`, a short `timeout`). An interrupted `pdflatex`
+    leaves a truncated `thesis.aux`, the next run stops with "Missing \begin{document}" and
+    deletes `output/pdf/thesis.pdf`. If that happens, run `latexmk -c thesis.tex` and rebuild.
 - After editing any `.tex` file, compile before reporting the change as done, and read the log
   for new warnings. Never claim a build succeeded without running it.
 - The compiled PDF **is tracked**, so that the author can review the thesis from git. Rebuild

@@ -84,32 +84,38 @@ classification instead, so it addresses a different decision problem.
 \section{Communication Graphs for IoT Services}
 \label{sec:anomaly:service-graphs}
 
-The lineage set out in Section~\ref{sec:background:networks:industrial} places communication
-whitelisting before service-oriented IoT deployments. Flow whitelists were built for control
-networks \cite{barbosa2013flow}, and communication patterns were modelled per host pair
-soon afterwards \cite{yoon2014communication}. The service-graph contribution acknowledges that lineage and identifies
-its proposed difference: an IoT deployment changes as services are added or removed, so its
-communication model must support interactive revision rather than a fixed learning phase
+An IoT site consists of distributed computing nodes, and the devices on these nodes are
+managed by microservices. The services cooperate to implement a use case. A heating controller,
+for example, reads temperatures from distributed meters and sets the valves of the heating
+devices \cite{aubet2018graph}. IoT data exchange is usually protected by access policies such as
+OAuth tokens or group-based access control, and such policies hold only if every service
+implements them correctly. Services also cooperate ad hoc on heterogeneous nodes. A site owner
+therefore cannot keep track of the communication relations between services by hand
 \cite{aubet2018graph}.
 
-The model is compact. Services are vertices, observed relations are edges, and each node maintains
-its own graph. A learning phase runs when a service starts and labels every relation observed
-during that period as normal. A relation absent from the model later raises a notification. The
-site owner may legitimate it, after which the system relabels the edge as normal. Detection runs
-on the node hosting the service, so the design does not require central collection
+The problem addressed here has two parts: to build a model of these relations without manual
+configuration, and to use it to detect anomalous traffic. Communication whitelisting is the
+established approach in control networks (Section~\ref{sec:background:networks:industrial}).
+Flow whitelists were built for SCADA networks \cite{barbosa2013flow}, and communication
+patterns were later modelled per host pair \cite{yoon2014communication}. Both assume that the
+topology stays stable after a single learning period. An IoT deployment changes whenever a
+service is added or removed, so its model must allow revision during operation
 \cite{aubet2018graph}.
 
-The intended distinguishing property was a portable model attached to service metadata. A service
-moved to another node would then carry its learned relations with it. The study also states that
-the implementation identifies services by concrete local addresses, which prevents that
-portability. Semantic service discovery would have been required for site-independent identities.
+The proposed model is compact. Services are vertices, observed relations are edges, and each
+node maintains its own graph. A learning phase runs when a service starts and labels every
+relation observed during that period as normal. A relation absent from the model later raises a
+notification. The site owner may legitimate it, after which the system relabels the edge as
+normal. Detection runs on the node hosting the service, so no central collection is needed
+\cite{aubet2018graph}. The design also aimed to store the learned relations in the service
+metadata, so that a service moved to another node would carry its model with it. Because the
+implementation identifies services by concrete local addresses, this portability was not
+reached; site-independent identities would have required semantic service discovery.
 
-Two costs were reported. Memory is modelled per vertex as 100 bytes plus 88 bytes for every
-incident edge, and a factor of 1.33 accounts for the stacked hash tables that hold the graph.
-That factor enters twice, once inside the per-vertex expression and once over the vertex set, so
-twenty services with ten relations each occupy 33.7~KB. The second cost is latency: about 6~ms
-added to an inter-service round trip of 24~ms, measured over configurations of ten to forty
-services \cite{aubet2018graph}.
+Two costs were reported. Memory per vertex is 100 bytes plus 88 bytes for every incident edge,
+and a factor of 1.33 for the stacked hash tables enters once per vertex and once over the vertex
+set. Twenty services with ten relations each thus occupy 33.7~KB. Detection adds about 6~ms to
+an inter-service round trip of 24~ms, measured over ten to forty services \cite{aubet2018graph}.
 
 \begin{figure}[tbp]
   \centering
@@ -136,22 +142,23 @@ services \cite{aubet2018graph}.
 
 Figure~\ref{fig:anomaly:servicegraph} reproduces both measurements. In the latency panel the two
 distributions overlap heavily. Medians without detection rise from roughly 14~ms at ten services
-to roughly 27~ms at forty, and every configuration carries a long upper tail past the 160~ms axis
-limit. Neither the repetition count nor the statistic behind the quoted 6~ms and 24~ms is stated,
-so both values are best read as an aggregate over the four configurations. The added cost does not
-grow between ten and forty services.
+to roughly 27~ms at forty, and every configuration has a long upper tail past the 160~ms axis
+limit. The study states neither the repetition count nor the statistic behind the 6~ms and
+24~ms values, which are best read as an aggregate over the four configurations. The added cost
+does not grow between ten and forty services. Panel~(b) covers one run of about fourteen
+minutes. Learning phases cluster in the first three minutes as services start, and another
+follows at minute seven when a service is added. The graph then settles at fourteen vertices and
+ten edges. One anomalous interval appears shortly after minute ten, and the edge count returns
+to its earlier value once it ends, so the trace records the detection but no legitimation.
 
-Panel~(b) covers one run of about fourteen minutes. Learning phases cluster in the first three
-minutes as services start, and another follows at minute seven when a service is added. The graph
-then settles at fourteen vertices and ten edges. One anomalous interval is recorded shortly after
-minute ten, and the edge count returns to its earlier value once it ends, so the trace records the
-detection but no legitimation by the site owner.
-
-No labelled attack set was used, and that interval holds a previously unseen connection rather
-than an executed attack, so the study reports no detection rate and no false-positive rate. A
-whitelist emits a verdict, so even a labelled trace yields no threshold curve without a change of
-method. RQ3.1 is answered here at the level of representation, update procedure, and measured
-overhead.
+To summarise, the study shows that a node-local communication graph can be built without manual
+configuration and revised by the site owner at run time, at a latency cost of about 6~ms and a
+memory cost of some tens of kilobytes. Detection quality was not measured. No labelled attack
+set was used, and the anomalous interval holds a previously unseen connection rather than an
+executed attack, so the study reports no detection rate and no false-positive rate. A whitelist
+also emits a verdict rather than a score, so even a labelled trace would yield no threshold
+curve. RQ3.1 is therefore answered at the level of representation, update procedure, and
+measured overhead.
 
 \section{The NADICS Framework and IUNO Integration}
 \label{sec:anomaly:nadics}
