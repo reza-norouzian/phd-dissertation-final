@@ -851,96 +851,55 @@ matrix.
 \subsection{Interpretation and Evaluation Scope}
 \label{sec:anomaly:gan-scope}
 
-The measured results describe a detector with high coverage of anomalous timestamps and a
-substantial false-positive burden. At the nominal one-second cadence, 17,391 false-positive
-observations correspond to approximately 4.83 hours of normal observations being
-flagged. This duration does not identify the number of alarms presented to an operator. A
-sustained interval and many isolated detections could contribute the same number of
-false-positive timestamps while requiring very different responses. Likewise, the 4,174 missed
-anomalous timestamps correspond to 69.6 minutes of anomalous observations, but their
-operational significance depends on which attacks and phases of process disruption they
-represent.
+The 24-component PCA configuration combines the highest measured $F_1$ of 81.43\% with a
+reduction from 51 input variables to 24 components. It detects 91.89\% of anomalous timestamps
+at a false-positive rate of 5.08\%. Within this SWaT evaluation, these results support PCA as
+a compact representation with a useful balance between detection coverage and false alarms.
 
-Attack-level assessment requires matching detected intervals to the retained attack episodes.
-Relevant outcomes include the number of episodes detected, the time between attack onset and
-the first qualifying detection, and the duration of detection within each episode. A minimum
-overlap or persistence rule must be specified before those outcomes are calculated. Attacks
-without a qualifying detection remain missed episodes and cannot be omitted from the
-interpretation of detection delay. The denominator is the number of attack episodes present in
-the evaluation cohort, which cannot be inferred solely from the 36 attacks described for the
-source dataset.
+The full-input and five-component PCA configurations have similar $F_1$ scores but different
+error profiles. The full input detects a greater proportion of anomalous observations, while
+five-component PCA flags fewer normal observations. Representation choice therefore offers a
+practical way to address different monitoring priorities: broader detection coverage when
+missed anomalies carry greater cost, or fewer false alarms when unnecessary investigation is
+more costly.
 
-False alarm episodes similarly require an explicit grouping rule and a normal-operation exposure
-denominator. Their rate can be expressed as the number of distinct false alarm episodes per day
-of evaluated normal operation. Neither this rate nor the distribution of alarm durations follows
-from the confusion matrix alone. Timestamp-level precision also depends on the prevalence of
-anomalous observations: its value in a cohort containing 13.07\% anomalous timestamps does not
-establish the precision expected during deployment with a different attack prevalence.
-
-The comparison between representations specifies a modest difference in $F_1$ rather than
-evidence of a universal advantage for PCA. The complete input configuration retains the highest
-recall, while the five-component PCA representation produces the fewest false-positive
-timestamps relative to normal observations. The preferred configuration therefore depends on the
-relative consequences of missed anomalous behaviour and unnecessary alarms. Retention of 99\% of
-training variance provides a description of the 24-component representation, not a guarantee of
-detection coverage or robustness.
-
-The report gives no run-to-run variability from independently initialised training runs.
-A repeated-run analysis under the same partition and model-selection procedure should calculate
-precision, recall, $F_1$ and false-positive rate for each run, followed by their means and
-standard deviations. Resampling-based uncertainty estimates must account for temporal dependence
-and clustering within attack episodes because individual timestamps are not independent.
-
-Further evaluation would separate the contributions of reconstruction scoring, critic scoring
-and their combination, and examine window length under a common validation procedure.
-Precision-recall curves would characterise changes across thresholds; their area cannot be
-derived from one confusion matrix. Training duration, inference throughput and peak memory use
-would establish computational cost on the stated hardware. The model topology, loss weights,
-normalisation rule, threshold parameters, software versions, feature identities and partition
-records would form the implementation record needed for reproducibility.
+For RQ3, the study illustrates how the modular workflow supports comparison of process-window
+representations on a common evaluation cohort. The resulting error profiles provide a basis for
+choosing a configuration according to the intended monitoring objective. This complements the
+S7-300 network evaluation with an application to physical process measurements.
 
 \section{Limitations, Validity, and Individual Contribution}
 \label{sec:anomaly:limitations}
 
 \paragraph{Scope of the industrial evaluation.}
-The S7-300 result rests on 25 attack episodes recorded in one plant over 24 hours, and the
-held-out partition holds a single episode of each class. Records taken from one episode are
-correlated, so the per-class scores of Table~\ref{tab:anomaly:iuno-confusion} summarise five
-attack events and not 1,233 independent trials. The benign monitoring day was a separate
-exercise with four active PLCs and executed no attack, so it bounds the false-alarm rate and says
-nothing about recall.
-No experiment reported here trains on one cell and tests for attacks on another, so transfer
-between installations is untested. The importances in
-Figure~\ref{fig:anomaly:iuno-importance} are impurity decreases on the training partition, so
-they describe what this forest used and do not show which fields detection requires. Both exercises were
-labelled by the team that executed the attacks, and each two-hour baseline covers only the
-operating modes that occurred within it.
+The studies provide evidence from one S7-300 installation and one SWaT campaign. The S7-300
+evaluation separates capture sessions, while SWaT uses later observations for testing. Each
+S7-300 attack class contributes one test episode, whose records are correlated; the separate
+benign monitoring day provides additional evidence on false alarms. Evaluation across further
+installations and operating modes would test transfer.
 
-\paragraph{Sampling and selection.}
-The GAN study develops the model on the first 56,240 attack-period timestamps and evaluates it
-on the later 393,679 timestamps. Training and validation also use separate normal-operation
-data, and attack episodes do not cross partition boundaries. The evaluation remains within one
-SWaT campaign. The S7-300 evaluation holds out whole capture sessions. Neither study tests transfer
-to another installation or an operational class ratio. No repeated runs or uncertainty
-intervals are reported, so small differences between configurations cannot be interpreted as
-stable improvements.
+\paragraph{Operational assessment.}
+The SWaT errors total about 4.83 hours of flagged normal observations and 69.6 minutes of missed
+anomalous observations. Assessment of individual attacks would match predicted intervals to
+attack episodes under a stated overlap rule and report detection delay alongside missed episodes.
+Grouping false alarms and reporting their rate per day of normal operation would clarify
+operator workload. Deployment precision also depends on the proportion of anomalous observations.
 
-\paragraph{Simple baselines.}
-On SWaT, simple tests on process values have matched much more elaborate detectors under a
-common protocol \cite{wolsing2022simple}. Reimplementing published intrusion detectors in one
-framework has likewise left simple baselines competitive \cite{bilot2025sometimes}. No such
-baseline is reported for the GAN study or for the S7-300 evaluation, so neither result shows
-that its model outperforms a simple rule on the same data.
+\paragraph{Further validation.}
+The measured comparisons concern configurations within the proposed workflow. Comparisons with
+simple baselines would test their added value, as motivated by prior industrial detection
+studies \cite{wolsing2022simple,bilot2025sometimes}. Repeated training runs would quantify
+variability, with uncertainty estimates that account for temporal dependence. Controlled
+ablations could isolate the contributions of reconstruction and critic scores. Complete
+experimental settings and runtime measurements would support reproduction and deployment planning.
 
 \paragraph{Individual contribution.}
-The candidate designed and implemented \nadics{}, its model interface, and the S7comm and PROFINET
-extractor. He produced the labelled S7-300 attack corpus. For the process study, he designed and
-implemented the multivariate GAN pipeline, its preprocessing variants, dynamic architecture,
-training, scoring, and evaluation on SWaT. He analysed the results and wrote the internal
-report. His contribution to the exploratory service-graph study was the
-concept and the measurement design. The IUNO deliverables attribute authorship at document level
-\cite{iuno_ap4,iuno_ap7}, so this account rests on the candidate's attestation and on the
-surviving artefacts rather than on passage-level attribution.
+The candidate designed and implemented \nadics{}, its model interface and protocol extractor,
+and produced the labelled S7-300 corpus. For SWaT, he developed the multivariate GAN pipeline
+and preprocessing variants, conducted and analysed the experiments, and wrote the internal
+report. His service-graph contribution covered the concept and measurement design. This account
+rests on his attestation and the surviving artefacts; the IUNO deliverables record authorship
+at document level \cite{iuno_ap4,iuno_ap7}.
 
 \section{Chapter Summary}
 \label{sec:anomaly:summary}
