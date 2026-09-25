@@ -938,20 +938,35 @@ the treatment of repackaged applications are described in Section~\ref{sec:hgann
 \section{Malware-Category Classification on CICMalDroid}
 \label{sec:hgann:12}
 
-The third task assigns an application to one of the five CICMalDroid categories. Benign is one of
-them, so this task subsumes the detection question rather than sitting beside it, and an
-application misclassified between two malicious categories is a different kind of error from one
-misclassified as benign. Results are in the right panel of Table~\ref{tab:hgann:multi}.
+The CICMalDroid task assigns each application to one of five categories: Adware, Banking
+malware, SMS malware, Riskware or Benign. The evaluation uses the 11,598 applications described
+in Section~\ref{sec:hgann:9}. It assesses both recognition of benign applications and
+distinction among the four malware categories. Predicting the wrong malware category counts
+as an error even when the application is recognised as malicious. The right panel of
+Table~\ref{tab:hgann:multi} reports the mean scores over five training seeds on the shared
+fixed partition.
 
-The published margin over the non-attentive operators is 4.7 points of F1 and 4.1 of accuracy,
-the widest of the four task and corpus combinations reported in this chapter. On the same
-corpus, binary-detection accuracy is 0.1 percentage point below HGNN+
-(Section~\ref{sec:hgann:10}). The
-ranking of the four combinations does not depend on the measure. Over the strongest baseline, the
-F1 margins in Figure~\ref{fig:hgann:f1} are 4.7 points here, 1.6 on each Drebin task and
-0.3 on CICMalDroid binary detection, which is also the order of the accuracy
-margins. This pattern describes the evaluated configurations. Establishing why the category task
-has a larger accuracy margin requires the controlled comparisons in Section~\ref{sec:hgann:13}.
+\hgann{} achieved the highest mean scores across all four measures: 94.2\% accuracy and
+94.0\% macro-$F_1$, with macro-precision of 94.1\% and macro-recall of 94.0\%.
+GraphSAGE, the stronger pairwise baseline in accuracy and macro-$F_1$, reached 83.4\% and
+82.3\%, respectively. The corresponding gains for \hgann{} are 10.8 percentage points in
+accuracy and 11.7 points in macro-$F_1$. Both non-attentive hypergraph models also exceeded
+the pairwise baselines on these measures.
+
+Among the non-attentive models, HGNN+ obtained the higher accuracy, 90.1\%, and macro-$F_1$,
+89.3\%. \hgann{} exceeded these scores by 4.1 and 4.7 percentage points, respectively.
+These are its largest gains over the strongest non-attentive baseline among the four
+task--dataset combinations in this chapter, as shown in Figures~\ref{fig:hgann:f1}
+and~\ref{fig:hgann:accuracy}. On the binary task for the same corpus, the corresponding
+macro-$F_1$ gain was 0.3 points, while accuracy was 0.1 points lower
+(Section~\ref{sec:hgann:10}).
+
+SMS malware is the largest category, with 33.7\% of the corpus. Assigning every application
+to this category would give the majority-class reference accuracy in
+Table~\ref{tab:hgann:multi}. Macro-$F_1$ complements accuracy by giving each of the five
+categories equal weight, including Benign. The reported gains therefore hold both when
+applications contribute equally to accuracy and when categories contribute equally to
+macro-$F_1$, under the evaluation conditions defined in Section~\ref{sec:hgann:9}.
 
 \section{Ablation, Efficiency, and Interpretability Analysis}
 \label{sec:hgann:13}
