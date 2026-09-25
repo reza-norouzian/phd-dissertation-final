@@ -647,57 +647,21 @@ attention.
 
 \subsection*{Read-out and classification}
 
-Applications differ in size, so the vertex states are collapsed into one vector per application.
-Two variants are named in the source publication, an unweighted mean over the vertices and a
-learned attention pooling.
+Stage 9 pools the final method states into a fixed-size application vector $g$. The source
+publication describes mean pooling and learned attention pooling as alternatives. Batches use
+block-diagonal incidence and weight matrices with stacked node features; an application index
+keeps propagation and pooling separate for each APK. For a fixed hypergraph, reordering methods
+or hyperedges leaves the application vector unchanged. This invariance concerns storage order;
+changes to code or order-dependent construction choices can still alter the hypergraph.
 
-Training and inference run on batches. The source assembles a batch of $B$ applications by placing
-their incidence and weight matrices on a block diagonal and stacking their feature matrices,
-\begin{equation}
-  H_{\mathcal{B}} = \operatorname{diag}(H_1, \ldots, H_B) , \qquad
-  W_{\mathcal{B}} = \operatorname{diag}(W_1, \ldots, W_B) , \qquad
-  X_{\mathcal{B}} = \begin{bmatrix} X_1 \\ \vdots \\ X_B \end{bmatrix} ,
-  \label{eq:hgann:batch}
-\end{equation}
-together with an index that maps each row of $X_{\mathcal{B}}$ to its application. No hyperedge
-spans two blocks, so degrees, keys, coefficients and messages are all computed inside one
-application. The output for an application therefore does not depend on the other applications in
-its batch, and the read-out uses the index to pool each block on its own.
+In Stage 10, a shared multi-layer perceptron with two hidden layers, ReLU activations and dropout
+maps $g$ to two classification heads. The binary head uses a sigmoid to estimate the malware
+probability, while the class head uses a softmax over the dataset's labels: twenty malware
+families for Drebin, or five application categories, including Benign, for CICMalDroid.
 
-The layer is also equivariant under relabelling. Let $\Pi$ reorder the methods of an application
-and $Q$ its hyperedges, and write $\Phi(X, H, W)$ for the output of
-Equation~\ref{eq:hgann:attnprop}. Then
-\begin{equation}
-  \Phi(\Pi X, \Pi H Q^{\top}, Q W Q^{\top}) = \Pi\, \Phi(X, H, W) , \qquad
-  g(\Pi X, \Pi H Q^{\top}, Q W Q^{\top}) = g(X, H, W) ,
-  \label{eq:hgann:invariance}
-\end{equation}
-where $g$ is the application vector. The first identity holds because the degree matrices, the keys
-and the coefficients all permute with $H$, and the second because both read-outs are symmetric in
-the vertex states. The prediction therefore does not depend on the order in which method rows or
-hyperedge columns are stored. This concerns the hypergraph once it is built. It gives no resistance
-to obfuscation, and order-dependent choices earlier in the pipeline, such as tie-breaking among
-nearest neighbours or among shortest paths, can change $H$ itself.
-
-That vector passes through a shared multi-layer perceptron with two hidden layers, rectified
-linear activations and dropout, and then into two heads. The first emits a single logit whose
-sigmoid is the probability that the application is malicious. The second emits one logit per class
-of the labelled taxonomy, normalised by a softmax. Training minimises the sum of the two
-objectives,
-\begin{equation}
-  \mathcal{L} = \lambda_{\text{bin}} \operatorname{BCE}(z_{\text{bin}}, y_{\text{bin}})
-              + \lambda_{\text{fam}} \operatorname{CE}(z_{\text{fam}}, y_{\text{fam}}) ,
-  \label{eq:hgann:loss}
-\end{equation}
-weighted by two constants.
-
-Equation~\ref{eq:hgann:loss} applies both terms unconditionally. On the corpus of
-Section~\ref{sec:hgann:12}, benign
-applications form one of the labelled classes and the second term is defined for them. On the
-corpus of Section~\ref{sec:hgann:11} the classes are twenty malware families. A benign application
-has no family among them, and neither has a malicious application from one of the smaller
-families, so the family term has no target for either. One well-defined specification averages each
-term over the training samples that carry its label,
+The source combines binary cross-entropy (BCE) and multiclass cross-entropy (CE), with weights
+$\lambda_{\text{bin}}$ and $\lambda_{\text{fam}}$. To account for samples with only one applicable
+label, a label-aware formulation averages each term over its eligible training set:
 \begin{equation}
   \mathcal{L} = \frac{\lambda_{\text{bin}}}{\lvert \mathcal{D}_{\text{bin}} \rvert}
   \sum_{i \in \mathcal{D}_{\text{bin}}} \operatorname{BCE}(z_{\text{bin},i}, y_{\text{bin},i})
@@ -705,8 +669,11 @@ term over the training samples that carry its label,
   \sum_{i \in \mathcal{D}_{\text{fam}}} \operatorname{CE}(z_{\text{fam},i}, y_{\text{fam},i}) ,
   \label{eq:hgann:maskedloss}
 \end{equation}
-with $\mathcal{D}_{\text{bin}}$ and $\mathcal{D}_{\text{fam}}$ the non-empty sets of samples that
-have a binary label and a class label.
+where $z$ denotes logits, $y$ denotes targets, and the non-empty sets
+$\mathcal{D}_{\text{bin}}$ and $\mathcal{D}_{\text{fam}}$ contain samples with binary and class
+labels, respectively. The class-labelled set includes benign applications on CICMalDroid;
+on Drebin, it contains only members of the twenty selected malware families. This formulation
+specifies how missing class targets can be handled; the source does not document that handling.
 
 \section{Datasets, Tasks, and Split Policy}
 \label{sec:hgann:9}
