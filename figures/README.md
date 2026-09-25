@@ -72,8 +72,9 @@ regeneration commands.
 ## HGANN-Mal figures
 
 `hgann-mal/` holds the five Chapter 5 figures. They are the author's own, supplied as PDF on
-11 September 2026 and kept verbatim in `hgann-mal/supplied/`. The thesis includes copies cropped
-to the drawing with `pdfcrop`, and three of them are set on landscape pages. They have no source
-in this repository and are not built by `src/build.sh`; `src/hgann-mal-figure-check.py` checks
+11 September 2026 and kept verbatim in `hgann-mal/supplied/`. The thesis includes three of them
+as copies cropped to the drawing with `pdfcrop`, two on landscape pages. The F1 and accuracy
+charts are thesis-native redraws from `src/hgann-mal-f1.tex` and `src/hgann-mal-accuracy.tex`.
+None of the five is built by `src/build.sh`; `src/hgann-mal-figure-check.py` checks
 their numbers against the chapter's result tables and the source publication. See `hgann-mal/README.md` for hashes, placement, type
 sizes and the open points inside the figures.

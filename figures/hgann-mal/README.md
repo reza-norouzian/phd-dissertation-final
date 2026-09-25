@@ -5,13 +5,15 @@ with a brief that gives a caption and description for each. He drew them as HTML
 from Chrome with TUM Neue Helvetica embedded. The four unchanged figures still require a new
 author export for content revisions. On 21 September 2026, T-032 replaced the included F1 chart
 with a thesis-native vector reproduction because five corrected metrics made the supplied chart
-stale. The author-supplied F1 PDF remains unchanged in `supplied/`.
+stale. On 25 September 2026 the accuracy chart was redrawn the same way, at text width, so that
+it no longer needs a landscape page. The author-supplied PDFs remain unchanged in `supplied/`.
 
 ## Files
 
-`supplied/` holds the files exactly as received. Four thesis assets are cropped copies whose
-content differs only in the page box. The F1 asset is generated from
-`figures/src/hgann-mal-f1.tex` and carries the corrected five-run means.
+`supplied/` holds the files exactly as received. Three thesis assets are cropped copies whose
+content differs only in the page box. The F1 and accuracy assets are generated from
+`figures/src/hgann-mal-f1.tex` and `figures/src/hgann-mal-accuracy.tex`; both carry the
+corrected five-run means and use the same colour for each method.
 
 | Thesis asset | Supplied file | Figure and placement |
 |---|---|---|
@@ -19,7 +21,7 @@ content differs only in the page box. The F1 asset is generated from
 | `hgann-mal-hyperedge-generation.pdf` | `fig4-pipeline-stage-4.pdf` | 5.2, Stage 4; Section 5.7, landscape page |
 | `hgann-mal-class-distribution.pdf` | `hgann-mal-class-distribution_new.pdf` | 5.3; Section 5.9, text width |
 | `hgann-mal-f1.pdf` | `figures/src/hgann-mal-f1.tex`; original: `hgann-mal-f1_new.pdf` | 5.4; Section 5.10, text width |
-| `hgann-mal-accuracy.pdf` | `fig3-acc-dif.pdf` | 5.5; Section 5.10, landscape page |
+| `hgann-mal-accuracy.pdf` | `figures/src/hgann-mal-accuracy.tex`; original: `fig3-acc-dif.pdf` | 5.5; Section 5.10, text width |
 
 SHA-256 of the supplied files, identical to the files received:
 
@@ -37,8 +39,9 @@ corrects the CICMalDroid task label and replaces `fig2-hgann-mal-macro-f1.pdf` (
 and replaces `fig1-hgann-mal-dataset-dist.pdf` (SHA-256 `b87de627...bce3`). The originals remain
 in the author's download folder.
 
-The corrected thesis-native F1 asset has SHA-256
-`76ad97b3ea19fdc2b2766c39c66569e9b8a5dfb20406d6916f65bf18169f8e5b`. Its source records every
+The thesis-native F1 and accuracy assets have SHA-256
+`1e2d58f005c7e054057125dff8df5913ca7a0d0ade57553cc9f67db5d6cc1495` and
+`b6adf240219e07f9f3159937873d2ead871fa958226514d24ef63335d40b695d`. Its source records every
 bar value and the four differences from the strongest baseline.
 
 After a new export, replace the file in `supplied/` and crop it again from this directory:
@@ -47,9 +50,10 @@ After a new export, replace the file in `supplied/` and crop it again from this 
 pdfcrop --margins 1 supplied/fig5-pipline-stage-3.pdf hgann-mal-node-features.pdf
 pdfcrop --margins 1 supplied/fig4-pipeline-stage-4.pdf hgann-mal-hyperedge-generation.pdf
 pdfcrop --margins 1 supplied/hgann-mal-class-distribution_new.pdf hgann-mal-class-distribution.pdf
-pdfcrop --margins 1 supplied/fig3-acc-dif.pdf hgann-mal-accuracy.pdf
 pdflatex -interaction=nonstopmode -halt-on-error -output-directory=tmp/pdfs/hgann-f1 figures/src/hgann-mal-f1.tex
 cp tmp/pdfs/hgann-f1/hgann-mal-f1.pdf figures/hgann-mal/hgann-mal-f1.pdf
+pdflatex -interaction=nonstopmode -halt-on-error -output-directory=tmp/pdfs/hgann-acc figures/src/hgann-mal-accuracy.tex
+cp tmp/pdfs/hgann-acc/hgann-mal-accuracy.pdf figures/hgann-mal/hgann-mal-accuracy.pdf
 ```
 
 ## Placement and type size
@@ -63,10 +67,13 @@ at which the text of each figure prints, measured from the font sizes in the PDF
 | 5.2 hyperedge generation | text height, landscape | 0.56 | 5.9 pt | 3.0 pt | 3.5 pt |
 | 5.3 class distribution | text width | 0.93 | 6.6 pt | 6.0 pt | 6.6 pt |
 | 5.4 F1 | text width | 1.00 | 6.2 pt | 5.8 pt | 6.2 pt |
-| 5.5 accuracy | text height, landscape | 0.79 | 8.2 pt | 7.0 pt | 4.8 pt |
+| 5.5 accuracy | text width | 1.00 | 6.2 pt | 6.0 pt | 6.2 pt |
 
-Figures 5.1, 5.2 and 5.5 are set as `sidewaysfigure`, as the IUNO test environment is in
-Chapter 3, because at text width their body text would print at 3 to 5 pt. Figures 5.1 and 5.2
+Figures 5.1 and 5.2 are set as `sidewaysfigure`, as the IUNO test environment is in
+Chapter 3, because at text width their body text would print at 3 to 4 pt. Since
+25 September 2026 every sideways figure turns anticlockwise, is drawn at no more than 0.92 of
+the text height and 0.85 of the text width, and keeps its caption label inside the text block
+(`thesis.tex`). Figures 5.1 and 5.2
 remain small on a landscape page. A new export with larger type, or with a narrower canvas at the
 same type size, would correct that; the thesis-native figures print their labels at 7 to 9 pt.
 
@@ -104,8 +111,8 @@ as provenance; unresolved items need a new author export or a decision.
    this (decompilation to Java with Androguard's DAD, a ready-made code2vec model), and
    Section 5.6 now states it. At his request the 320-dimensional width is not explained; the
    chapter keeps its remark that the width differs from that of the released model.
-5. `hgann-mal-f1.pdf` and `hgann-mal-accuracy.pdf` use the source publication's name HGNNP. The
-   chapter says HGNN+, and both captions give the mapping.
+5. Resolved on 25 September 2026. The supplied F1 and accuracy charts use the source
+   publication's name HGNNP; both thesis-native redraws print HGNN+, as the chapter does.
 
 Both procedures were confirmed by the author on 11 September 2026 (D-049), and the matching
 pending markers in Sections 5.6 and 5.7 are resolved.

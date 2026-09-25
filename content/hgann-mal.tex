@@ -230,7 +230,7 @@ width is $F = \lvert O \rvert + 328$.
 
 \begin{sidewaysfigure}
   \centering
-  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-node-features.pdf}
+  \includegraphics[width=0.92\textheight,height=0.85\textwidth,keepaspectratio]{hgann-mal/hgann-mal-node-features.pdf}
   \caption[Construction of the node feature vector in Stage 3]{Construction of the node feature
   vector in Stage~3. For each method $v$ of the function-call graph, an opcode histogram, four
   structural centrality metrics, four suspicious-API flags and counts, and a 320-dimensional
@@ -297,7 +297,7 @@ $\mathcal{C}_{\text{sem}}$ and $\mathcal{C}_{\text{sus}}$.
 
 \begin{sidewaysfigure}
   \centering
-  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-hyperedge-generation.pdf}
+  \includegraphics[width=0.92\textheight,height=0.85\textwidth,keepaspectratio]{hgann-mal/hgann-mal-hyperedge-generation.pdf}
   \caption[Hyperedge generation in Stage 4]{Hyperedge generation in Stage~4: three complementary
   constructions over one vertex set of methods. (4A)~Topological hyperedges take the $K$-hop ball
   around every method in the call graph, with $K = 3$ and uniform weight $w = 1$. (4B)~Semantic
@@ -819,20 +819,20 @@ in the following sections.
   training seeds on each fixed split, from Tables~\ref{tab:hgann:binary}
   and~\ref{tab:hgann:multi}.
   The vertical axis is truncated at 80 so that differences among the hypergraph methods remain
-  visible. The gain beside each task is the margin of \hgann{} over the strongest baseline.
-  HGNNP is the source publication's name for HGNN+.}
+  visible. The gain beside each task is the margin of \hgann{} over the strongest baseline.}
   \label{fig:hgann:f1}
 \end{figure}
 
-\begin{sidewaysfigure}
+\begin{figure}[tbp]
   \centering
-  \includegraphics[width=\textheight]{hgann-mal/hgann-mal-accuracy.pdf}
+  \includegraphics[width=\linewidth]{hgann-mal/hgann-mal-accuracy.pdf}
   \caption[Accuracy against the majority baseline and the strongest baselines]{Mean accuracy
   over five training seeds on each fixed split, from Tables~\ref{tab:hgann:binary}
   and~\ref{tab:hgann:multi}, divided at the majority baseline, at GraphSAGE and at HGNN+.
-  The figure labels HGNN+ as HGNNP after the source publication.}
+  The vertical tick marks the accuracy of \hgann{}. On CICMalDroid binary detection it lies
+  0.1 points below HGNN+.}
   \label{fig:hgann:accuracy}
-\end{sidewaysfigure}
+\end{figure}
 
 \subsection*{Drebin and AndroZoo}
 
@@ -875,23 +875,23 @@ majority class would therefore yield accuracies of 63.0\% and 84.5\%, respective
 The Drebin summary also permits a sensitivity calculation for a lower malware prevalence.
 Holding its malware recall and false-positive rate fixed, Equation~\ref{eq:background:prevalence}
 gives a malware-specific precision of 89.5\% at 10\% prevalence, compared with
-97.8\% in the test cohort. This is a conditional calculation, not a measured deployment
-result. It shows why the precision of malware alerts should be interpreted together with the
-malware share in the population being analysed.
+97.8\% in the test cohort.
 
 \section{Malware-Family Classification on Drebin}
 \label{sec:hgann:11}
 
-The second task assigns a malicious application to the family it belongs to. It runs on the 4,664
-Drebin samples of the twenty largest families, shown in
-Figure~\ref{fig:hgann:class-distribution}(a), and no
-benign application takes part. Results are in the left panel of Table~\ref{tab:hgann:multi}.
+Family classification identifies which known malware family an application belongs to.
+The evaluation uses 4,664 malicious applications from the twenty largest Drebin families,
+whose sizes are shown in Figure~\ref{fig:hgann:class-distribution}(a). Each application is
+assigned one of these twenty family labels. The left panel of Table~\ref{tab:hgann:multi}
+reports the mean scores over five training seeds on the shared fixed partition described in
+Section~\ref{sec:hgann:9}.
 
 \begin{table}
-  \caption{Multiclass classification results (\%). Each F1, precision and recall value is a
-  five-run mean of the macro-averaged score on a common fixed split \cite{norouzian2025hgannmal}.
-  Drebin uses twenty malware families; CICMalDroid uses five categories, including Benign.
-  Best values in bold.}
+  \caption{Multiclass classification results (\%). Learned-model scores are five-run means
+  on a shared fixed partition per corpus; F1, precision and recall are macro-averaged over classes.
+  Drebin uses twenty malware families; CICMalDroid uses five categories, including Benign 
+  \cite{norouzian2025hgannmal}. Best values in bold.}
   \label{tab:hgann:multi}
   \centering
   \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
@@ -913,24 +913,27 @@ benign application takes part. Results are in the left panel of Table~\ref{tab:h
   \end{tabular}
 \end{table}
 
-The ordering repeats: pairwise operators lowest, non-attentive hypergraph operators four to five
-and a half points of accuracy above them, and \hgann{} 1.7 points above the better of those. Against
-the trivial baseline the margin is wide here, since the largest family covers 19.8\% of the
-samples.
+\hgann{} achieved the highest mean scores on all four measures, with 95.0\% accuracy and
+93.9\% macro-$F_1$. Its macro-precision and macro-recall were 94.1\% and 93.8\%, respectively.
+GraphSAGE, the stronger pairwise baseline in accuracy and macro-$F_1$, reached 88.0\% and
+86.3\%. The corresponding gains for \hgann{} are 7.0 and 7.6 percentage points.
 
-The twenty families range from 925 samples down to 41, a ratio above twenty to one.
-Macro-$F_1$ averages the family-specific $F_1$ scores with equal weights, irrespective of family
-size \cite{opitz2019macrof1}. A high average can still conceal poor performance for individual
-families. Assessing the smaller Drebin families therefore requires per-family scores and
-test-set counts. The published scores do not provide this information.
+Both non-attentive hypergraph models also exceeded the pairwise baselines. HGNN+ obtained
+the stronger results within this group, with 93.3\% accuracy and 92.3\% macro-$F_1$.
+\hgann{} improved on these scores by 1.7 and 1.6 percentage points, respectively. The same
+ordering appears in Figure~\ref{fig:hgann:f1}. These results support the use of higher-order
+program representations to distinguish malware families from static application code in this
+evaluation.
 
-The classes are also one vendor's
-labels rather than an agreed taxonomy, as Section~\ref{sec:hgann:9} records, so a disagreement
-between the model and the label is not always an error of the model. The families are further
-related to one another: several of the twenty are known to contain repackaged applications built from shared
-code. Shared code gives the applications of one family similar semantic hyperedges, each built
-inside its own application under Section~\ref{sec:hgann:7}, and it is also the condition under
-which duplication inflates a measured score.
+Family sizes range from 41 to 925 applications. The largest family, FakeInstaller, accounts
+for 19.8\% of the selected corpus, which provides the reference accuracy for a rule that assigns
+every application to that family. Accuracy weights each application equally, so larger families
+contribute more to the result. Macro-$F_1$ gives each family equal weight through the mean of
+its family-specific $F_1$ scores \cite{opitz2019macrof1}. The gains on both measures therefore
+show an advantage under both weighting conventions. The aggregate scores describe performance
+across the twenty selected families; assessment of individual families, particularly the
+smallest ones, requires their class-specific scores and test-set counts. The corpus labels and
+the treatment of repackaged applications are described in Section~\ref{sec:hgann:9}.
 
 \section{Malware-Category Classification on CICMalDroid}
 \label{sec:hgann:12}

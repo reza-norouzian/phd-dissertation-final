@@ -39,7 +39,10 @@
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{subcaption}
-\usepackage{rotating}
+% Sideways figures turn anticlockwise on every page. Their caption label stays inside the
+% text block, because the template's marginal label would reach the page edge or the footer.
+\usepackage[figuresright]{rotating}
+\AddToHook{env/sidewaysfigure/begin}{\captionsetup{format=hang,width=0.92\textheight}}
 \usepackage{tikz}
 \usetikzlibrary{positioning, fit, backgrounds, shapes.geometric, calc}
 % Algorithm floats (Chapter 5), numbered per chapter. Loaded after hyperref, which

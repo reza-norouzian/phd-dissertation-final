@@ -1,7 +1,7 @@
 """Check the numbers printed in the Chapter 5 data figures.
 
-Extracts the text of the included F1 figure and the author-supplied accuracy and distribution
-figures with pdftotext. The F1 and accuracy figures are compared with the result tables of content/hgann-mal.tex
+Extracts the text of the included F1 and accuracy figures and the author-supplied distribution
+figure with pdftotext. The F1 and accuracy figures are compared with the result tables of content/hgann-mal.tex
 (tab:hgann:binary, tab:hgann:multi), and the class-distribution figure with the two dataset
 tables of the source publication, which the chapter reprinted until T-006 cut them. Problems
 inside a figure are printed as notes and do not fail the check. Run from the repository root:
@@ -106,14 +106,14 @@ note('Family classification' in t2.split('(b)')[1],
      'it is malware-category classification')
 
 # Accuracy figure: the four reference points of every row and the printed differences.
-t3 = text('fig3-acc-dif.pdf')
+t3 = text('hgann-mal-accuracy.pdf', ASSET)
 for k in ACC:
     for v in (MAJ[k], ACC[k][1], ACC[k][3], ACC[k][4]):
         check(f'{v:.1f}' in t3, f'accuracy figure prints {v:.1f} ({k})')
     check(ACC[k][1] == max(ACC[k][:2]), f'GraphSAGE is the best pairwise operator ({k})')
     check(ACC[k][3] == max(ACC[k][2:4]), f'HGNN+ is the best hypergraph baseline ({k})')
 deltas = [round(ACC[k][4] - ACC[k][3], 1) for k in ACC]
-printed = [float(x.replace('−', '-')) for x in re.findall(r'·\s*([+−-]\d\.\d)', t3)]
+printed = [float(x.replace('−', '-')) for x in re.findall(r'([+−]\d\.\d)', t3)]
 check(printed == deltas, f'accuracy figure: HGANN-Mal minus HGNN+ {printed}')
 steps = {k: round(ACC[k][3] - ACC[k][1], 1) for k in ACC}
 check((min(steps.values()), max(steps.values())) == (3.8, 6.7),
