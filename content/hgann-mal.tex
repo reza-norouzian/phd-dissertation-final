@@ -1033,65 +1033,52 @@ bonus would retain the shared ranking of Equation~\ref{eq:hgann:ranking}
 \section{Limitations and Threats to Validity}
 \label{sec:hgann:14}
 
-\paragraph{The gain cannot be attributed to attention.} \hgann{} changes the hyperedge vocabulary
-and aggregation together. The component-attribution question and the required comparisons are
-specified in Section~\ref{sec:hgann:13}; the reported gains concern the complete system.
+\paragraph{Comparison scope.} Common call graphs and node features support the comparison of
+graph and hypergraph models under shared evaluation partitions. The measured gains concern
+the complete \hgann{} configuration; the individual contribution of attention remains a
+question for the ablations in Section~\ref{sec:hgann:13}. The baselines assess general learning
+operators within this pipeline. Comparisons with dedicated Android detectors would extend
+this evidence to a broader range of detection systems.
 
-\paragraph{The evaluation covers favourable conditions only.} Both splits are random, so training
-and test samples come from the same collection period, and the figures do not describe performance
-on applications released later \cite{pendlebury2019tesseract}. Neither corpus was obfuscated, and
-no adversary was present. Under obfuscation, concept drift and adversarial examples, none of twelve
-representative Android detectors kept the performance it reached in the ideal setting, and one
-call-graph-based detector scored 0.912 of F1 on one year's test set and 0.463 on another's
-\cite{gao2024comprehensive}. Sections~\ref{sec:hgann:10} to~\ref{sec:hgann:12} thus report the
-conditions that a comparison between representations needs. A deployment would meet harder ones.
+\paragraph{Evaluation coverage.} Drebin and CICMalDroid provide distinct application collections
+and classification tasks. The five-run means describe performance on fixed random partitions;
+individual run scores are unavailable for quantifying variability. Evaluation on later
+application releases would require time-ordered splits \cite{pendlebury2019tesseract}.
+Grouping repackaged applications before partitioning would also address the potential overlap
+between training and test code identified in Section~\ref{sec:hgann:9}.
 
-\paragraph{Static-analysis coverage.} The representation omits code and call targets unavailable
-to the extractor, as described in Section~\ref{sec:hgann:3}.
-
-\paragraph{The baselines are general operators.} GCN, GraphSAGE, HGNN and HGNN+ were
-re-implemented on this pipeline's call graphs and node features. They test higher-order against
-pairwise encoding within one design, but they do not place \hgann{} against the Android detectors
-that the field uses as reference points. Later work on hypergraph stability includes HGNNv2
-\cite{gao2026hgnnv2}; the present experiment evaluates HGNN and HGNN+.
-
-\paragraph{The threat model is non-adaptive.} No adversary in this evaluation knows that the
-detector exists, although published attacks act on the object this pipeline consumes. A
-structural attack on graph-based Android detection reports over 90\% success in feature
-space and up to 100\% in problem space against function-call-graph detectors under
-white-box access \cite{zhao2021structural}. FCGHunter rewrites an application with
-semantics-preserving operators and reaches a white-box success rate of 87.9\% against forty
-detectors built from graph-summary features \cite{song2026fcghunter}. A4M reports an average of
-85.17\% against seven detectors built with MaMaDroid, APIGraph and a graph neural network,
-under a perturbation budget of 5\% \cite{li2025efficient}. None of these attacks was run
-against \hgann{}. Every hyperedge of Section~\ref{sec:hgann:7} is derived from the call graph or
-from quantities computed over it, so methods and edges injected into that graph also change the
-hyperedges. Attention operates downstream of an extraction that the adversary controls. \hgann{}
-therefore inherits the exposure of its representation, and in line with Chapter~\ref{chap:advml}
-this chapter makes no robustness claim.
+\paragraph{Static evidence and robustness.} Package-based analysis supports classification before
+execution, with coverage determined by the bytecode and call targets recovered by the analyser
+(Section~\ref{sec:hgann:3}). Additional runtime or native-code analysis could broaden this
+coverage. The experiments evaluate applications as collected; dedicated tests of obfuscation
+and detector-directed evasion remain future work. Published attacks on call-graph detectors
+provide relevant candidates for such tests
+\cite{zhao2021structural,song2026fcghunter,li2025efficient}. Their application to \hgann{}
+would assess robustness under the explicit adversary assumptions described in
+Chapter~\ref{chap:advml}.
 
 \section{Chapter Summary}
 \label{sec:hgann:15}
 
-For the first part of RQ2, the chapter lifted a method-level function-call graph to a
-hypergraph. Three rules of different kinds join its methods into groups, and attention learns how
-strongly each method participates in each group. The operator analysis in
-Section~\ref{sec:hgann:8} shows that attention reweights the memberships that the construction
-fixed, and within one layer it ranks the hyperedges of every method in one shared order. It can
-distinguish hyperedge groupings that produce the same fixed propagation matrix, although the
-experiments do not establish whether training uses this capacity.
+This chapter addressed RQ2 through \hgann{}, which represents groups of related methods within
+an Android application. Hyperedges capture call-graph proximity and similarity between method
+representations. Slice-aware groups add context around security-sensitive API calls, and
+attention learns how strongly each method participates in its groups. The resulting application
+representation supports binary detection and prediction of family or category labels from
+static code. The mathematical analysis established properties of this attention operator and
+bounds for storage and sparse propagation.
 
-For the second part, the system was measured against two pairwise graph operators and two
-hypergraph operators without attention, on Drebin and on CICMalDroid, for binary detection and
-for classification into families and into categories. Every hypergraph configuration exceeded
-the stronger pairwise baseline by 3.1 to 10.8 points of mean accuracy over five training runs.
-\hgann{} exceeded the
-strongest non-attentive hypergraph baseline in three of four task--dataset combinations; on
-CICMalDroid binary detection, its mean accuracy was 97.6\% compared with 97.7\%
-for HGNN+. These descriptive comparisons apply to the fixed evaluation partitions.
+The evaluation compared graph and hypergraph models on Drebin and CICMalDroid under shared
+fixed partitions. Across the four task--dataset combinations, every hypergraph configuration
+exceeded the stronger pairwise baseline by 3.1 to 10.8 percentage points in mean accuracy over
+five training seeds. \hgann{} exceeded the strongest non-attentive hypergraph baseline in
+three of these settings, with accuracy gains of 1.2 to 4.1 points. On CICMalDroid binary
+detection, HGNN+ achieved 97.7\% accuracy and \hgann{} achieved 97.6\%. The largest gains for
+\hgann{} occurred in CICMalDroid category classification.
 
-Because the hyperedge vocabulary and the weighting were changed together, the improvement over the hypergraph
-baselines cannot be attributed to attention, and the experiment that would separate them was not
-run. Chapter~\ref{chap:discussion} takes the representational question up against
-Chapter~\ref{chap:hybroid}, and Chapter~\ref{chap:conclusion} records the gap as the first item of
-future work.
+These results support higher-order modelling of static program context within the evaluated
+configurations. Section~\ref{sec:hgann:13} identifies the experiments needed to measure the
+separate contributions of construction and attention. In the dissertation, \hgann{} complements
+\hybroid{} through its focus on relations within the application package, while \hybroid{}
+combines program structure with observed network traffic. Chapter~\ref{chap:discussion}
+examines what these two approaches contribute to contextual security analysis.
