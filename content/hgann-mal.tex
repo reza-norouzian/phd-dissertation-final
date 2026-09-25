@@ -127,26 +127,35 @@ Section~\ref{sec:hgann:14} states what each of them implies for the results repo
 \section{Observation and Threat Model}
 \label{sec:hgann:3}
 
-\hgann{} analyses the manifest and Dalvik bytecode of an application package without executing
-the application. These inputs determine which parts of its behaviour can be represented.
+\hgann{} analyses Android applications from their installation packages. The observation unit
+is one APK: its manifest describes the requested permissions, while its Dalvik bytecode provides
+the methods and call sites used to construct the program representation. From this evidence,
+the analysis recovers a function-call graph and identifies code associated with security-sensitive
+API calls. Hyperedges then group related methods so that the classifier can use context across
+several methods in one application-level prediction.
 
-Static analysis removes the need for a device or emulator and for scripted interaction. Packages
-can be analysed independently across a corpus; Section~\ref{sec:hgann:13} treats the computational
-cost of representation construction and learning. The second modality of
-Chapter~\ref{chap:hybroid} depends on traffic that the CICAndMal2017 authors captured on physical handsets, and
-Section~\ref{sec:discussion:3} compares the two observation requirements directly.
+This package-based approach supports analysis before an application is executed. An analyst can
+process a collection of APKs without preparing a device or emulator, scripting user interactions,
+or recording network traffic. The evidence therefore comes from the code available to the static
+analyser, independently of which execution paths a test session would trigger. This provides a
+different observation setting from \hybroid{}, which combines static evidence with captured
+network traffic. Section~\ref{sec:discussion:3} discusses these acquisition requirements, and
+Section~\ref{sec:hgann:13} examines the computational cost of the hypergraph pipeline.
 
-The representation inherits the static-analysis limits described in
-Section~\ref{sec:background:android:analysis}. Code loaded at runtime is absent from the
-recovered bytecode. Reflective calls can also be missing because the pipeline does not model
-their target resolution. Packed or native payloads may lie outside the parsed DEX files.
-These omissions restrict the methods and relations available to hypergraph construction.
+The security objective is to distinguish malicious applications from benign ones and to assign
+the dataset-specific class labels. On Drebin, the multiclass task identifies malware families;
+on CICMalDroid, it distinguishes application categories, including Benign. The evaluation uses
+historical application samples under a \emph{non-adaptive threat model}: the samples are analysed
+as collected, without modifications designed to evade \hgann{}. Within this setting, the
+experiments assess how higher-order program representations support detection and classification
+under a common protocol.
 
-The evaluation uses historical samples without detector-directed modification, so its threat
-model is non-adaptive. Rewriting an application can change the recovered call graph and the
-representations derived from it. Section~\ref{sec:hgann:14} relates this exposure to published
-attacks on function-call-graph detectors; Chapter~\ref{chap:advml} treats evaluation under
-explicit adversary assumptions.
+The scope of each prediction is the code and call relations recovered from the package.
+Additional code obtained only at runtime and unresolved reflective calls fall outside that
+representation; packed or native payloads may also remain unavailable to the DEX analyser.
+Section~\ref{sec:hgann:14} discusses these coverage limits and the separate question of resistance
+to deliberate evasion. Chapter~\ref{chap:advml} develops the evaluation requirements for such
+adversarial settings.
 
 \section{APK Processing and Function-Call Graph Extraction}
 \label{sec:hgann:4}
