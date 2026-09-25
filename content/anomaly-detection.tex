@@ -755,11 +755,10 @@ measurement.
 
 Table~\ref{tab:anomaly:gan-representations} presents the measured performance of
 the five input configurations. Each row uses the same class totals: 51,453 anomalous timestamps
-and 342,226 normal timestamps. Precision describes the proportion of predicted anomalous
-timestamps that fall within recorded attack periods. Recall describes the proportion of actual
-anomalous timestamps that are detected. $F_1$ is the harmonic mean of precision and recall, while the
-false-positive rate is the proportion of normal timestamps incorrectly flagged. All table entries
-are calculated from integer confusion counts and rounded to two decimal places.
+and 342,226 normal timestamps. The measures follow the definitions in
+Section~\ref{sec:background:metrics:binary}, with an anomalous timestamp as the positive class.
+All table entries are calculated from integer confusion counts and rounded to two decimal
+places.
 
 \begin{table}[tbp]
   \centering
@@ -824,15 +823,9 @@ and 17,391 of the 342,226 normal timestamps are flagged as anomalous.
   \end{tabular}
 \end{table}
 
-The performance measures follow directly from these counts and are calculated from the
-unrounded values:
-\begin{alignat*}{3}
-  \mathrm{Precision} &= TP/(TP+FP)          &&= 47{,}279/64{,}670   &&= 73.11\%,\\
-  \mathrm{Recall}    &= TP/(TP+FN)          &&= 47{,}279/51{,}453   &&= 91.89\%,\\
-  F_1                &= 2TP/(2TP+FP+FN)     &&= 94{,}558/116{,}123  &&= 81.43\%,\\
-  \mathrm{FPR}       &= FP/(FP+TN)          &&= 17{,}391/342{,}226  &&= 5.08\%,\\
-  \mathrm{Accuracy}  &= (TP+TN)/(TP+FN+FP+TN) &&= 372{,}114/393{,}679 &&= 94.52\%.
-\end{alignat*}
+From these counts, precision is 47,279/64,670 = 73.11\% and recall is 47,279/51,453 =
+91.89\%. $F_1$ equals 94,558/116,123 = 81.43\%, the false-positive rate 17,391/342,226 =
+5.08\%, and accuracy 372,114/393,679 = 94.52\%.
 
 The recall of 91.89\% means that the detector flags approximately 92 of every 100 anomalous
 timestamps. It does not mean that 92\% of attack episodes are detected. Long attacks contribute
