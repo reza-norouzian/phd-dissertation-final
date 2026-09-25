@@ -968,101 +968,67 @@ categories equal weight, including Benign. The reported gains therefore hold bot
 applications contribute equally to accuracy and when categories contribute equally to
 macro-$F_1$, under the evaluation conditions defined in Section~\ref{sec:hgann:9}.
 
-\section{Ablation, Efficiency, and Interpretability Analysis}
+\section{Efficiency Bounds and Future Evaluation}
 \label{sec:hgann:13}
 
-\subsection*{Component attribution}
+\subsection*{Ablation priorities}
 
-\hgann{} differs from the hypergraph baselines in two ways at once. It builds a different set of
-hyperedges, fusing a topological, a semantic and a slice-aware family where the baselines take
-$k$-hop and permission-based ones \cite{zhang2023android}, and it weights membership by a learned
-score instead of a fixed indicator. Both changes are present in every number in
-Tables~\ref{tab:hgann:binary} and~\ref{tab:hgann:multi}, and no experiment in this chapter varies
-one while holding the other. The measured differences are therefore differences between two
-systems, and they do not establish that attention is what produces them.
-
-Component analysis would require a non-attentive operator over the identical fused hyperedge
-set and a separate comparison of \hgann{} with topological hyperedges alone. A leave-one-out
-analysis of the hyperedge families would assess their contributions, while a parameter sweep
-would examine $K$, $k$, $\tau$, $c_{\max}$, $L_p$ and the two weight constants. The source
-publication reports none of these tests. The first two would separate attention from
-construction; the others concern the contributions of individual families and the sensitivity
-to construction parameters.
-Equation~\ref{eq:hgann:uniform} adds a condition to the first: uniform coefficients also rescale
-propagation, so that comparison has to fix a normalisation convention before its difference can be
-attributed to attention.
-
-Fang et al.\ compared GAT-based architectures with GCN, GraphSAGE and GIN on node-classification
-and link-prediction benchmarks over pairwise graphs. Their reported means place GAT above
-the non-attentive baselines on some node-classification datasets and below them on others
-\cite[Table~2]{fang2025kaa}. Their ranking analysis concerns pairwise attention under explicit
-capacity assumptions. These
-results do not establish the behaviour of attention on Android hypergraphs. Brody et al.'s
-static-ranking argument for additive scoring \cite{brody2022gatv2} carries over to the score
-used here, as Equation~\ref{eq:hgann:ranking} shows; the transfer of the finite-ranking bound
-remains unestablished.
+The current evaluation changes two parts of \hgann{} together: the method groups
+(hyperedges) and the weights that set each method's participation in those groups. Its
+results measure the complete system. To test attention alone, future work could keep the
+same groups and compare fixed with learned membership weights. Both versions need matched
+normalisation, because uniform coefficients also change propagation scale
+(Equation~\ref{eq:hgann:uniform}). A separate comparison with topological groups alone,
+followed by removal of one group type at a time, would show the value of the additional groups.
 
 \subsection*{Efficiency}
 
-The stated procedure admits bounds. Let $n$ be the number of methods, $m$ the number
-of retained hyperedges, $\lvert \mathcal{S} \rvert$ the number of slices and
-$\nu = \operatorname{nnz}(H) = \sum_{e \in \mathcal{E}} \lvert e \rvert$ the number of stored
-memberships. Algorithm~\ref{alg:hgann:construction} proposes at most one topological and one
-semantic candidate per method and one candidate per slice, and post-processing only removes
-candidates. Semantic hyperedges hold at most $k + 1$ methods under the convention of
-Equation~\ref{eq:hgann:sem}, and the others at most $c_{\max}$. Hence
+The sparse representation provides explicit storage bounds. Let $n$ and $m$ count methods and
+retained hyperedges, let $\mathcal{S}$ be the slice set, and let
+$\nu=\operatorname{nnz}(H)$ count stored memberships.
+Algorithm~\ref{alg:hgann:construction} proposes at most two candidates per method and one per
+slice. With at most $k+1$ members per semantic hyperedge and $c_{\max}$ for the other types,
 \begin{equation}
   m \le 2n + \lvert \mathcal{S} \rvert , \qquad
   \nu \le (c_{\max} + k + 1)\, n + c_{\max} \lvert \mathcal{S} \rvert
   = 70\, n + 64\, \lvert \mathcal{S} \rvert ,
   \label{eq:hgann:sizes}
 \end{equation}
-and the representation grows linearly in the numbers of methods and slices. For one attention head
-with input width $F$ and output width $F'$, a sparse evaluation of Equation~\ref{eq:hgann:attnprop}
-computes the projection, the keys, the scores and the two incidence products in
+where the numerical bound uses $k=5$ and $c_{\max}=64$. Stored memberships therefore grow
+linearly with the numbers of methods and slices. For one attention head with input width $F$
+and output width $F'$, sparse propagation requires
 \begin{equation}
   T_{\text{layer}} = O(nFF' + \nu F') , \qquad
   M_{\text{layer}} = O\bigl(nF + (n + m)F' + \nu + FF'\bigr)
   \label{eq:hgann:cost}
 \end{equation}
-time and memory, where $m \le \nu / 2$ because every retained hyperedge has at least two members.
-The bound follows the two stages of Equation~\ref{eq:hgann:messages} and never forms
-$P_{\text{att}}$. That matrix can be far denser than $H$, since two methods are coupled whenever
-they share a hyperedge: it can hold up to $\sum_e \lvert e \rvert^2 \le c_{\max} \nu$ non-zero
-entries, and the cap bounds this density. Further heads and layers add their own terms.
+time and memory. The incidence products in Equation~\ref{eq:hgann:messages} avoid forming
+the potentially dense method-to-method matrix $P_{\text{att}}$.
 
-Construction costs more. With $\lvert E \rvert$ call edges, breadth-first searches from every
-method build the topological hyperedges in $O(n(n + \lvert E \rvert))$. An exhaustive search within
-one application evaluates the similarity of $O(n^2)$ pairs of 320-dimensional embeddings, and since
-the FAISS index is unspecified, no sub-quadratic bound can be claimed for it. The slice paths need
-one breadth-first search from each member of each slice,
-$O\bigl(\sum_s \lvert F_s \rvert (n + \lvert E \rvert)\bigr)$ in total. The cap is applied after a
-candidate is built, so it does not limit the cost of candidates that are then rejected, and
-centrality computation and the semantic embedding add costs outside these bounds. None of these
-quantities is a measurement. Static analysis removes the need for runtime capture, while graph
-searches and semantic-neighbour construction retain the computational costs specified above.
+Construction has separate costs. With $\lvert E \rvert$ call edges, breadth-first searches
+for topological groups take $O(n(n+\lvert E\rvert))$ time. Exhaustive semantic search compares
+$O(n^2)$ pairs of 320-dimensional embeddings; a tighter bound depends on the unspecified FAISS
+index. Slice-path searches take
+$O\bigl(\sum_s\lvert F_s\rvert(n+\lvert E\rvert)\bigr)$, with $F_s$ defined in
+Section~\ref{sec:hgann:7}. Candidate generation precedes size filtering, and centrality
+computation and code embeddings add further work. These are analytical bounds; end-to-end
+runtime measurements remain future work.
 
-\subsection*{Interpretability prospects}
+\subsection*{Interpretability and extensions}
 
-Slice-aware hyperedges associate code regions with particular security-sensitive API calls.
-An analyst could inspect their learned weights alongside those call sites.
-Equation~\ref{eq:hgann:ranking} provides one ordering of the keys $b_e$ per layer and head,
-which could organise such an inspection. The source publication leaves interpretability as
-future work and reports no learned attention weights.
+Slice-aware hyperedges identify code near security-sensitive API calls. An analyst could
+inspect this code and the weights assigned to its groups when investigating a classification.
+The hyperedge ranking in Equation~\ref{eq:hgann:ranking} could help select groups for
+inspection. The source publication reports no learned weights or tests of their value as
+explanations, so this use remains a proposal.
 
-\subsection*{Type-aware extensions}
-
-The type tags recorded in Section~\ref{sec:hgann:7} could provide an additional input to
-aggregation. In the current layer, a topological hyperedge and a semantic hyperedge over the
-same methods, both with unit weight, have identical representations in $H$ and $W$.
-
-One extension would learn a scalar weight per family, which introduces three parameters.
-Alternatively, the attention score of
-Equation~\ref{eq:hgann:attn} could take the type as an input. Entered additively, the type would
-only shift the keys $b_e$, and Equation~\ref{eq:hgann:ranking} shows that every method would still
-rank its hyperedges in one shared order; a weighting that depends on the family and the vertex
-together needs a score that is not additive, such as the revised form of Brody et
-al.\ \cite{brody2022gatv2}. Both extensions remain proposals for evaluation.
+Each hyperedge also has a tag that records how it was formed: from call-graph proximity,
+similar code, or a slice around a sensitive API call. The current model stores the tag but
+does not use it during propagation. A future model could learn one weight per type or include
+the tag in the attention score. To let different methods prefer different types, the effect
+of the tag must depend on the method's features. Giving every method the same type-specific
+bonus would retain the shared ranking of Equation~\ref{eq:hgann:ranking}
+\cite{brody2022gatv2}. These extensions require evaluation.
 
 \section{Limitations and Threats to Validity}
 \label{sec:hgann:14}

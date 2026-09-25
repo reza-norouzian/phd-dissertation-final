@@ -465,7 +465,7 @@ starts on p. 61, and the complete thesis has 151 pages. The 23-page planning all
 
 4.12 Malware-Category Classification on CICMalDroid
 
-4.13 Ablation, Efficiency, and Interpretability Analysis
+4.13 Efficiency Bounds and Future Evaluation
 
 4.14 Limitations and Threats to Validity
 
