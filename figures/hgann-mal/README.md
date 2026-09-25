@@ -38,7 +38,7 @@ and replaces `fig1-hgann-mal-dataset-dist.pdf` (SHA-256 `b87de627...bce3`). The 
 in the author's download folder.
 
 The corrected thesis-native F1 asset has SHA-256
-`8c8c4f5c6a92565e5458a33e039c86bce129fe01878a01e413163a579b06d06d`. Its source records every
+`76ad97b3ea19fdc2b2766c39c66569e9b8a5dfb20406d6916f65bf18169f8e5b`. Its source records every
 bar value and the four differences from the strongest baseline.
 
 After a new export, replace the file in `supplied/` and crop it again from this directory:

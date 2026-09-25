@@ -306,7 +306,7 @@ time.
 \end{table}
 
 Extraction produced 119,160 feature records. Of these, 113,751 are normal and 5,409 carry one of
-the five attack labels, an attack share of 4.54 per cent. Table~\ref{tab:anomaly:iuno-corpus}
+the five attack labels, an attack share of 4.54\%. Table~\ref{tab:anomaly:iuno-corpus}
 gives the composition. The training sessions hold 79,636 records, the validation session 19,683
 and the test session 19,841. Each attack type contributes three training episodes and one
 episode to each of the remaining partitions, and because episodes differ in duration and in the
@@ -341,22 +341,22 @@ Figure~\ref{fig:anomaly:iuno-importance} shows the importance of each field in t
 of Section~\ref{sec:anomaly:iuno-results}. The forest was fitted to the training partition; the
 impurity reductions from splits on each field were summed across its trees, normalised over all
 63 fields, and ranked. Panel~(a) shows the fifteen highest, and
-Appendix~\ref{app:nadics-importance} lists all 63. \texttt{s7\_function} leads at 11.9 per cent,
+Appendix~\ref{app:nadics-importance} lists all 63. \texttt{s7\_function} leads at 11.9\%,
 because a stop or a start is an ordinary S7 operation whose function code is visible in the
-request, and \texttt{role\_violation} follows at 8.0 per cent, because a write from a host whose
+request, and \texttt{role\_violation} follows at 8.0\%, because a write from a host whose
 role does not write is anomalous even over an established connection. Both signals have limits:
 legitimate maintenance issues the same function codes, and a compromised engineering station
 writes from a role that is permitted to write.
 
 Panel~(b) sets each group's share of the total importance against its share of the fields.
-Protocol semantics holds the largest share at 36.4 per cent, although it also holds the most
+Protocol semantics holds the largest share at 36.4\%, although it also holds the most
 fields. The comparison that carries information is the share per field: the nine relational
-fields average 2.38 per cent each, against 0.74 for the eighteen flow fields and 0.60 for the five
+fields average 2.38\% each, against 0.74\% for the eighteen flow fields and 0.60\% for the five
 process fields. Only the process fields receive less importance per field than the flow
 statistics. That is consistent with the position the schema takes: an
 industrial detector built on Argus and Bro flow features alone discards most of what separates an
-S7 attack from S7 polling. Panel~(c) gives the cumulative share. Ten fields reach 54.5 per cent
-of the total importance, twenty-four reach 80 per cent and thirty-six reach 90 per cent, so the
+S7 attack from S7 polling. Panel~(c) gives the cumulative share. Ten fields reach 54.5\%
+of the total importance, twenty-four reach 80\% and thirty-six reach 90\%, so the
 tail of the schema is thin and a reduced schema is plausible. \nadics{} exposes an importance
 ranking for exactly this purpose \cite{iuno_ap4}.
 
@@ -414,17 +414,17 @@ types. Every figure below comes from the held-out test session, which holds 18,6
 Table~\ref{tab:anomaly:iuno-confusion} reports the six-class confusion matrix together with the
 per-class scores. Collapsing the same predictions into the binary decision gives 18,518 true
 negatives, 90 false positives, 48 false negatives and 1,185 true positives. Binary accuracy is
-99.30 per cent, attack precision 92.94 per cent and attack recall 96.11 per cent, for an attack
-$F_1$ of 94.50 per cent. The false-positive rate over normal records is 0.484 per cent and the
-balanced accuracy 97.81 per cent. On the six-class task, accuracy reaches 98.85 per cent, the
-macro-$F_1$ 89.56 per cent and the weighted $F_1$ 98.86 per cent.
+99.30\%, attack precision 92.94\% and attack recall 96.11\%, for an attack
+$F_1$ of 94.50\%. The false-positive rate over normal records is 0.484\% and the
+balanced accuracy 97.81\%. On the six-class task, accuracy reaches 98.85\%, the
+macro-$F_1$ 89.56\% and the weighted $F_1$ 98.86\%.
 
-Accuracy is the least informative of these numbers. Normal records make up 93.79 per cent of the
-test partition, so a detector that never fired would already score 93.79 per cent, and the gap
-between the weighted and the macro $F_1$, 98.86 against 89.56 per cent, measures how much of the
+Accuracy is the least informative of these numbers. Normal records make up 93.79\% of the
+test partition, so a detector that never fired would already score 93.79\%, and the gap
+between the weighted and the macro $F_1$, 98.86\% against 89.56\%, measures how much of the
 six-class figure the normal class carries. Per-class recall is highest for denial of service at
-95.19 per cent and lowest for brute force at 82.35 per cent, with authentication bypass close
-behind at 83.91 per cent. Most errors of these two classes fall on other attack classes.
+95.19\% and lowest for brute force at 82.35\%, with authentication bypass close
+behind at 83.91\%. Most errors of these two classes fall on other attack classes.
 Authentication bypass loses 22 of its 348 records to the normal class and 34 to the other attack
 types, while brute force loses nine of its 187 records to the normal class and 24 to the other
 attack types, 14 of them to reconnaissance. Both attacks reuse the protocol operations of
@@ -446,7 +446,7 @@ bytes, about 2.322~GB in the classic PCAP format, and the extractor emitted 83,8
 Engineering work and planned device restarts took place during the period and count as benign.
 
 The detector classified 83,740 records as normal and 107 as attacks, all of them false, a
-record-level false-positive rate of 0.128 per cent. Positives were merged into alarm episodes
+record-level false-positive rate of 0.128\%. Positives were merged into alarm episodes
 before presentation to the control room: positives that share a source, a destination and a
 predicted attack class belong to one episode, and an episode closes once 60 seconds pass without
 a further positive. One notification opens an episode, and later positives update it. Nine alarm
@@ -455,9 +455,9 @@ cause. Engineering workstation activity accounts for 43 positive records in thre
 OPC~UA reconnections for 28 records in two. Brief communication interruptions produced 23
 records in two episodes, and planned device restarts 13 records in two.
 
-No attack was executed during this period, so every alarm it raised was false. Its 0.128 per
-cent record rate lies below the 0.484 per cent of the test session, whose normal records also
-include the recovery intervals of executed attacks. The recovered causes share a structure that
+No attack was executed during this period, so every alarm it raised was false. Its 0.128\%
+record rate lies below the 0.484\% of the test session, whose normal records also include the
+recovery intervals of executed attacks. The recovered causes share a structure that
 matters for deployment: each is a legitimate departure from routine polling, so the alarm burden
 of this design follows the rate at which such events occur in the plant.
 
@@ -502,15 +502,15 @@ minutes.
 \end{table}
 
 Table~\ref{tab:anomaly:iuno-pi} reports the three loads. At the moderate load, 1,498,463 frames
-were presented in 599.87 seconds and 361 were dropped, a loss of 0.024 per cent at a processed
+were presented in 599.87 seconds and 361 were dropped, a loss of 0.024\% at a processed
 rate of 2,497.38 frames per second. This input rate is about 17 times the average frame rate of
-the corpus capture. The extractor used 43.1 per cent of the CPU capacity of the device on average
+the corpus capture. The extractor used 43.1\% of the CPU capacity of the device on average
 and at most 381~MiB of memory. The 95th percentile of the delay from the close of a window to the
 emission of its record was 234~ms, a delay that excludes the ten seconds in which the window
-accumulates. The light load lost four of its 599,827 frames at 22.6 per cent CPU utilisation.
-The overload row does not describe a supported rate: 11.71 per cent of the input was dropped,
+accumulates. The light load lost four of its 599,827 frames at 22.6\% CPU utilisation.
+The overload row does not describe a supported rate: 11.71\% of the input was dropped,
 and the processed rate stayed at 3,090.93 frames per second against an input rate of 3,500.69.
-Mean CPU utilisation reached 50.4 per cent there, and the 95th-percentile emission delay rose to
+Mean CPU utilisation reached 50.4\% there, and the 95th-percentile emission delay rose to
 817~ms. The three runs emitted 5,842, 5,887 and 5,781 records, fewer than the 6,000 that 100
 continuously active channels would give in ten-second windows over ten minutes, because channel
 activity varied.
@@ -908,11 +908,11 @@ RQ3 asks how a modular framework can analyse network and process features for an
 detection in industrial systems. \nadics{} provides a researcher-guided workflow for adapting
 data preparation and comparing candidate learners through fixed interfaces. Its modular design
 supports the selection of a configuration for a given dataset. On the S7-300 corpus recorded
-inside IUNO the framework reaches 94.50
-per cent attack $F_1$ and 89.56 per cent macro-$F_1$ over six classes at a record false-positive
-rate of 0.484 per cent, and a benign day with four active PLCs raised nine alarm episodes, all of
+inside IUNO the framework reaches 94.50\% attack $F_1$ and 89.56\% macro-$F_1$ over six
+classes at a record false-positive rate of 0.484\%, and a benign day with four active PLCs raised
+nine alarm episodes, all of
 them false. For SWaT process windows, the GAN evaluation reports
-91.89 per cent timestamp recall at a false-positive rate of 5.08 per cent with 24 PCA
+91.89\% timestamp recall at a false-positive rate of 5.08\% with 24 PCA
 components. The full input gives the highest recall and five components the lowest
 false-positive rate, so the preferred representation depends on the relative cost of missed
 anomalies and false alarms.

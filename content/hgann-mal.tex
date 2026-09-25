@@ -91,7 +91,7 @@ The closest prior Android hypergraph system identified in this review is that of
 each vertex by six centrality measures and opcode and API-package indicators,
 and forms hyperedges by two rules: the $K$-order call neighbours of a function, and the set of
 functions sharing a permission. It evaluates HGNN, HGNN+, HyperGCN and UniGNN against GCN, GIN and
-GraphSAGE, on Malnet-Tiny and on Drebin, and it reports its best Drebin result as 97.1 per cent
+GraphSAGE, on Malnet-Tiny and on Drebin, and it reports its best Drebin result as 97.1\%
 accuracy with HGNN+. The evaluated hypergraph models use fixed hyperedge weights.
 
 Compared with this construction, \hgann{} introduces semantic groups and slice-aware hyperedges
@@ -102,10 +102,10 @@ pipeline; the study does not reproduce a complete competing Android detector.
 
 \subsection*{Comparability of published results}
 
-Zhang et al.\ report 97.1 per cent accuracy for HGNN+ on the
+Zhang et al.\ report 97.1\% accuracy for HGNN+ on the
 twenty-family Drebin task over 4,664 samples under an 80/20 split \cite{zhang2023android}, while
-Section~\ref{sec:hgann:11} reports 95.0 per cent for \hgann{} and 93.3 per cent for the same
-operator on the same task over the same samples under a 70/20/10 split. Setting those numbers
+Section~\ref{sec:hgann:11} reports 95.0\% for \hgann{} and 93.3\% for the same
+operator on the same task over the same samples under a 70\%/20\%/10\% split. Setting those numbers
 against each other would compare implementations, feature sets, splits and training regimes at
 once.
 
@@ -694,7 +694,7 @@ one of the ten scanners. The source publication of this chapter counts 179 famil
 \cite{norouzian2025hgannmal}, a figure the dataset paper does not state. Family sizes are heavily
 skewed, so the classification task uses the twenty largest, which cover 4,664 of the samples and
 are drawn with their sizes in Figure~\ref{fig:hgann:class-distribution}(a). The 159 smaller
-families hold the other 896 samples, 16.1 per cent of the set, and they are left out of the
+families hold the other 896 samples, 16.1\% of the set, and they are left out of the
 family task only, since binary detection uses all 5,560 malicious samples.
 
 \begin{figure}[tbp]
@@ -720,7 +720,7 @@ VirusTotal, and what the collection stores per application is the number of anti
 that flagged it, together with the compilation date of its bytecode, its size and the market it
 came from.
 About 9,470 benign applications were used against the full set of 5,560 malicious ones, giving a
-corpus of roughly 15,030 in which malware is 37.0 per cent.
+corpus of roughly 15,030 in which malware is 37.0\%.
 
 Turning that stored count into a benign label requires a threshold, and the threshold is a
 decision rather than a property of the data. The AndroZoo authors report the flagged share at one
@@ -761,8 +761,8 @@ absent from Drebin, which limits comparisons between the two classification task
 
 \subsection*{Split and repetition policy}
 
-Each corpus was divided at random into 70 per cent for training, 20 per cent for testing and
-10 per cent for validation. The partition was shared by all methods and held fixed across
+Each corpus was divided at random into 70\% for training, 20\% for testing and
+10\% for validation. The partition was shared by all methods and held fixed across
 repetitions. Each configuration, including GCN, GraphSAGE, HGNN, HGNN+ and \hgann{}, was
 trained five times with different random seeds. The tabulated learned-model scores are
 arithmetic means over these five runs. These repetitions sample training randomness
@@ -777,15 +777,20 @@ although Drebin contains repackaged near-duplicates.
 \section{Binary Detection Results}
 \label{sec:hgann:10}
 
-Table~\ref{tab:hgann:binary} reports binary detection on the cohorts defined in
-Section~\ref{sec:hgann:9}. Figures~\ref{fig:hgann:f1} and~\ref{fig:hgann:accuracy} combine these
-published results with the multiclass results of Table~\ref{tab:hgann:multi}.
+Binary detection tests whether the application-level representation separates malicious APKs
+from benign ones. Table~\ref{tab:hgann:binary} compares \hgann{} with the pairwise graph models
+GCN and GraphSAGE and the hypergraph models HGNN and HGNN+. The evaluation follows the shared
+partitions defined in Section~\ref{sec:hgann:9}; all learned-model scores are means over
+five training seeds. Precision, recall and $F_1$ are macro-averaged across the malicious and
+benign classes, so each class contributes equally. Figures~\ref{fig:hgann:f1}
+and~\ref{fig:hgann:accuracy} place these binary results alongside the multiclass results reported
+in the following sections.
 
 \begin{table}
-  \caption{Binary detection, in per cent. Each F1, precision and recall value is a five-run mean
-  of the macro-averaged score on a common fixed split. Five author-corrected rows in the two result
-  tables supersede the values printed in the source publication \cite{norouzian2025hgannmal}.
-  Best values in bold.}
+  \caption{Binary detection results (\%). Learned-model scores are five-run means on a shared
+  fixed partition per corpus; F1, precision and recall are macro-averaged over both classes.
+  Author-corrected Drebin macro scores supersede the corresponding entries in the source
+  publication \cite{norouzian2025hgannmal}. Best values in bold.}
   \label{tab:hgann:binary}
   \centering
   \begin{tabular}{lrrrr@{\hskip 2em}rrrr}
@@ -814,7 +819,8 @@ published results with the multiclass results of Table~\ref{tab:hgann:multi}.
   training seeds on each fixed split, from Tables~\ref{tab:hgann:binary}
   and~\ref{tab:hgann:multi}.
   The vertical axis is truncated at 80 so that differences among the hypergraph methods remain
-  visible. HGNNP is the source publication's name for HGNN+.}
+  visible. The gain beside each task is the margin of \hgann{} over the strongest baseline.
+  HGNNP is the source publication's name for HGNN+.}
   \label{fig:hgann:f1}
 \end{figure}
 
@@ -828,38 +834,50 @@ published results with the multiclass results of Table~\ref{tab:hgann:multi}.
   \label{fig:hgann:accuracy}
 \end{sidewaysfigure}
 
-Across the evaluated tasks, every hypergraph configuration exceeded the stronger pairwise
-baseline by 3.1 to 10.8 points of mean accuracy. \hgann{} exceeded the strongest non-attentive hypergraph baseline
-in three of the four task--dataset combinations \cite{norouzian2025hgannmal}. These comparisons
-concern complete model configurations, because hyperedge construction and attention weighting
-changed together. A controlled comparison using identical hyperedges and matched normalisation
-is required to isolate the contribution of attention.
+\subsection*{Drebin and AndroZoo}
 
-On CICMalDroid binary detection, \hgann{} achieved 97.6 per cent mean accuracy compared with
-97.7 per cent for HGNN+. Without the individual run scores, this difference establishes neither
-statistical equivalence nor superiority.
+\hgann{} achieved the highest mean scores on this corpus: 98.3\% accuracy and
+98.2\% macro-$F_1$. Relative to the strongest pairwise result for each metric, these
+are gains of 5.0 percentage points in accuracy over GraphSAGE and 6.0 points in macro-$F_1$
+over GCN. The non-attentive hypergraph models also scored above both pairwise baselines.
+Among them, HGNN+ reached the higher accuracy, 97.1\%, while HGNN reached the higher
+macro-$F_1$, 96.6\%. \hgann{} exceeded these values by 1.2 and 1.6 points, respectively.
 
-A majority-class predictor scores 63.0 per cent on the Drebin corpus, where benign applications
-are the majority, and 84.5 per cent on CICMalDroid, where they are 15.5 per cent of the samples. Reported
-accuracy stands 35.3 points above the trivial baseline in the first case and 13.1 points above it
-in the second. These differences place each reported accuracy in the context of its class balance.
+The author-supplied five-run summary matrix gives a more concrete account of the detection
+errors. For the 3,006 test applications, it reports 1,085 true positives and 27 false negatives,
+with 24 false positives and 1,870 true negatives. These entries correspond to detection of
+97.6\% of the malicious applications and a false-positive rate of 1.3\% among
+benign applications. Malware-specific precision is 97.8\%, and malware-specific $F_1$
+is 97.7\%. Equal averaging over both classes gives the rounded macro scores of
+98.2\% reported in Table~\ref{tab:hgann:binary}. Compared with the HGNN summary matrix,
+missed malware decreases from 63 to 27 applications, while false alarms decrease from 33 to 24.
+The improvement therefore appears in both types of detection error.
 
-\subsection*{Drebin confusion matrix and class balance}
+\subsection*{CICMalDroid}
 
-The five-run summary matrix for the \hgann{} Drebin binary evaluation reports 1,085 true positives and
-27 false negatives, with 24 false positives and 1,870 true negatives. Its entries total
-3,006, the test-set size, with 1,112 malicious and 1,894 benign applications. From these
-entries, the false-positive rate is 1.3 per cent and positive-class F1 is 97.7 per cent.
-Equal averaging over the malicious and benign classes gives 98.2 per cent for precision,
-recall and F1 after rounding; accuracy is 98.3 per cent. The corresponding GCN and HGNN
-summary matrices reproduce their corrected rows in Table~\ref{tab:hgann:binary} by the same calculation.
+On CICMalDroid, \hgann{} reached 97.6\% mean accuracy and 96.2\% macro-$F_1$.
+These exceed GraphSAGE, the stronger pairwise baseline on both metrics, by 6.1 and
+5.2 percentage points. All hypergraph models again scored above the pairwise models in
+accuracy and macro-$F_1$. Within the hypergraph group, \hgann{} recorded the highest
+macro-$F_1$, 0.3 points above HGNN+, whereas HGNN+ recorded the highest accuracy at
+97.7\%, 0.1 points above \hgann{}. The ranking thus depends on the measure: accuracy
+weights applications equally, while macro-$F_1$ weights the two class-specific $F_1$ scores
+equally. Across both corpora, the binary results support higher-order modelling within the
+evaluated static-analysis pipeline.
 
-The experiment used a corpus with 37.0 per cent malware, whereas deployments may contain a lower
-share. A separate sensitivity calculation holds recall and the false-positive rate fixed while
-reducing the malware share to 10 per cent. Under this assumption, positive-class precision falls from 97.8 to
-about 89.5 per cent because benign applications outnumber malicious applications nine to
-one. This calculation illustrates the effect of class balance under fixed rates, as discussed in
-Section~\ref{sec:background:evaluation}.
+\subsection*{Class balance and interpretation}
+
+The two corpora place different weights on detection errors. Malware accounts for 37.0\% of the Drebin--AndroZoo corpus and 84.5\% of
+CICMalDroid. Predicting only the
+majority class would therefore yield accuracies of 63.0\% and 84.5\%, respectively;
+\hgann{} exceeds these reference values by 35.3 and 13.1 percentage points.
+
+The Drebin summary also permits a sensitivity calculation for a lower malware prevalence.
+Holding its malware recall and false-positive rate fixed, Equation~\ref{eq:background:prevalence}
+gives a malware-specific precision of 89.5\% at 10\% prevalence, compared with
+97.8\% in the test cohort. This is a conditional calculation, not a measured deployment
+result. It shows why the precision of malware alerts should be interpreted together with the
+malware share in the population being analysed.
 
 \section{Malware-Family Classification on Drebin}
 \label{sec:hgann:11}
@@ -870,7 +888,7 @@ Figure~\ref{fig:hgann:class-distribution}(a), and no
 benign application takes part. Results are in the left panel of Table~\ref{tab:hgann:multi}.
 
 \begin{table}
-  \caption{Multiclass classification, in per cent. Each F1, precision and recall value is a
+  \caption{Multiclass classification results (\%). Each F1, precision and recall value is a
   five-run mean of the macro-averaged score on a common fixed split \cite{norouzian2025hgannmal}.
   Drebin uses twenty malware families; CICMalDroid uses five categories, including Benign.
   Best values in bold.}
@@ -897,7 +915,7 @@ benign application takes part. Results are in the left panel of Table~\ref{tab:h
 
 The ordering repeats: pairwise operators lowest, non-attentive hypergraph operators four to five
 and a half points of accuracy above them, and \hgann{} 1.7 points above the better of those. Against
-the trivial baseline the margin is wide here, since the largest family covers 19.8 per cent of the
+the trivial baseline the margin is wide here, since the largest family covers 19.8\% of the
 samples.
 
 The twenty families range from 925 samples down to 41, a ratio above twenty to one.
@@ -1055,13 +1073,13 @@ that the field uses as reference points. Later work on hypergraph stability incl
 
 \paragraph{The threat model is non-adaptive.} No adversary in this evaluation knows that the
 detector exists, although published attacks act on the object this pipeline consumes. A
-structural attack on graph-based Android detection reports over 90 per cent success in feature
-space and up to 100 per cent in problem space against function-call-graph detectors under
+structural attack on graph-based Android detection reports over 90\% success in feature
+space and up to 100\% in problem space against function-call-graph detectors under
 white-box access \cite{zhao2021structural}. FCGHunter rewrites an application with
-semantics-preserving operators and reaches a white-box success rate of 87.9 per cent against forty
+semantics-preserving operators and reaches a white-box success rate of 87.9\% against forty
 detectors built from graph-summary features \cite{song2026fcghunter}. A4M reports an average of
-85.17 per cent against seven detectors built with MaMaDroid, APIGraph and a graph neural network,
-under a perturbation budget of five per cent \cite{li2025efficient}. None of these attacks was run
+85.17\% against seven detectors built with MaMaDroid, APIGraph and a graph neural network,
+under a perturbation budget of 5\% \cite{li2025efficient}. None of these attacks was run
 against \hgann{}. Every hyperedge of Section~\ref{sec:hgann:7} is derived from the call graph or
 from quantities computed over it, so methods and edges injected into that graph also change the
 hyperedges. Attention operates downstream of an extraction that the adversary controls. \hgann{}
@@ -1085,7 +1103,7 @@ for classification into families and into categories. Every hypergraph configura
 the stronger pairwise baseline by 3.1 to 10.8 points of mean accuracy over five training runs.
 \hgann{} exceeded the
 strongest non-attentive hypergraph baseline in three of four task--dataset combinations; on
-CICMalDroid binary detection, its mean accuracy was 97.6 per cent compared with 97.7 per cent
+CICMalDroid binary detection, its mean accuracy was 97.6\% compared with 97.7\%
 for HGNN+. These descriptive comparisons apply to the fixed evaluation partitions.
 
 Because the hyperedge vocabulary and the weighting were changed together, the improvement over the hypergraph

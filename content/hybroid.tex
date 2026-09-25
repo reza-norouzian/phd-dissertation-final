@@ -166,7 +166,7 @@ which the Hybroid study uses 1,700 package/capture pairs.
 
 Both analysis branches excluded the 47 graph-extraction failures from the 2,126 source samples
 and used the same remaining 2,079 applications. This corresponds to processing coverage of
-97.8 per cent. All modality comparisons concern that common cohort; excluded samples are not
+97.8\%. All modality comparisons concern that common cohort; excluded samples are not
 counted as classification successes or errors. Their class labels are unavailable, so the
 post-exclusion class counts cannot be reconstructed.
 
@@ -178,7 +178,7 @@ unspecified; Section~\ref{sec:hybroid:9} explains the implications for interpret
 
 A supplementary static-only experiment used 45,592 malicious and 90,313 benign applications
 from AndroZoo, VirusShare and VirusTotal. Its 135,905 samples were divided at random into
-80 per cent for training and 20 per cent for testing \cite{norouzian2021hybroid}. This experiment
+80\% for training and 20\% for testing \cite{norouzian2021hybroid}. This experiment
 evaluates the code representation on a larger corpus; it provides no additional modality
 comparison. Its detection results are reported in Section~\ref{sec:hybroid:9}.
 
@@ -395,12 +395,12 @@ independence or exclude nonlinear dependence.
 \end{figure}
 
 Table~\ref{tab:hybroid:protocols} reports the observed protocol shares. HTTP accounts for
-29.22--61.38 per cent of flows across the malware categories, and TLS for 0.00--10.89 per cent.
+29.22\%--61.38\% of flows across the malware categories, and TLS for 0.00\%--10.89\%.
 The publication does not characterise the remaining protocols.
 
 \begin{table}
   \caption{Reported HTTP and TLS flow shares by malware category
-  \cite{norouzian2021hybroid}. The remainder is calculated as 100 per cent minus those shares;
+  \cite{norouzian2021hybroid}. The remainder is calculated as 100\% minus those shares;
   its protocol composition is unspecified.}
   \label{tab:hybroid:protocols}
   \centering
@@ -476,7 +476,7 @@ and their joint input in Sections~\ref{sec:hybroid:9} to~\ref{sec:hybroid:11}.
 Table~\ref{tab:hybroid:baselines} reports the binary-detection comparison
 \cite{norouzian2021hybroid}. \hybroid{} has the highest reported value in each column, with
 accuracy of 0.970 and AUC of 0.996. The possible post-exclusion class counts imply a calculated
-accuracy of 79.5--81.8 per cent for an always-benign rule, which provides a majority-class
+accuracy of 79.5\%--81.8\% for an always-benign rule, which provides a majority-class
 reference. The baseline table compares complete detection pipelines; its interpretation also
 depends on preprocessing and tuning, as well as on common metric definitions.
 
@@ -490,8 +490,8 @@ $\mathrm{FP}/N=\pi R(1-P)/P$, so accuracy satisfies
   \label{eq:hybroid:metricidentity}
 \end{equation}
 Treating Hybroid's reported accuracy, precision and recall of 0.970 as values from one such
-matrix would imply $\pi=0.50$. The evaluated malware proportion is instead between 18.2 and
-20.5 per cent, depending on the labels of the excluded applications. This illustrates why the
+matrix would imply $\pi=0.50$. The evaluated malware proportion is instead between 18.2\% and
+20.5\%, depending on the labels of the excluded applications. This illustrates why the
 reported row cannot be interpreted as a pooled malware-class confusion matrix. Class-averaged
 metrics have different meanings, and separately averaged fold metrics need not satisfy the
 nonlinear identity in Equation~\ref{eq:hybroid:metricidentity}. The publication supplies neither
@@ -536,7 +536,7 @@ alone for each learner. With code features, random forest and gradient boosting 
 \cite{norouzian2021hybroid}.
 
 For the supplementary static-only corpus described in Section~\ref{sec:hybroid:4}, the paper
-reports 95.0 per cent accuracy and 96.0 per cent $F_1$ \cite{norouzian2021hybroid}. These values
+reports 95.0\% accuracy and 96.0\% $F_1$ \cite{norouzian2021hybroid}. These values
 come from the separate 80/20 evaluation on 135,905 applications.
 
 \section{Malware-Category Classification}
@@ -718,7 +718,7 @@ joint classifier under a specified attacker model.
 A learned 64-dimensional vector of static program structure is concatenated with
 \netfeatures{} features averaged over the recorded network flows of the same application.
 The joint input supports separate binary and five-class prediction tasks. On CICAndMal2017,
-gradient boosting with this input achieves a reported detection accuracy of 97.0 per cent and
+gradient boosting with this input achieves a reported detection accuracy of 97.0\% and
 category classification precision, recall and $F_1$ of 0.94 \cite{norouzian2021hybroid}.
 
 The within-system comparisons answer the second part for the evaluated cohort. Fusion improves reported
