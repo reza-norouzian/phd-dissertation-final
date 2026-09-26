@@ -464,6 +464,13 @@ predictions made by separate modality-specific classifiers. The 77 input feature
 contribute equally, and their counts do not establish which modality influences the decision.
 The final learner is trained separately for binary detection and five-class categorisation.
 
+% Optional cross-chapter connection, confirmed by the author. Remove the leading percent signs
+% to include this paragraph in the thesis.
+% The final classification module reused the modular learning engine developed for \nadics{}
+% (Section~\ref{sec:anomaly:nadics}). Its configurable model interface was adapted to accept
+% \hybroid{}'s application-level features and to compare classifiers for the Android prediction
+% tasks.
+
 
 The reported comparisons cover a decision tree, random forest and gradient boosting
 \cite{norouzian2021hybroid}. Support vector machines and naive Bayes were excluded after
@@ -711,20 +718,20 @@ would support more precise comparisons and estimates of uncertainty.
 \section{Chapter Summary}
 \label{sec:hybroid:13}
 
-\hybroid{} answers the first part of RQ1 with an application-level joint representation.
-A learned 64-dimensional vector of static program structure is concatenated with
-\netfeatures{} features averaged over the recorded network flows of the same application.
-The joint input supports separate binary and five-class prediction tasks. On CICAndMal2017,
-gradient boosting with this input achieves a reported detection accuracy of 97.0\% and
-category classification precision, recall and $F_1$ of 0.94 \cite{norouzian2021hybroid}.
+This chapter addressed RQ1 through \hybroid{}, which combines learned program-graph features
+with observed network-flow statistics in one application-level representation. The two feature
+groups are concatenated and used for separate binary detection and five-class category
+classification tasks.
 
-The within-system comparisons answer the second part for the evaluated cohort. Fusion improves reported
-detection $F_1$ by one or two percentage points over the better single modality. Its category
-classification contrast ranges from minus two to plus three points across learners. Flow
-features lead code features in detection, while code features lead in categorisation for each
-reported learner. These are descriptive point differences under the published protocol
-\cite{norouzian2021hybroid}.
+On CICAndMal2017, gradient boosting with the fused input achieved a reported detection accuracy
+of 97.0\%, the highest in the published baseline comparison
+(Table~\ref{tab:hybroid:baselines}), and a category-classification $F_1$ of 0.94
+\cite{norouzian2021hybroid}. Fusion increased reported detection $F_1$ by one or two percentage
+points over the better single modality across all three learners. For category classification,
+the differences ranged from minus two to plus three points. These comparisons answer RQ1 for
+the evaluated cohort: both observations can contribute to classification, with the benefit of
+their combination dependent on the task and learner.
 
-Chapter~\ref{chap:hgann} examines contextual representation within the application package
-alone. Its hypergraphs encode relations among groups of methods, with no runtime traffic
-capture required by the analysis pipeline.
+\hybroid{} examines context across code and runtime observations. Chapter~\ref{chap:hgann}
+examines context within static program structure: \hgann{} uses hypergraphs to represent
+groups of related methods from the application package.
