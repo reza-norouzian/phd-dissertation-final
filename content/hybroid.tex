@@ -199,15 +199,12 @@ which the Hybroid study uses 1,700 package/capture pairs.
 
 Both analysis branches excluded the 47 graph-extraction failures from the 2,126 source samples
 and used the same remaining 2,079 applications. This corresponds to processing coverage of
-97.8\%. All modality comparisons concern that common cohort; excluded samples are not
-counted as classification successes or errors. Their class labels are unavailable, so the
-post-exclusion class counts cannot be reconstructed.
+97.8\%.
 
 The paper reports five-fold cross-validation with random shuffling and scores averaged over
 the folds \cite{norouzian2021hybroid}. Implementation used Python with scikit-learn, TensorFlow
 and Keras, on a server with 32 cores, 128\,GB of memory and a 16\,GB GPU. Accuracy and $F_1$
-are reported alongside precision, recall and ROC AUC. The class-averaging convention is
-unspecified; Section~\ref{sec:hybroid:9} explains the implications for interpreting these values.
+are reported alongside precision, recall and ROC AUC.
 
 A supplementary static-only experiment used 45,592 malicious and 90,313 benign applications
 from AndroZoo, VirusShare and VirusTotal. Its 135,905 samples were divided at random into
@@ -240,8 +237,7 @@ a context window of $o_t$, excluding $t$ itself. The canonical objective is
   \label{eq:hybroid:skipgram}
 \end{equation}
 Here $v_o,u_o\in\mathbb R^l$ are the input and output embeddings, and $\theta$ contains their
-parameters. The objective rewards prediction of local opcode contexts. It defines the learning
-aim; the Hybroid publication does not specify which training approximation was used.
+parameters. The objective rewards prediction of local opcode contexts and it defines the learning aim.
 
 \begin{figure}
   \centering
@@ -253,23 +249,22 @@ aim; the Hybroid publication does not specify which training approximation was u
   \label{fig:hybroid:powerlaw}
 \end{figure}
 
-Figure~\ref{fig:hybroid:powerlaw} shows that opcode frequencies are uneven. Skip-gram uses
-contextual co-occurrence and does not require a power-law distribution. A learned lookup table
-can be reused for applications whose opcode types it covers, although vocabulary coverage alone
-does not establish generalisation to new applications or independence of the evaluation data.
+Figure~\ref{fig:hybroid:powerlaw} shows an uneven distribution of opcode frequencies in the
+pre-training corpus. This pattern does not establish a power-law fit or justify the choice of
+skip-gram, which learns from local opcode co-occurrence. Once trained, the embedding table can
+assign vectors to the same opcode types in other applications. Vocabulary coverage alone,
+however, does not establish classification performance on new applications or independence
+between the pre-training corpus and evaluation data.
 
-Operand removal also makes calls with the same opcode share a token embedding regardless of
-their callee \cite{haq2021survey}. Call targets can still contribute to graph construction through
-their operand references. Thus, the token features and graph edges retain different information
-from the same bytecode; omitting operands from the former does not imply independence of the two.
+Removing operands assigns the same token vector to calls with the same opcode, even when their
+callees differ \cite{haq2021survey}. The analyser can still use method references in those
+operands to construct call-graph edges. The token vectors thus represent opcode context, while
+the graph records recovered call relations. Both derive from the same bytecode, so their
+features should not be treated as independent sources of evidence.
 
-Basic-block features provide the input to the method-level CFG encoder. The publication
-describes them as weighted means of opcode vectors \cite{norouzian2021hybroid}. For a block
-$b$ with opcode positions $I_b$, this design can be written as
-$x_b=\sum_{j\in I_b}w_{bj}v_{o_j}/\sum_{j\in I_b}w_{bj}$, with $w_{bj}\geq0$ and
-$\sum_{j\in I_b}w_{bj}>0$. The result lies in $\mathbb R^l$. This notation expresses the stated
-block-level design: the source uses function-level indexing in its formula and does not specify
-the weighting rule, so the exact aggregation procedure remains under-specified.
+Basic-block features provide the input to the method-level CFG encoder. In the published design,
+the opcode vectors for instructions in a block are combined by a weighted mean to produce a
+block vector in $\mathbb R^l$ \cite{norouzian2021hybroid}.
 
 \section{Program-Graph Representation}
 \label{sec:hybroid:6}
