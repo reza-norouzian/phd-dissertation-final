@@ -383,10 +383,7 @@ let $\mathcal I_{\mathrm{fit}}$ denote the applications used to fit the scaling 
   \end{aligned}
   \label{eq:hybroid:flowscaling}
 \end{equation}
-The fitted range maps to $[0,1]$; values outside that range can map outside the interval.
-Leakage-controlled cross-validation requires fitting the bounds and data-dependent feature
-selection within each training fold. The publication describes these operations but does not
-locate their fitting within the cross-validation procedure.
+
 
 \begin{table}
   \caption{The \netfeatures{} retained network-flow fields, grouped by the quantities they
@@ -407,6 +404,8 @@ locate their fitting within the cross-validation procedure.
   \end{tabular}
 \end{table}
 
+The fitted range maps to $[0,1]$; values outside that range can map outside the interval.
+
 Feature selection retained the \netfeatures{} fields in Table~\ref{tab:hybroid:flowfeatures}.
 The publication reports Pearson correlation, an extremely randomised trees estimator and
 univariate scoring as selection methods \cite{norouzian2021hybroid}. Kendall correlations were
@@ -424,7 +423,6 @@ independence or exclude nonlinear dependence.
 
 Table~\ref{tab:hybroid:protocols} reports the observed protocol shares. HTTP accounts for
 29.22\%--61.38\% of flows across the malware categories, and TLS for 0.00\%--10.89\%.
-The publication does not characterise the remaining protocols.
 
 \begin{table}
   \caption{Reported HTTP and TLS flow shares by malware category
@@ -464,11 +462,8 @@ flow features by $d_i\in\mathbb R^{13}$. Both feature groups form the joint inpu
 classifier. This is feature-level fusion: the learner receives both observations, rather than
 predictions made by separate modality-specific classifiers. The 77 input features need not
 contribute equally, and their counts do not establish which modality influences the decision.
-
 The final learner is trained separately for binary detection and five-class categorisation.
-The binary-trained static representation is used for both tasks; a category-specific refitting
-of that representation is not reported. The experiment therefore evaluates the available
-representation on each task, without isolating the effect of its binary training objective.
+
 
 The reported comparisons cover a decision tree, random forest and gradient boosting
 \cite{norouzian2021hybroid}. Support vector machines and naive Bayes were excluded after
@@ -480,6 +475,9 @@ and their joint input in Sections~\ref{sec:hybroid:9} to~\ref{sec:hybroid:11}.
 
 \section{Binary Detection Results}
 \label{sec:hybroid:9}
+
+Table~\ref{tab:hybroid:baselines} brings together the binary-detection scores for \hybroid{}
+and four external baselines reported in \cite{norouzian2021hybroid}.
 
 \begin{table}
   \caption{Published binary-detection comparison with four baselines. Performance values are
@@ -501,8 +499,7 @@ and their joint input in Sections~\ref{sec:hybroid:9} to~\ref{sec:hybroid:11}.
   \end{tabular}
 \end{table}
 
-Table~\ref{tab:hybroid:baselines} reports the binary-detection comparison
-\cite{norouzian2021hybroid}. \hybroid{} has the highest reported value in each column, with
+\hybroid{} has the highest reported value in each column, with
 accuracy of 0.970 and AUC of 0.996. The possible post-exclusion class counts imply a calculated
 accuracy of 79.5\%--81.8\% for an always-benign rule, which provides a majority-class
 reference. The baseline table compares complete detection pipelines; its interpretation also
@@ -522,9 +519,7 @@ matrix would imply $\pi=0.50$. The evaluated malware proportion is instead betwe
 20.5\%, depending on the labels of the excluded applications. This illustrates why the
 reported row cannot be interpreted as a pooled malware-class confusion matrix. Class-averaged
 metrics have different meanings, and separately averaged fold metrics need not satisfy the
-nonlinear identity in Equation~\ref{eq:hybroid:metricidentity}. The publication supplies neither
-the class-averaging definition nor raw predictions for a reconstruction. The table therefore
-retains the published scores without assigning an unreported convention to them.
+nonlinear identity in Equation~\ref{eq:hybroid:metricidentity}.
 
 \begin{figure}[t]
   \centering
