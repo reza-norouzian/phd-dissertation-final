@@ -673,8 +673,7 @@ The single-modality ordering changes with the task. Network flow has the higher 
 for detection under all three learners: 0.90 against 0.89, 0.94 against 0.93, and 0.95 against
 0.93. Program code has the higher value for categorisation: 0.87 against 0.80, 0.91 against 0.88,
 and 0.91 against 0.90. This reversal is consistent across the three learners reported in the
-paper. The experiment does not identify a causal mechanism for it
-\cite{norouzian2021hybroid}.
+paper \cite{norouzian2021hybroid}.
 
 Fusion adds one or two percentage points of $F_1$ in binary detection. For categorisation,
 the contrast is minus two points for the decision tree, plus one for random forest and plus
@@ -683,56 +682,31 @@ single-modality score of 0.91 to 0.94 on that task. These comparisons support a 
 fusion benefit for detection and a learner-dependent result for category classification
 \cite{norouzian2021hybroid}.
 
-Fold-level scores and raw predictions are unavailable, so uncertainty and paired statistical
-tests cannot be reconstructed. The contrasts are differences between rounded reported means,
-not estimates of a statistically established improvement \cite{norouzian2021hybroid}.
-
-\section{Limitations and Threats to Validity}
+\section{Evaluation Scope and Limitations}
 \label{sec:hybroid:12}
 
-\paragraph{Observation conditions and temporal validity.}
-The traffic describes the configured execution windows, so behaviour that was not triggered may
-be absent. Its age also limits transfer to current applications. For applications targeting
-Android~9 (API level~28) or higher, cleartext traffic is disabled by default, although an
-application can opt in \cite{aosp2026networksecurity}. Flow statistics remain observable with
-encrypted payloads, but their distribution may change with the protocol mix. Neither the main
-cross-validation experiment nor the larger static-only experiment enforces temporal ordering.
-Their results therefore do not establish prospective performance on later applications
-\cite{pendlebury2019tesseract}.
+\hybroid{} provides a comparison of code, traffic and fused representations on 2,079 applications,
+with processing coverage of 97.8\%. Using the same retained applications for both branches
+supports the comparison of modalities. These results concern successful extraction; the
+47 applications excluded because of graph-recovery failures motivate further work on
+obfuscated code and evaluation of a traffic-only fallback \cite{norouzian2021hybroid}.
 
-\paragraph{Capture-related feature associations.}
-Some flow fields may reflect endpoints or capture conditions as well as application activity.
-An audit of UNSW-NB15 found that TTL features could distinguish operating-system populations
-associated with benign and malicious traffic \cite{flood2024bad}. That finding concerns a
-different corpus, but it identifies a mechanism relevant to the fields retained here.
-An ablation of TTL, TOS and TCP sequence features would assess reliance on those fields and
-whether their associations persist under changed capture conditions. No such test is reported
-for \hybroid{}.
+The evaluation uses historical samples under the recorded execution conditions, with traffic
+coverage bounded by the paths exercised during capture. The main evaluation and the supplementary
+static-only experiment use random partitions.
+Testing newer applications in chronological order would assess transfer across changes in malware
+and network protocols \cite{pendlebury2019tesseract}. Ablations of TTL, TOS and TCP sequence
+fields could assess sensitivity to capture conditions. Resilience to deliberate evasion remains
+a separate evaluation objective: functionality-preserving APK transformations provide a way
+to test both branches and the fused classifier under a stated attacker model
+\cite{song2026fcghunter, li2025efficient}.
 
-\paragraph{Processing coverage and obfuscation.}
-The common-cohort comparison is conditional on successful extraction of both representations.
-The excluded graph-extraction failures are attributed to obfuscated applications in the source
-\cite{norouzian2021hybroid}. Excluding them from both branches permits comparison on the same
-samples, but does not measure how a dynamic-only fallback would perform on those applications.
-Identifier renaming can preserve call relations, while packing or structural rewriting can
-affect recovery. The study does not establish resistance across these transformations.
-
-\paragraph{Reproducibility and interpretation.}
-The block aggregation and application-level composition remain under-specified
-(Sections~\ref{sec:hybroid:5} and~\ref{sec:hybroid:6}). The recorded protocol also does not
-fully document the fitting boundaries for feature preparation and model selection. A common
-cohort does not by itself establish identical fold assignments or independence of every fitted
-stage from test data. These are limits of the available specification, not evidence that leakage
-occurred. Interpretation of the scores remains subject to the metric definitions discussed in
-Section~\ref{sec:hybroid:9} and the uncertainty limits in Section~\ref{sec:hybroid:11}.
-
-\paragraph{Adversarial evaluation.}
-A relevant robustness test would apply functionality-preserving APK transformations to the
-complete pipeline. Published attacks provide operators for modifying function-call graphs
-\cite{song2026fcghunter, li2025efficient}. Inserted unreachable calls need not add network
-communication, but functionally equivalent applications may still differ in timing-dependent
-flow features. Hybroid's resilience therefore requires measurement of both branches and their
-joint classifier under a specified attacker model.
+The reported means support descriptive comparisons, with metric interpretation discussed in
+Section~\ref{sec:hybroid:9}. A fuller replication record would specify the block weights and
+application-level composition, together with the data used to fit preprocessing and select
+models. The available description leaves these details and the use of identical folds across
+configurations unresolved. Explicit metric-averaging conventions and fold-level predictions
+would support more precise comparisons and estimates of uncertainty.
 
 \section{Chapter Summary}
 \label{sec:hybroid:13}
