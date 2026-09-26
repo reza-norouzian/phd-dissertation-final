@@ -4,13 +4,14 @@
 \section{Research Problem and Contribution}
 \label{sec:hybroid:1}
 
-An Android package and its recorded network traffic provide different evidence for malware
-analysis. Static analysis recovers code that may remain unexecuted during a test, subject to
-the recovery limits described in Section~\ref{sec:background:android:analysis}. Traffic records
-communication during the observed execution, but its coverage depends on the behaviour
-triggered. Combining these observations could provide useful evidence when either source alone
-is insufficient to distinguish application classes. This possible complementarity motivates
-\hybroid{}; its predictive value must be measured for the chosen representations and task.
+An Android package can contain code paths that a test never executes, so its traffic capture
+cannot describe communication those paths might produce. Conversely, flow statistics describe
+observed communication without identifying the code path that produced it. Static analysis can
+recover program structure beyond the executed paths, subject to the limits described in
+Section~\ref{sec:background:android:analysis}. For malware classification, the unresolved
+question is whether combining these partial observations improves predictions over either
+source alone on the same applications. This possible complementarity motivates \hybroid{};
+its value must be measured for the chosen representations and prediction task.
 
 This chapter addresses RQ1, stated in Section~\ref{sec:intro:rqs}: \rqOneText{}
 It examines gap~\gapref{1} through a joint representation and a comparison on one application
@@ -121,14 +122,13 @@ CICMalDroid2020 corpus, with gains that depend on the available traffic. This su
 fusion under explicit observation conditions. Its reported gains are not directly comparable
 with Hybroid's because the representations and evaluation cohorts differ.
 
-For RQ1, the remaining question concerns the combination of a learned program-graph vector with
-application-level flow statistics. \hybroid{} makes these observations available to a common
-learner through feature concatenation, then compares the joint input with each branch alone.
-The comparison holds the application cohort and learner type fixed, so it addresses the
-predictive value of adding the second feature group. Its outcome must be assessed separately
-for binary detection and category classification, because the labels require different
-distinctions between applications. The observation requirements and evaluation protocol are
-specified next.
+The earlier hybrid studies do not establish whether adding a learned program-graph vector to
+application-level flow statistics improves classification for the tasks and cohort studied here.
+RQ1 tests
+that particular combination against each feature group alone on the same application cohort
+and with the same learner type. Binary detection and category classification require separate
+comparisons because their labels distinguish applications in different ways. The observation
+requirements and evaluation protocol are specified next.
 
 \section{Observation and Threat Model}
 \label{sec:hybroid:3}
