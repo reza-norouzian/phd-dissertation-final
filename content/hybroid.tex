@@ -4,19 +4,39 @@
 \section{Research Problem and Contribution}
 \label{sec:hybroid:1}
 
-This chapter addresses RQ1, stated in Section~\ref{sec:intro:rqs}: \rqOneText{}
-It examines gap~\gapref{1} on one application cohort, separately for each prediction task and
-learner.
+An Android package and its recorded network traffic provide different evidence for malware
+analysis. Static analysis recovers code that may remain unexecuted during a test, subject to
+the recovery limits described in Section~\ref{sec:background:android:analysis}. Traffic records
+communication during the observed execution, but its coverage depends on the behaviour
+triggered. Combining these observations could provide useful evidence when either source alone
+is insufficient to distinguish application classes. This possible complementarity motivates
+\hybroid{}; its predictive value must be measured for the chosen representations and task.
 
-\hybroid{} combines program structure recovered from an Android application package with
-network traffic recorded during execution on a physical handset. Every sample enters the
-pipeline as such a pair~(1), and the two observations are analysed in parallel~(2). The static
-branch yields a 64-dimensional code vector, the dynamic branch \netfeatures{}~network-flow
-features, and the two are concatenated into one joint vector per sample~(3). A supervised
-classifier is trained and cross-validated on that vector~(4) and produces the predictions~(5).
-Two tasks are evaluated separately: binary malware detection and five-class classification into
-Benign or one of four malware categories. Figure~\ref{fig:hybroid:architecture} presents the
-pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
+This chapter addresses RQ1, stated in Section~\ref{sec:intro:rqs}: \rqOneText{}
+It examines gap~\gapref{1} through a joint representation and a comparison on one application
+cohort, separately for each prediction task and learner.
+
+Program graphs supply context for the code features: control-flow edges relate basic blocks,
+while call-graph edges relate methods. \hybroid{} combines learned opcode features with this
+recovered structure in its static branch \cite{norouzian2021hybroid}. As introduced in
+Sections~\ref{sec:background:graphs:pairwise} and~\ref{sec:background:learning:messagepassing},
+graph propagation combines a block's instruction features with neighbouring block states.
+The code representation is fitted using application labels for malware detection, so training
+can adapt its features to that task. Its fixed-width output supplies the static input to the
+final classifier.
+The network branch supplies flow statistics, such as duration and byte counts, without requiring
+payload contents. Both branches must describe the same application before their features can
+be combined.
+
+Figure~\ref{fig:hybroid:architecture} presents the pipeline. Each sample enters as an APK paired
+with traffic recorded on a physical handset~(1); the branches process these observations in
+parallel~(2). The static branch yields a 64-dimensional code vector, and the network branch
+aggregates flow records into \netfeatures{} features per application. This common unit permits
+feature-level fusion: concatenating the vectors gives one classifier access to both feature
+groups~(3). This final supervised learner fits their associations with the target labels~(4),
+with separate models for binary detection and five-class prediction into Benign or one of four
+malware categories~(5). Representation learning in the code branch and final classification
+thus serve distinct roles; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define them.
 
 \begin{sidewaysfigure}
   \centering
@@ -25,12 +45,12 @@ pipeline; Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} define its stages.
   \label{fig:hybroid:architecture}
 \end{sidewaysfigure}
 
-The contribution comprises the multimodal pipeline and its within-system evaluation. The network
-branch aggregates bidirectional flow records into \netfeatures{} features per application. The
-code branch uses learned instruction embeddings and program graphs to represent static structure.
-Sections~\ref{sec:hybroid:5} to~\ref{sec:hybroid:8} answer the first part of RQ1 with this
-joint representation; Section~\ref{sec:hybroid:11} answers the second by comparing the fused
-input with each branch alone.
+The contribution comprises this multimodal pipeline and its within-system evaluation.
+Section~\ref{sec:hybroid:11} compares the joint input with each branch alone for the same learner
+and task. The reported mean $F_1$ gains over the better single modality are one or two percentage
+points for detection; category-classification differences range from minus two to plus three
+points, depending on the learner. These descriptive results support a task-dependent benefit
+from fusion. The evaluation leaves the relative merits of alternative fusion mechanisms open.
 
 The work was published at ISC 2021 \cite{norouzian2021hybroid}. The candidate is the first of four
 authors, with shared first authorship recorded for the first two. He designed the overall pipeline
@@ -64,7 +84,10 @@ models transitions between abstracted API calls as Markov chains; package- or fa
 abstraction reduces dependence on individual method identities \cite{onwuzurike2019mamadroid}.
 Attributed control-flow graphs have also been used for binary-code similarity and malware
 classification \cite{xu2017neural, yan2019classifying}. These methods operate at different
-program granularities, as defined in Section~\ref{sec:background:graphs:pairwise}.
+program granularities, as defined in Section~\ref{sec:background:graphs:pairwise}. This distinction
+guides the static design in \hybroid{}: opcode embeddings describe block contents, and graph
+propagation incorporates neighbouring blocks. The rationale is to use instruction information
+together with structural context; the modality comparison evaluates that code branch as a whole.
 
 The choice of vertex features remains relevant in later work. Tran et al.\ augment function-call
 graphs with function metadata and code embeddings, and report improved classification under
@@ -79,8 +102,9 @@ features \cite{arora2014malware, zulkifli2018android}. CREDROID examines network
 including transmitted information \cite{malik2016credroid}. In the broader malware-traffic
 literature, learned representations operate on raw packets or sessions
 \cite{marin2021deepmal, wang2017malware}. The observation unit determines which traffic is
-represented together and what a prediction label describes. \hybroid{} aggregates flow records
-at application level to align them with its static representation.
+represented together and what a prediction label describes. Application-level aggregation in
+\hybroid{} permits fusion with the code vector, at the cost of the record order and variation
+discarded by averaging (Section~\ref{sec:hybroid:7}).
 
 The CICAndMal2017 study classifies Android malware from flow features and provides the dynamic
 baseline used here \cite{lashkari2018toward}. A later extension combines network-flow and API
@@ -88,14 +112,23 @@ features \cite{taheri2019extensible}. Hybrid methods cover a wider range of obse
 and fusion mechanisms \cite{jain2026hybrid}. MARVIN compares static, dynamic and combined
 features, while the study by Onwuzurike et al.\ compares the modalities through a common
 behavioural model \cite{lindorfer2015marvin, onwuzurike2018family}. Both report advantages for
-the combination in their evaluated settings. The benefit for a particular representation pair
-and task still requires a within-system comparison, which motivates RQ1.
+the combination in their evaluated settings. These studies establish precedents for hybrid
+analysis; the observation pair and fusion mechanism determine the design examined in each case.
 
 HGDetector later combines static network-related call-graph features with graphs derived from
 network traffic \cite{feng2025hgdetector}. Its experiments use CICAndMal2017 and a filtered
 CICMalDroid2020 corpus, with gains that depend on the available traffic. This supports examining
 fusion under explicit observation conditions. Its reported gains are not directly comparable
 with Hybroid's because the representations and evaluation cohorts differ.
+
+For RQ1, the remaining question concerns the combination of a learned program-graph vector with
+application-level flow statistics. \hybroid{} makes these observations available to a common
+learner through feature concatenation, then compares the joint input with each branch alone.
+The comparison holds the application cohort and learner type fixed, so it addresses the
+predictive value of adding the second feature group. Its outcome must be assessed separately
+for binary detection and category classification, because the labels require different
+distinctions between applications. The observation requirements and evaluation protocol are
+specified next.
 
 \section{Observation and Threat Model}
 \label{sec:hybroid:3}
